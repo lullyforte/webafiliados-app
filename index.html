@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WebAfiliados">
+  <title>WebAfiliados</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff6b35, #f7c59f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 40px; }
+    .card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 1rem; color: #aaa; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+    input {
+      width: 100%;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    input:focus { border-color: #ff6b35; }
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff6b35, #e55a25);
+      border: none;
+      border-radius: 10px;
+      padding: 16px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #ff6b35;
+      color: #ff6b35;
+    }
+    .status {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-top: 12px;
+      display: none;
+    }
+    .status.ok { background: #1a3a1a; color: #4caf50; display: block; }
+    .status.err { background: #3a1a1a; color: #f44336; display: block; }
+    .status.info { background: #1a2a3a; color: #64b5f6; display: block; }
+    .push-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #555; flex-shrink: 0; }
+    .dot.green { background: #4caf50; }
+    .dot.yellow { background: #ff9800; }
+    .dot.red { background: #f44336; }
+    .push-text { font-size: 0.9rem; color: #ccc; }
+    #loginSection { display: block; }
+    #dashSection { display: none; }
+    .affiliate-info {
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .affiliate-info strong { color: #fff; display: block; margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+  <div class="logo">WebAfiliados</div>
+  <div class="subtitle">Painel do Afiliado</div>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginSection">
+    <h2>Entrar</h2>
+    <input type="email" id="emailInput" placeholder="Seu e-mail" autocomplete="email">
+    <input type="password" id="passInput" placeholder="Sua senha" autocomplete="current-password">
+    <button class="btn" id="loginBtn" onclick="doLogin()">Entrar</button>
+    <div class="status" id="loginStatus"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="card" id="dashSection">
+    <h2>Minha Conta</h2>
+    <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
+    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:4px;">Sair</button>
+  </div>
+
+  <!-- PUSH NOTIFICATIONS -->
+  <div class="card" id="pushSection" style="display:none;">
+    <h2>Notificações Push</h2>
+    <div class="push-status">
+      <div class="dot" id="pushDot"></div>
+      <div class="push-text" id="pushText">Verificando...</div>
+    </div>
+    <button class="btn" id="pushBtn" onclick="requestPush()">Ativar Notificações</button>
+    <div class="status" id="pushStatus"></div>
+  </div>
+
+  <script>
+    const API = 'https://webafiliados-backend-production.up.railway.app';
+    let SESSION = null;
+
+    // ── Inicialização ────────────────────────────────────────────────────
+    window.addEventListener('load', async () => {
+      // Registra service worker
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('./sw.js');
+          console.log('SW registrado!');
+        } catch(e) {
+          console.warn('SW erro:', e.message);
+        }
+      }
+
+      // Verifica sessão salva
+      const saved = localStorage.getItem('wa_session');
+      if (saved) {
+        try {
+          SESSION = JSON.parse(saved);
+          showDash();
+          checkPushStatus();
+        } catch(e) {
+          localStorage.removeItem('wa_session');
+        }
+      }
+    });
+
+    // ── Login ─────────────────────────────────────────────────────────────
+    async function doLogin() {
+      const email = document.getElementById('emailInput').value.trim();
+      const pass  = document.getElementById('passInput').value;
+      const btn   = document.getElementById('loginBtn');
+      const st    = document.getElementById('loginStatus');
+
+      if (!email || !pass) { showStatus(st, 'Preencha e-mail e senha.', 'err'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      showStatus(st, 'Autenticando...', 'info');
+
+      try {
+        const res = await fetch(`${API}/api/affiliates/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Erro ao entrar');
+
+        SESSION = data;
+        localStorage.setItem('wa_session', JSON.stringify(SESSION));
+        showDash();
+        checkPushStatus();
+      } catch(e) {
+        showStatus(st, e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    }
+
+    function doLogout() {
+      SESSION = null;
+      localStorage.removeItem('wa_session');
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('dashSection').style.display = 'none';
+      document.getElementById('pushSection').style.display = 'none';
+    }
+
+    function showDash() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashSection').style.display = 'block';
+      document.getElementById('pushSection').style.display = 'block';
+
+      const info = document.getElementById('affiliateInfo');
+      info.innerHTML = `
+        <strong>${SESSION.affiliate?.name || SESSION.name || 'Afiliado'}</strong>
+        ${SESSION.affiliate?.email || SESSION.email || ''}
+      `;
+    }
+
+    // ── Push ──────────────────────────────────────────────────────────────
+    async function checkPushStatus() {
+      const dot  = document.getElementById('pushDot');
+      const text = document.getElementById('pushText');
+      const btn  = document.getElementById('pushBtn');
+
+      if (!('PushManager' in window)) {
+        dot.className = 'dot red';
+        text.textContent = 'Push não suportado neste navegador';
+        btn.style.display = 'none';
+        return;
+      }
+
+      const perm = Notification.permission;
+      if (perm === 'granted') {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          dot.className = 'dot green';
+          text.textContent = 'Notificações ativas ✓';
+          btn.textContent = 'Reativar Notificações';
+          return;
+        }
+      }
+      if (perm === 'denied') {
+        dot.className = 'dot red';
+        text.textContent = 'Notificações bloqueadas — libere nas configurações';
+        btn.style.display = 'none';
+        return;
+      }
+
+      dot.className = 'dot yellow';
+      text.textContent = 'Notificações não ativadas';
+    }
+
+    async function requestPush() {
+      const btn = document.getElementById('pushBtn');
+      const st  = document.getElementById('pushStatus');
+
+      if (!SESSION) { showStatus(st, 'Faça login primeiro.', 'err'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Ativando...';
+
+      try {
+        // Busca chave pública VAPID
+        const keyRes = await fetch(`${API}/api/push/vapid-key`);
+        const { publicKey } = await keyRes.json();
+
+        const reg  = await navigator.serviceWorker.ready;
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') throw new Error('Permissão negada pelo usuário');
+
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlB64ToUint8Array(publicKey)
+        });
+
+        // Envia subscription para o backend
+        const affiliateId = SESSION.affiliate?.id || SESSION.id;
+        const token = SESSION.token;
+
+        const saveRes = await fetch(`${API}/api/push/subscribe`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ affiliateId, subscription: sub.toJSON() })
+        });
+
+        if (!saveRes.ok) throw new Error('Erro ao salvar subscription');
+
+        showStatus(st, '✅ Notificações ativadas com sucesso!', 'ok');
+        checkPushStatus();
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Ativar Notificações';
+      }
+    }
+
+    function urlB64ToUint8Array(b64) {
+      const pad = '='.repeat((4 - b64.length % 4) % 4);
+      const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+      return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+    }
+
+    function showStatus(el, msg, type) {
+      el.textContent = msg;
+      el.className = 'status ' + type;
+    }
+
+    // Enter no input faz login
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+  </script>
+</body>
+</html>
