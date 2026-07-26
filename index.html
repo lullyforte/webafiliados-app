@@ -92,8 +92,6 @@
     .dot.yellow { background: #ff9800; }
     .dot.red { background: #f44336; }
     .push-text { font-size: 0.9rem; color: #ccc; }
-    #loginSection { display: block; }
-    #dashSection { display: none; }
     .affiliate-info {
       background: #2a2a2a;
       border-radius: 10px;
@@ -120,7 +118,7 @@
   </div>
 
   <!-- DASHBOARD -->
-  <div class="card" id="dashSection">
+  <div class="card" id="dashSection" style="display:none;">
     <h2>Minha Conta</h2>
     <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
     <button class="btn btn-outline" onclick="doLogout()" style="margin-top:4px;">Sair</button>
@@ -141,19 +139,25 @@
     const API = 'https://webafiliados-backend-production.up.railway.app';
     let SESSION = null;
 
-    // ── Inicialização ────────────────────────────────────────────────────
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
     window.addEventListener('load', async () => {
-      // Registra service worker
       if ('serviceWorker' in navigator) {
         try {
           await navigator.serviceWorker.register('./sw.js');
-          console.log('SW registrado!');
         } catch(e) {
           console.warn('SW erro:', e.message);
         }
       }
-
-      // Verifica sessão salva
       const saved = localStorage.getItem('wa_session');
       if (saved) {
         try {
@@ -166,29 +170,23 @@
       }
     });
 
-    // ── Login ─────────────────────────────────────────────────────────────
     async function doLogin() {
       const email = document.getElementById('emailInput').value.trim();
       const pass  = document.getElementById('passInput').value;
       const btn   = document.getElementById('loginBtn');
       const st    = document.getElementById('loginStatus');
-
       if (!email || !pass) { showStatus(st, 'Preencha e-mail e senha.', 'err'); return; }
-
       btn.disabled = true;
       btn.textContent = 'Entrando...';
       showStatus(st, 'Autenticando...', 'info');
-
       try {
-        const res = await fetch(`${API}/api/affiliates/login`, {
+        const res = await fetch(API + '/api/affiliates/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password: pass })
         });
         const data = await res.json();
-
         if (!res.ok) throw new Error(data.error || 'Erro ao entrar');
-
         SESSION = data;
         localStorage.setItem('wa_session', JSON.stringify(SESSION));
         showDash();
@@ -213,27 +211,20 @@
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('dashSection').style.display = 'block';
       document.getElementById('pushSection').style.display = 'block';
-
       const info = document.getElementById('affiliateInfo');
-      info.innerHTML = `
-        <strong>${SESSION.affiliate?.name || SESSION.name || 'Afiliado'}</strong>
-        ${SESSION.affiliate?.email || SESSION.email || ''}
-      `;
+      info.innerHTML = '<strong>' + (SESSION.affiliate && SESSION.affiliate.name ? SESSION.affiliate.name : SESSION.name || 'Afiliado') + '</strong>' + (SESSION.affiliate && SESSION.affiliate.email ? SESSION.affiliate.email : SESSION.email || '');
     }
 
-    // ── Push ──────────────────────────────────────────────────────────────
     async function checkPushStatus() {
       const dot  = document.getElementById('pushDot');
       const text = document.getElementById('pushText');
       const btn  = document.getElementById('pushBtn');
-
       if (!('PushManager' in window)) {
         dot.className = 'dot red';
-        text.textContent = 'Push não suportado neste navegador';
+        text.textContent = 'Push não suportado — instale como app';
         btn.style.display = 'none';
         return;
       }
-
       const perm = Notification.permission;
       if (perm === 'granted') {
         const reg = await navigator.serviceWorker.ready;
@@ -241,17 +232,16 @@
         if (sub) {
           dot.className = 'dot green';
           text.textContent = 'Notificações ativas ✓';
-          btn.textContent = 'Reativar Notificações';
+          btn.textContent = 'Reativar';
           return;
         }
       }
       if (perm === 'denied') {
         dot.className = 'dot red';
-        text.textContent = 'Notificações bloqueadas — libere nas configurações';
+        text.textContent = 'Bloqueado — libere nas configurações';
         btn.style.display = 'none';
         return;
       }
-
       dot.className = 'dot yellow';
       text.textContent = 'Notificações não ativadas';
     }
@@ -259,42 +249,41 @@
     async function requestPush() {
       const btn = document.getElementById('pushBtn');
       const st  = document.getElementById('pushStatus');
-
       if (!SESSION) { showStatus(st, 'Faça login primeiro.', 'err'); return; }
-
       btn.disabled = true;
       btn.textContent = 'Ativando...';
-
       try {
-        // Busca chave pública VAPID
-        const keyRes = await fetch(`${API}/api/push/vapid-key`);
-        const { publicKey } = await keyRes.json();
+        const keyRes = await fetch(API + '/api/push/vapid-key');
+        const keyData = await keyRes.json();
+        const publicKey = keyData.publicKey;
 
         const reg  = await navigator.serviceWorker.ready;
         const perm = await Notification.requestPermission();
-        if (perm !== 'granted') throw new Error('Permissão negada pelo usuário');
+        if (perm !== 'granted') throw new Error('Permissão negada');
 
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlB64ToUint8Array(publicKey)
         });
 
-        // Envia subscription para o backend
-        const affiliateId = SESSION.affiliate?.id || SESSION.id;
+        const affiliateId = SESSION.affiliate ? SESSION.affiliate.id : SESSION.id;
         const token = SESSION.token;
 
-        const saveRes = await fetch(`${API}/api/push/subscribe`, {
+        const saveRes = await fetch(API + '/api/push/subscribe', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': 'Bearer ' + token
           },
           body: JSON.stringify({ affiliateId, subscription: sub.toJSON() })
         });
 
-        if (!saveRes.ok) throw new Error('Erro ao salvar subscription');
+        if (!saveRes.ok) {
+          const errData = await saveRes.json();
+          throw new Error(errData.error || 'Erro ao salvar');
+        }
 
-        showStatus(st, '✅ Notificações ativadas com sucesso!', 'ok');
+        showStatus(st, '✅ Notificações ativadas!', 'ok');
         checkPushStatus();
       } catch(e) {
         showStatus(st, '❌ ' + e.message, 'err');
@@ -304,21 +293,10 @@
       }
     }
 
-    function urlB64ToUint8Array(b64) {
-      const pad = '='.repeat((4 - b64.length % 4) % 4);
-      const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
-      return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-    }
-
     function showStatus(el, msg, type) {
       el.textContent = msg;
       el.className = 'status ' + type;
     }
-
-    // Enter no input faz login
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doLogin();
-    });
   </script>
 </body>
 </html>
