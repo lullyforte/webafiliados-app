@@ -68,6 +68,12 @@
       border: 1px solid #ff6b35;
       color: #ff6b35;
     }
+    .btn-secondary {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #fff;
+      margin-top: 10px;
+    }
     .status {
       padding: 12px 16px;
       border-radius: 10px;
@@ -101,12 +107,52 @@
       color: #ccc;
     }
     .affiliate-info strong { color: #fff; display: block; margin-bottom: 4px; }
+    .prompt-box {
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #eee;
+      margin-bottom: 16px;
+      max-height: 320px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .product-meta {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    .field-label {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+    .field-label:first-child { margin-top: 0; }
+    .thumb {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .loading { text-align: center; color: #888; padding: 40px 0; }
   </style>
 </head>
 <body>
 
   <div class="logo">WebAfiliados</div>
-  <div class="subtitle">Painel do Afiliado</div>
+  <div class="subtitle" id="pageSubtitle">Painel do Afiliado</div>
 
   <!-- LOGIN -->
   <div class="card" id="loginSection">
@@ -135,6 +181,21 @@
     <div class="status" id="pushStatus"></div>
   </div>
 
+  <!-- TELA: PROMPT PRONTO (Push 1) -->
+  <div class="card" id="promptSection" style="display:none;">
+    <h2>🎬 Prompt do Vídeo</h2>
+    <div class="prompt-box" id="promptText"></div>
+    <button class="btn" id="copyPromptBtn" onclick="copyPrompt()">📋 Copiar Prompt</button>
+    <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶️ Abrir YouTube Create</button>
+    <div class="status" id="promptStatus"></div>
+  </div>
+
+  <!-- TELA: PACOTE / VÍDEO PRONTO (Push 2) -->
+  <div class="card" id="packageSection" style="display:none;">
+    <h2>📦 Pacote do Vídeo</h2>
+    <div id="packageContent" class="loading">Carregando pacote...</div>
+  </div>
+
   <script>
     const API = 'https://webafiliados-backend-production.up.railway.app';
     let SESSION = null;
@@ -150,6 +211,18 @@
       return outputArray;
     }
 
+    function getSession() {
+      const saved = localStorage.getItem('wa_session');
+      if (!saved) return null;
+      try { return JSON.parse(saved); } catch(e) { return null; }
+    }
+
+    function hideAllCards() {
+      ['loginSection','dashSection','pushSection','promptSection','packageSection'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+    }
+
     window.addEventListener('load', async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -158,18 +231,127 @@
           console.warn('SW erro:', e.message);
         }
       }
-      const saved = localStorage.getItem('wa_session');
-      if (saved) {
-        try {
-          SESSION = JSON.parse(saved);
-          showDash();
-          checkPushStatus();
-        } catch(e) {
-          localStorage.removeItem('wa_session');
-        }
+
+      SESSION = getSession();
+
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get('view');
+
+      if (view === 'prompt') {
+        renderPromptView(params);
+        return;
+      }
+
+      if (view === 'package') {
+        renderPackageView(params);
+        return;
+      }
+
+      // Fluxo padrão: login/dashboard
+      if (SESSION) {
+        showDash();
+        checkPushStatus();
       }
     });
 
+    // ===== TELA DE PROMPT (Push 1) =====
+    function renderPromptView(params) {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Vídeo pronto para gerar';
+      document.getElementById('promptSection').style.display = 'block';
+      const text = params.get('text') || '(prompt vazio)';
+      document.getElementById('promptText').textContent = decodeURIComponent(text);
+      window._currentPrompt = decodeURIComponent(text);
+    }
+
+    function copyPrompt() {
+      const st = document.getElementById('promptStatus');
+      navigator.clipboard.writeText(window._currentPrompt || '')
+        .then(() => showStatus(st, '✅ Prompt copiado!', 'ok'))
+        .catch(() => showStatus(st, '❌ Não foi possível copiar automaticamente. Selecione o texto manualmente.', 'err'));
+    }
+
+    function openYoutubeCreate() {
+      window.open('https://www.youtube.com/create', '_blank');
+    }
+
+    // ===== TELA DE PACOTE (Push 2) =====
+    async function renderPackageView(params) {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Conferir e publicar';
+      document.getElementById('packageSection').style.display = 'block';
+      const content = document.getElementById('packageContent');
+      const packageId = params.get('id');
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login no app para ver este pacote.</div>';
+        return;
+      }
+      if (!packageId) {
+        content.innerHTML = '<div class="status err" style="display:block;">Pacote não identificado.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/api/packaging/' + packageId, {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao buscar pacote');
+
+        const pkg = data.package;
+        content.innerHTML = `
+          <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
+          <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
+
+          <div class="field-label">Legenda</div>
+          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || '—')}</div>
+
+          <div class="field-label">Hashtags</div>
+          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || '—')}</div>
+
+          <div class="field-label">Link de Afiliado</div>
+          <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
+
+          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn">✅ Confirmar Publicação</button>
+          <div class="status" id="confirmStatus"></div>
+        `;
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function confirmPackage(packageId) {
+      const btn = document.getElementById('confirmBtn');
+      const st = document.getElementById('confirmStatus');
+      btn.disabled = true;
+      btn.textContent = 'Confirmando...';
+      try {
+        const res = await fetch(API + '/api/packaging/' + packageId + '/confirm', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao confirmar');
+        showStatus(st, '✅ Publicação confirmada!', 'ok');
+        btn.textContent = 'Confirmado ✓';
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = '✅ Confirmar Publicação';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ===== LOGIN / DASHBOARD (fluxo original) =====
     async function doLogin() {
       const email = document.getElementById('emailInput').value.trim();
       const pass  = document.getElementById('passInput').value;
@@ -208,6 +390,8 @@
     }
 
     function showDash() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Painel do Afiliado';
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('dashSection').style.display = 'block';
       document.getElementById('pushSection').style.display = 'block';
