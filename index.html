@@ -320,6 +320,9 @@
         const pkg = (data.packages || []).find(p => String(p.id) === String(packageId));
         if (!pkg) throw new Error('Pacote não encontrado na lista de prontos');
 
+        window._currentPackageCaption = (pkg.caption || '') + '\n' + (pkg.hashtags || '');
+        window._currentPackageLink = pkg.affiliate_link || '';
+
         content.innerHTML = `
           <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
           <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
@@ -333,7 +336,11 @@
           <div class="field-label">Link de Afiliado</div>
           <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
 
-          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn">✅ Confirmar Publicação</button>
+          <button class="btn btn-secondary" onclick="copyPackageCaption()">📋 Copiar Legenda + Hashtags</button>
+          <button class="btn btn-secondary" onclick="openProductOnShopee()" style="margin-top:10px;">🛍️ Favoritar na Shopee</button>
+          <div class="status" id="copyPackageStatus"></div>
+
+          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn" style="margin-top:16px;">✅ Confirmar Publicação</button>
           <div class="status" id="confirmStatus"></div>
         `;
       } catch(e) {
@@ -360,6 +367,23 @@
         btn.disabled = false;
         btn.textContent = '✅ Confirmar Publicação';
       }
+    }
+
+    function copyPackageCaption() {
+      const st = document.getElementById('copyPackageStatus');
+      navigator.clipboard.writeText(window._currentPackageCaption || '')
+        .then(() => showStatus(st, '✅ Legenda e hashtags copiadas!', 'ok'))
+        .catch(() => showStatus(st, '❌ Não foi possível copiar. Selecione o texto manualmente.', 'err'));
+    }
+
+    function openProductOnShopee() {
+      const link = window._currentPackageLink;
+      if (!link) {
+        const st = document.getElementById('copyPackageStatus');
+        showStatus(st, '❌ Link de afiliado não disponível.', 'err');
+        return;
+      }
+      window.open(link, '_blank');
     }
 
     // ===== TELA DE UPLOAD (devolver vídeo gerado) =====
