@@ -167,40 +167,40 @@
   <div class="card" id="dashSection" style="display:none;">
     <h2>Minha Conta</h2>
     <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
-    <button class="btn btn-secondary" onclick="showUploadScreen()">📤 Vídeos Pendentes</button>
+    <button class="btn btn-secondary" onclick="showUploadScreen()">ðŸ“¤ VÃ­deos Pendentes</button>
     <button class="btn btn-outline" onclick="doLogout()" style="margin-top:10px;">Sair</button>
   </div>
 
   <!-- PUSH NOTIFICATIONS -->
   <div class="card" id="pushSection" style="display:none;">
-    <h2>Notificações Push</h2>
+    <h2>NotificaÃ§Ãµes Push</h2>
     <div class="push-status">
       <div class="dot" id="pushDot"></div>
       <div class="push-text" id="pushText">Verificando...</div>
     </div>
-    <button class="btn" id="pushBtn" onclick="requestPush()">Ativar Notificações</button>
+    <button class="btn" id="pushBtn" onclick="requestPush()">Ativar NotificaÃ§Ãµes</button>
     <div class="status" id="pushStatus"></div>
   </div>
 
   <!-- TELA: PROMPT PRONTO (Push 1) -->
   <div class="card" id="promptSection" style="display:none;">
-    <h2>🎬 Prompt do Vídeo</h2>
+    <h2>ðŸŽ¬ Prompt do VÃ­deo</h2>
     <div class="prompt-box" id="promptText"></div>
-    <button class="btn" id="copyPromptBtn" onclick="copyPrompt()">📋 Copiar Prompt</button>
-    <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶️ Abrir YouTube Create</button>
+    <button class="btn" id="copyPromptBtn" onclick="copyPrompt()">ðŸ“‹ Copiar Prompt</button>
+    <button class="btn btn-secondary" onclick="openYoutubeCreate()">â–¶ï¸ Abrir YouTube Create</button>
     <div class="status" id="promptStatus"></div>
   </div>
 
-  <!-- TELA: PACOTE / VÍDEO PRONTO (Push 2) -->
+  <!-- TELA: PACOTE / VÃDEO PRONTO (Push 2) -->
   <div class="card" id="packageSection" style="display:none;">
-    <h2>📦 Pacote do Vídeo</h2>
+    <h2>ðŸ“¦ Pacote do VÃ­deo</h2>
     <div id="packageContent" class="loading">Carregando pacote...</div>
   </div>
 
-  <!-- TELA: UPLOAD DE VÍDEO -->
+  <!-- TELA: UPLOAD DE VÃDEO -->
   <div class="card" id="uploadSection" style="display:none;">
-    <h2>⬆️ Enviar Vídeo</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <h2>â¬†ï¸ Enviar VÃ­deo</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">â† Voltar</button>
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
 
@@ -265,7 +265,7 @@
         return;
       }
 
-      // Fluxo padrão: login/dashboard
+      // Fluxo padrÃ£o: login/dashboard
       if (SESSION) {
         showDash();
         checkPushStatus();
@@ -275,7 +275,7 @@
     // ===== TELA DE PROMPT (Push 1) =====
     function renderPromptView(params) {
       hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Vídeo pronto para gerar';
+      document.getElementById('pageSubtitle').textContent = 'VÃ­deo pronto para gerar';
       document.getElementById('promptSection').style.display = 'block';
       const text = params.get('text') || '(prompt vazio)';
       document.getElementById('promptText').textContent = decodeURIComponent(text);
@@ -285,8 +285,8 @@
     function copyPrompt() {
       const st = document.getElementById('promptStatus');
       navigator.clipboard.writeText(window._currentPrompt || '')
-        .then(() => showStatus(st, '✅ Prompt copiado!', 'ok'))
-        .catch(() => showStatus(st, '❌ Não foi possível copiar automaticamente. Selecione o texto manualmente.', 'err'));
+        .then(() => showStatus(st, 'âœ… Prompt copiado!', 'ok'))
+        .catch(() => showStatus(st, 'âŒ NÃ£o foi possÃ­vel copiar automaticamente. Selecione o texto manualmente.', 'err'));
     }
 
     function openYoutubeCreate() {
@@ -302,11 +302,11 @@
       const packageId = params.get('id');
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">Faça login no app para ver este pacote.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login no app para ver este pacote.</div>';
         return;
       }
       if (!packageId) {
-        content.innerHTML = '<div class="status err" style="display:block;">Pacote não identificado.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Pacote nÃ£o identificado.</div>';
         return;
       }
 
@@ -320,22 +320,22 @@
         const pkg = data.package;
         content.innerHTML = `
           <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
-          <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
+          <div class="product-meta">R$ ${pkg.price || ''} â€¢ Status: ${escapeHtml(pkg.status)}</div>
 
           <div class="field-label">Legenda</div>
-          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || '—')}</div>
+          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || 'â€”')}</div>
 
           <div class="field-label">Hashtags</div>
-          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || '—')}</div>
+          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || 'â€”')}</div>
 
           <div class="field-label">Link de Afiliado</div>
-          <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
+          <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || 'â€”')}</div>
 
-          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn">✅ Confirmar Publicação</button>
+          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn">âœ… Confirmar PublicaÃ§Ã£o</button>
           <div class="status" id="confirmStatus"></div>
         `;
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -351,60 +351,60 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao confirmar');
-        showStatus(st, '✅ Publicação confirmada!', 'ok');
-        btn.textContent = 'Confirmado ✓';
+        showStatus(st, 'âœ… PublicaÃ§Ã£o confirmada!', 'ok');
+        btn.textContent = 'Confirmado âœ“';
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, 'âŒ ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = '✅ Confirmar Publicação';
+        btn.textContent = 'âœ… Confirmar PublicaÃ§Ã£o';
       }
     }
 
-    // ===== TELA DE UPLOAD (devolver vídeo gerado) =====
+    // ===== TELA DE UPLOAD (devolver vÃ­deo gerado) =====
     function showUploadScreen() {
       hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Vídeos pendentes';
+      document.getElementById('pageSubtitle').textContent = 'VÃ­deos pendentes';
       document.getElementById('uploadSection').style.display = 'block';
       renderPendingList(document.getElementById('uploadContent'));
     }
 
     async function renderPendingList(content) {
-      content.innerHTML = '<div class="loading">Carregando vídeos pendentes...</div>';
+      content.innerHTML = '<div class="loading">Carregando vÃ­deos pendentes...</div>';
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">Faça login para ver os vídeos pendentes.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login para ver os vÃ­deos pendentes.</div>';
         return;
       }
 
       try {
-        const res = await fetch(API + '/video/pending', {
+        const res = await fetch(API + '/api/video/pending', {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao buscar pendentes');
 
         if (!data.videos || data.videos.length === 0) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vídeo pendente no momento. 🎉</div>';
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vÃ­deo pendente no momento. ðŸŽ‰</div>';
           return;
         }
 
         content.innerHTML = data.videos.map(v => `
           <div class="prompt-box" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
-            <strong>${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</strong>
+            <strong>${escapeHtml(v.title || v.product_name || ('VÃ­deo #' + v.id))}</strong>
           </div>
         `).join('');
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
     function renderSingleUpload(videoId) {
       const content = document.getElementById('uploadContent');
       content.innerHTML = `
-        <div class="field-label">Vídeo #${videoId}</div>
+        <div class="field-label">VÃ­deo #${videoId}</div>
         <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
-        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">📤 Enviar Vídeo</button>
-        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">← Ver outros pendentes</button>
+        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">ðŸ“¤ Enviar VÃ­deo</button>
+        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">â† Ver outros pendentes</button>
         <div class="status" id="uploadStatus"></div>
       `;
     }
@@ -422,26 +422,26 @@
       const file = fileInput.files[0];
       btn.disabled = true;
       btn.textContent = 'Enviando...';
-      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+      showStatus(st, 'Enviando vÃ­deo, aguarde...', 'info');
 
       try {
         const formData = new FormData();
         formData.append('video', file);
 
-        const res = await fetch(API + '/video/' + videoId + '/upload', {
+        const res = await fetch(API + '/api/video/' + videoId + '/upload', {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + SESSION.token },
           body: formData
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
+        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vÃ­deo');
 
-        showStatus(st, '✅ Vídeo enviado com sucesso!', 'ok');
-        btn.textContent = 'Enviado ✓';
+        showStatus(st, 'âœ… VÃ­deo enviado com sucesso!', 'ok');
+        btn.textContent = 'Enviado âœ“';
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, 'âŒ ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = '📤 Enviar Vídeo';
+        btn.textContent = 'ðŸ“¤ Enviar VÃ­deo';
       }
     }
 
@@ -508,7 +508,7 @@
       const btn  = document.getElementById('pushBtn');
       if (!('PushManager' in window)) {
         dot.className = 'dot red';
-        text.textContent = 'Push não suportado — instale como app';
+        text.textContent = 'Push nÃ£o suportado â€” instale como app';
         btn.style.display = 'none';
         return;
       }
@@ -518,25 +518,25 @@
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
           dot.className = 'dot green';
-          text.textContent = 'Notificações ativas ✓';
+          text.textContent = 'NotificaÃ§Ãµes ativas âœ“';
           btn.textContent = 'Reativar';
           return;
         }
       }
       if (perm === 'denied') {
         dot.className = 'dot red';
-        text.textContent = 'Bloqueado — libere nas configurações';
+        text.textContent = 'Bloqueado â€” libere nas configuraÃ§Ãµes';
         btn.style.display = 'none';
         return;
       }
       dot.className = 'dot yellow';
-      text.textContent = 'Notificações não ativadas';
+      text.textContent = 'NotificaÃ§Ãµes nÃ£o ativadas';
     }
 
     async function requestPush() {
       const btn = document.getElementById('pushBtn');
       const st  = document.getElementById('pushStatus');
-      if (!SESSION) { showStatus(st, 'Faça login primeiro.', 'err'); return; }
+      if (!SESSION) { showStatus(st, 'FaÃ§a login primeiro.', 'err'); return; }
       btn.disabled = true;
       btn.textContent = 'Ativando...';
       try {
@@ -546,7 +546,7 @@
 
         const reg  = await navigator.serviceWorker.ready;
         const perm = await Notification.requestPermission();
-        if (perm !== 'granted') throw new Error('Permissão negada');
+        if (perm !== 'granted') throw new Error('PermissÃ£o negada');
 
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
@@ -570,13 +570,13 @@
           throw new Error(errData.error || 'Erro ao salvar');
         }
 
-        showStatus(st, '✅ Notificações ativadas!', 'ok');
+        showStatus(st, 'âœ… NotificaÃ§Ãµes ativadas!', 'ok');
         checkPushStatus();
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, 'âŒ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Ativar Notificações';
+        btn.textContent = 'Ativar NotificaÃ§Ãµes';
       }
     }
 
