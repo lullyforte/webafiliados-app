@@ -167,7 +167,8 @@
   <div class="card" id="dashSection" style="display:none;">
     <h2>Minha Conta</h2>
     <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
-    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:4px;">Sair</button>
+    <button class="btn btn-secondary" onclick="showUploadScreen()">📤 Vídeos Pendentes</button>
+    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:10px;">Sair</button>
   </div>
 
   <!-- PUSH NOTIFICATIONS -->
@@ -196,6 +197,13 @@
     <div id="packageContent" class="loading">Carregando pacote...</div>
   </div>
 
+  <!-- TELA: UPLOAD DE VÍDEO -->
+  <div class="card" id="uploadSection" style="display:none;">
+    <h2>⬆️ Enviar Vídeo</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <div id="uploadContent" class="loading">Carregando...</div>
+  </div>
+
   <script>
     const API = 'https://webafiliados-backend-production.up.railway.app';
     let SESSION = null;
@@ -218,7 +226,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','pushSection','promptSection','packageSection'].forEach(id => {
+      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection'].forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
     }
@@ -244,6 +252,16 @@
 
       if (view === 'package') {
         renderPackageView(params);
+        return;
+      }
+
+      if (view === 'upload') {
+        if (SESSION) {
+          showUploadScreen();
+        } else {
+          hideAllCards();
+          document.getElementById('loginSection').style.display = 'block';
+        }
         return;
       }
 
@@ -339,6 +357,91 @@
         showStatus(st, '❌ ' + e.message, 'err');
         btn.disabled = false;
         btn.textContent = '✅ Confirmar Publicação';
+      }
+    }
+
+    // ===== TELA DE UPLOAD (devolver vídeo gerado) =====
+    function showUploadScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Vídeos pendentes';
+      document.getElementById('uploadSection').style.display = 'block';
+      renderPendingList(document.getElementById('uploadContent'));
+    }
+
+    async function renderPendingList(content) {
+      content.innerHTML = '<div class="loading">Carregando vídeos pendentes...</div>';
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para ver os vídeos pendentes.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/video/pending', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao buscar pendentes');
+
+        if (!data.videos || data.videos.length === 0) {
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vídeo pendente no momento. 🎉</div>';
+          return;
+        }
+
+        content.innerHTML = data.videos.map(v => `
+          <div class="prompt-box" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
+            <strong>${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</strong>
+          </div>
+        `).join('');
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function renderSingleUpload(videoId) {
+      const content = document.getElementById('uploadContent');
+      content.innerHTML = `
+        <div class="field-label">Vídeo #${videoId}</div>
+        <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
+        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">📤 Enviar Vídeo</button>
+        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">← Ver outros pendentes</button>
+        <div class="status" id="uploadStatus"></div>
+      `;
+    }
+
+    async function doUpload(videoId) {
+      const fileInput = document.getElementById('videoFileInput');
+      const btn = document.getElementById('uploadBtn');
+      const st = document.getElementById('uploadStatus');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+
+      try {
+        const formData = new FormData();
+        formData.append('video', file);
+
+        const res = await fetch(API + '/video/' + videoId + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
+
+        showStatus(st, '✅ Vídeo enviado com sucesso!', 'ok');
+        btn.textContent = 'Enviado ✓';
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = '📤 Enviar Vídeo';
       }
     }
 
