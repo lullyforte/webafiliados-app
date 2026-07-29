@@ -311,13 +311,15 @@
       }
 
       try {
-        const res = await fetch(API + '/api/packaging/' + packageId, {
+        const res = await fetch(API + '/api/packaging/ready', {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao buscar pacote');
 
-        const pkg = data.package;
+        const pkg = (data.packages || []).find(p => String(p.id) === String(packageId));
+        if (!pkg) throw new Error('Pacote não encontrado na lista de prontos');
+
         content.innerHTML = `
           <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
           <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
