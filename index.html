@@ -187,9 +187,8 @@
     <h2>🎬 Prompt do Vídeo</h2>
     <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
-    <button class="btn" id="copyPromptBtn" onclick="copyPrompt()">📋 Copiar Prompt</button>
-    <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶️ Abrir YouTube Create</button>
-    <button class="btn btn-secondary" id="downloadImageBtn" onclick="downloadProductImage()" style="display:none; margin-top:10px;">🖼️ Baixar Foto do Produto</button>
+    <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
+    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">▶️ Abrir YouTube Create</button>
     <div class="status" id="promptStatus"></div>
   </div>
 
@@ -298,16 +297,17 @@
       }
     }
 
-    function downloadProductImage() {
-      const url = window._currentProductImage;
-      if (!url) return;
-      window.open(url, '_blank');
-    }
-
-    function copyPrompt() {
+    function copyPromptAndImage() {
       const st = document.getElementById('promptStatus');
       navigator.clipboard.writeText(window._currentPrompt || '')
-        .then(() => showStatus(st, '✅ Prompt copiado!', 'ok'))
+        .then(() => {
+          if (window._currentProductImage) {
+            window.open(window._currentProductImage, '_blank');
+            showStatus(st, '✅ Prompt copiado e imagem aberta! Cole o texto e anexe a imagem no YouTube Create.', 'ok');
+          } else {
+            showStatus(st, '✅ Prompt copiado! (este produto não tem foto disponível)', 'ok');
+          }
+        })
         .catch(() => showStatus(st, '❌ Não foi possível copiar automaticamente. Selecione o texto manualmente.', 'err'));
     }
 
