@@ -185,9 +185,11 @@
   <!-- TELA: PROMPT PRONTO (Push 1) -->
   <div class="card" id="promptSection" style="display:none;">
     <h2>🎬 Prompt do Vídeo</h2>
+    <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
     <button class="btn" id="copyPromptBtn" onclick="copyPrompt()">📋 Copiar Prompt</button>
     <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶️ Abrir YouTube Create</button>
+    <button class="btn btn-secondary" id="downloadImageBtn" onclick="downloadProductImage()" style="display:none; margin-top:10px;">🖼️ Baixar Foto do Produto</button>
     <div class="status" id="promptStatus"></div>
   </div>
 
@@ -280,6 +282,26 @@
       const text = params.get('text') || '(prompt vazio)';
       document.getElementById('promptText').textContent = decodeURIComponent(text);
       window._currentPrompt = decodeURIComponent(text);
+
+      const imageParam = params.get('image');
+      const imageUrl = imageParam ? decodeURIComponent(imageParam) : '';
+      window._currentProductImage = imageUrl;
+      const imgEl = document.getElementById('promptProductImage');
+      const btnEl = document.getElementById('downloadImageBtn');
+      if (imageUrl) {
+        imgEl.src = imageUrl;
+        imgEl.style.display = 'block';
+        btnEl.style.display = 'block';
+      } else {
+        imgEl.style.display = 'none';
+        btnEl.style.display = 'none';
+      }
+    }
+
+    function downloadProductImage() {
+      const url = window._currentProductImage;
+      if (!url) return;
+      window.open(url, '_blank');
     }
 
     function copyPrompt() {
