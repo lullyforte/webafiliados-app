@@ -235,6 +235,42 @@
       margin-top: 16px;
     }
     .field-label:first-child { margin-top: 0; }
+    select {
+      width: 100%;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    select:focus { border-color: #ff6b35; }
+    .day-card {
+      background: #212121;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .day-card-row { display: flex; gap: 10px; }
+    .day-card-row > div { flex: 1; }
+    .day-active-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .day-active-label input[type="checkbox"] { width: auto; margin: 0; }
+    .day-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
     .thumb {
       width: 100%;
       border-radius: 10px;
@@ -327,6 +363,13 @@
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
 
+  <!-- TELA: CONFIGURAÇÕES -->
+  <div class="card" id="settingsSection" style="display:none;">
+    <h2>⚙️ Calendário Editorial</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <div id="settingsContent" class="loading">Carregando...</div>
+  </div>
+
   <script>
     const API = 'https://api.webafliados.shop';
     let SESSION = null;
@@ -349,7 +392,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection'].forEach(id => {
+      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection'].forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
     }
@@ -713,7 +756,139 @@
     }
 
     function showSettingsScreen() {
-      alert('Configurações — em construção! 🚧');
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Configurações';
+      document.getElementById('settingsSection').style.display = 'block';
+      renderSettingsScreen();
+    }
+
+    async function renderSettingsScreen() {
+      const content = document.getElementById('settingsContent');
+      content.innerHTML = '<div class="loading">Carregando configurações...</div>';
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
+        return;
+      }
+
+      try {
+        const [catRes, schedRes] = await Promise.all([
+          fetch(API + '/api/settings/categories', {
+            headers: { 'Authorization': 'Bearer ' + SESSION.token }
+          }),
+          fetch(API + '/api/settings/schedule', {
+            headers: { 'Authorization': 'Bearer ' + SESSION.token }
+          })
+        ]);
+        const catData = await catRes.json();
+        const schedData = await schedRes.json();
+        if (!catRes.ok) throw new Error(catData.error || 'Erro ao buscar categorias');
+        if (!schedRes.ok) throw new Error(schedData.error || 'Erro ao buscar calendário');
+
+        window.__SETTINGS_CATEGORIES = catData.categories || [];
+
+        content.innerHTML = schedData.schedule.map(day => renderDayCard(day)).join('');
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function renderDayCard(day) {
+      const categories = window.__SETTINGS_CATEGORIES || [];
+      const options = categories.map(c =>
+        `<option value="${c.key}" ${c.key === day.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
+      ).join('');
+
+      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+
+      return `
+        <div class="day-card" id="day-card-${day.day_of_week}">
+          <div class="day-title">${escapeHtml(day.day_label)}</div>
+
+          <label class="day-active-label">
+            <input type="checkbox" id="day-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
+            Dia ativo
+          </label>
+
+          <select id="day-category-${day.day_of_week}">
+            <option value="">— Selecione a categoria —</option>
+            ${options}
+          </select>
+
+          <div class="day-card-row">
+            <div>
+              <div class="field-label" style="margin-top:0;">Preço mín. (R$)</div>
+              <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}">
+            </div>
+            <div>
+              <div class="field-label" style="margin-top:0;">Preço máx. (R$)</div>
+              <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}">
+            </div>
+          </div>
+
+          <div class="day-card-row">
+            <div>
+              <div class="field-label" style="margin-top:0;">Comissão mín. (%)</div>
+              <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}">
+            </div>
+            <div>
+              <div class="field-label" style="margin-top:0;">Vídeos/dia</div>
+              <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}">
+            </div>
+          </div>
+
+          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})">💾 Salvar ${escapeHtml(day.day_label)}</button>
+          <div class="status" id="day-status-${day.day_of_week}"></div>
+        </div>
+      `;
+    }
+
+    async function saveScheduleDay(dayOfWeek) {
+      const card = document.getElementById('day-card-' + dayOfWeek);
+      const btn = card.querySelector('.btn-secondary');
+      const st = document.getElementById('day-status-' + dayOfWeek);
+
+      const category = document.getElementById('day-category-' + dayOfWeek).value;
+      const price_min = parseFloat(document.getElementById('day-pricemin-' + dayOfWeek).value) || 0;
+      const price_max = parseFloat(document.getElementById('day-pricemax-' + dayOfWeek).value) || 99999;
+      const commissionPercent = parseFloat(document.getElementById('day-commission-' + dayOfWeek).value) || 0;
+      const videos_per_day = parseInt(document.getElementById('day-videos-' + dayOfWeek).value) || 1;
+      const active = document.getElementById('day-active-' + dayOfWeek).checked;
+
+      if (!category) {
+        showStatus(st, 'Selecione uma categoria antes de salvar.', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Salvando...';
+
+      try {
+        const res = await fetch(API + '/api/settings/schedule/' + dayOfWeek, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            category,
+            price_min,
+            price_max,
+            commission_min: commissionPercent / 100,
+            videos_per_day,
+            active
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+        showStatus(st, '✅ Salvo com sucesso!', 'ok');
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
     }
 
     async function checkPushStatus() {
