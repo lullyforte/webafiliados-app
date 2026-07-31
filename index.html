@@ -504,7 +504,18 @@
     }
 
     function openYoutubeCreate() {
-      window.open('https://www.youtube.com/create', '_blank');
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      const isAndroid = /android/i.test(ua);
+
+      if (isIOS) {
+        window.open('https://apps.apple.com/br/app/youtube-create/id6476327393', '_blank');
+      } else if (isAndroid) {
+        window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.producer', '_blank');
+      } else {
+        // Desktop: YouTube Create não tem versão web, só mobile.
+        window.open('https://www.youtube.com/creators/create/youtube-create-app/', '_blank');
+      }
     }
 
     // ===== TELA DE PACOTE (Push 2) =====
