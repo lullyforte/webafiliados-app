@@ -26,7 +26,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  if (url.hostname.includes('railway.app') || url.hostname.includes('webafiliados.shop')) {
+  if (url.hostname.includes('railway.app') || url.hostname.includes('webafliados.shop')) {
     event.respondWith(fetch(event.request));
     return;
   }
