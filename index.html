@@ -363,10 +363,34 @@
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
 
-  <!-- TELA: CONFIGURAÇÕES -->
-  <div class="card" id="settingsSection" style="display:none;">
-    <h2>⚙️ Calendário Editorial</h2>
+  <!-- TELA: MENU DE CONFIGURAÇÕES -->
+  <div class="card" id="settingsMenuSection" style="display:none;">
+    <h2>⚙️ Configurações</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <div class="icon-grid">
+      <div class="icon-card" onclick="showCalendarScreen()">
+        <div class="icon-card-ico">📅</div>
+        <p>Calendário</p>
+      </div>
+      <div class="icon-card" onclick="showComingSoon('API Afiliado')">
+        <div class="icon-card-ico">🔑</div>
+        <p>API Afiliado</p>
+      </div>
+      <div class="icon-card" onclick="showComingSoon('Notificações')">
+        <div class="icon-card-ico">🔔</div>
+        <p>Notificações</p>
+      </div>
+      <div class="icon-card" onclick="showComingSoon('Conta')">
+        <div class="icon-card-ico">👤</div>
+        <p>Conta</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: CONFIGURAÇÕES > CALENDÁRIO EDITORIAL -->
+  <div class="card" id="settingsSection" style="display:none;">
+    <h2>📅 Calendário Editorial</h2>
+    <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="settingsContent" class="loading">Carregando...</div>
   </div>
 
@@ -392,7 +416,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection'].forEach(id => {
+      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection','settingsMenuSection'].forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
     }
@@ -758,6 +782,12 @@
     function showSettingsScreen() {
       hideAllCards();
       document.getElementById('pageSubtitle').textContent = 'Configurações';
+      document.getElementById('settingsMenuSection').style.display = 'block';
+    }
+
+    function showCalendarScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Calendário Editorial';
       document.getElementById('settingsSection').style.display = 'block';
       renderSettingsScreen();
     }
