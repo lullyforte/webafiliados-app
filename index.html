@@ -307,7 +307,7 @@
         <div class="icon-card-ico">🖼️</div>
         <p>Galeria</p>
       </div>
-      <div class="icon-card" onclick="showComingSoon('Editar com IA')">
+      <div class="icon-card" onclick="showAiEditScreen()">
         <div class="icon-card-ico">🪄</div>
         <p>Editar com IA</p>
       </div>
@@ -394,6 +394,13 @@
     <div id="settingsContent" class="loading">Carregando...</div>
   </div>
 
+  <!-- TELA: EDITAR COM IA -->
+  <div class="card" id="aiEditSection" style="display:none;">
+    <h2>🪄 Editar com IA</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <div id="aiEditContent" class="loading">Carregando...</div>
+  </div>
+
   <script>
     const API = 'https://api.webafliados.shop';
     let SESSION = null;
@@ -416,7 +423,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection','settingsMenuSection'].forEach(id => {
+      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection','settingsMenuSection','aiEditSection'].forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
     }
@@ -783,6 +790,135 @@
         `).join('');
       } catch (e) {
         grid.innerHTML = '<p style="font-size:12px;color:#888;grid-column:1/-1;">Não foi possível carregar.</p>';
+      }
+    }
+
+    // ===== TELA: EDITAR COM IA =====
+    function showAiEditScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').textContent = 'Editar com IA';
+      document.getElementById('aiEditSection').style.display = 'block';
+      renderAiProductList();
+    }
+
+    async function renderAiProductList() {
+      const content = document.getElementById('aiEditContent');
+      content.innerHTML = '<div class="loading">Carregando produtos do dia...</div>';
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para continuar.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/api/products', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao buscar produtos');
+
+        const products = Array.isArray(data) ? data : (data.products || []);
+
+        if (!products.length) {
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum produto selecionado hoje ainda. Volte mais tarde ou rode a seleção de produtos.</div>';
+          return;
+        }
+
+        content.innerHTML = `
+          <div class="field-label" style="margin-top:0;">Escolha um produto para gerar/editar o conteúdo:</div>
+          ${products.map(p => `
+            <div class="prompt-box" style="cursor:pointer;display:flex;gap:10px;align-items:center;" onclick="selectProductForAi(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+              ${p.image_url ? `<img src="${p.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
+              <div>
+                <div style="font-weight:600;">${escapeHtml(p.name)}</div>
+                <div style="font-size:0.75rem;color:#999;">R$ ${p.price} • Score ${parseFloat(p.score || 0).toFixed(1)}</div>
+              </div>
+            </div>
+          `).join('')}
+        `;
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function selectProductForAi(productId, productName) {
+      const content = document.getElementById('aiEditContent');
+      content.innerHTML = `<div class="loading">🤖 Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
+
+      try {
+        const res = await fetch(API + '/api/ai/generate', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteúdo');
+
+        renderAiContentEditor(data.content);
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>' +
+          '<button class="btn btn-outline" onclick="renderAiProductList()" style="margin-top:12px;">← Escolher outro produto</button>';
+      }
+    }
+
+    function renderAiContentEditor(item) {
+      const content = document.getElementById('aiEditContent');
+      content.innerHTML = `
+        <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">← Escolher outro produto</button>
+
+        <div class="field-label" style="margin-top:0;">Título</div>
+        <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80">
+
+        <div class="field-label">Descrição</div>
+        <textarea id="ai-description" style="width:100%;min-height:90px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.description || '')}</textarea>
+
+        <div class="field-label">Legenda</div>
+        <input type="text" id="ai-caption" value="${escapeHtml(item.caption || '')}">
+
+        <div class="field-label">Hashtags</div>
+        <input type="text" id="ai-hashtags" value="${escapeHtml(item.hashtags || '')}">
+
+        <div class="field-label">Narração</div>
+        <textarea id="ai-narration" style="width:100%;min-height:70px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.narration || '')}</textarea>
+
+        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">💾 Salvar alterações</button>
+        <div class="status" id="ai-save-status"></div>
+      `;
+    }
+
+    async function saveAiContent(contentId) {
+      const st = document.getElementById('ai-save-status');
+      const btn = document.querySelector('#aiEditContent .btn-secondary');
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Salvando...';
+
+      try {
+        const res = await fetch(API + '/api/ai/' + contentId, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: document.getElementById('ai-title').value,
+            description: document.getElementById('ai-description').value,
+            caption: document.getElementById('ai-caption').value,
+            hashtags: document.getElementById('ai-hashtags').value,
+            narration: document.getElementById('ai-narration').value,
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+        showStatus(st, '✅ Salvo com sucesso!', 'ok');
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
       }
     }
 
