@@ -19,6 +19,27 @@
       align-items: center;
       padding: 40px 20px;
     }
+    #loginSection {
+      position: relative;
+    }
+    body.pre-login::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('./logo-completa.png');
+      background-repeat: no-repeat;
+      background-position: center 30%;
+      background-size: 85% auto;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body.pre-login .card,
+    body.pre-login .header-bar,
+    body.pre-login .subtitle {
+      position: relative;
+      z-index: 1;
+    }
     .logo {
       font-size: 2rem;
       font-weight: 800;
@@ -27,6 +48,80 @@
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
     }
+    .header-bar {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 4px;
+    }
+    .brand-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .icon-card {
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 10px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .icon-card:active { opacity: 0.7; }
+    .icon-card-ico { font-size: 20px; }
+    .icon-card p {
+      font-size: 11px;
+      margin: 6px 0 0;
+      line-height: 1.2;
+      color: #ddd;
+    }
+    .section-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .section-title { font-size: 15px; font-weight: 600; margin: 0; color: #fff; }
+    .section-link { font-size: 13px; color: #ff6b35; cursor: pointer; }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .video-card {
+      border-radius: 12px;
+      overflow: hidden;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      cursor: pointer;
+    }
+    .video-thumb {
+      aspect-ratio: 3/4;
+      background: linear-gradient(180deg, #333, #1a1a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #666;
+    }
+    .video-card-info { padding: 8px 10px; }
+    .video-card-title {
+      font-size: 12px;
+      margin: 0 0 4px;
+      color: #ddd;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .video-card-status { font-size: 11px; margin: 0; color: #888; }
     .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 40px; }
     .card {
       background: #1a1a1a;
@@ -151,7 +246,9 @@
 </head>
 <body>
 
-  <div class="logo">WebAfiliados</div>
+  <div class="header-bar">
+    <img src="./logo.png" alt="Afilia" class="brand-logo">
+  </div>
   <div class="subtitle" id="pageSubtitle">Painel do Afiliado</div>
 
   <!-- LOGIN -->
@@ -163,11 +260,36 @@
     <div class="status" id="loginStatus"></div>
   </div>
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD / INÍCIO -->
   <div class="card" id="dashSection" style="display:none;">
-    <h2>Minha Conta</h2>
-    <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
-    <button class="btn btn-secondary" onclick="showUploadScreen()">📤 Vídeos Pendentes</button>
+    <div class="icon-grid">
+      <div class="icon-card" onclick="showSettingsScreen()">
+        <div class="icon-card-ico">⚙️</div>
+        <p>Configurações</p>
+      </div>
+      <div class="icon-card" onclick="showUploadScreen()">
+        <div class="icon-card-ico">🖼️</div>
+        <p>Galeria</p>
+      </div>
+      <div class="icon-card" onclick="showComingSoon('Editar com IA')">
+        <div class="icon-card-ico">🪄</div>
+        <p>Editar com IA</p>
+      </div>
+      <div class="icon-card" onclick="openYoutubeCreate()">
+        <div class="icon-card-ico">🎬</div>
+        <p>Gerar vídeo</p>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <p class="section-title">Vídeos prontos</p>
+      <span class="section-link" onclick="showUploadScreen()">Ver tudo</span>
+    </div>
+    <div class="video-grid" id="readyVideoGrid">
+      <div class="loading">Carregando...</div>
+    </div>
+
+    <div class="affiliate-info" id="affiliateInfo" style="margin-top:20px;">Carregando...</div>
     <button class="btn btn-outline" onclick="doLogout()" style="margin-top:10px;">Sair</button>
   </div>
 
@@ -268,8 +390,11 @@
 
       // Fluxo padrão: login/dashboard
       if (SESSION) {
+        document.body.classList.remove('pre-login');
         showDash();
         checkPushStatus();
+      } else {
+        document.body.classList.add('pre-login');
       }
     });
 
@@ -522,6 +647,7 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao entrar');
         SESSION = data;
         localStorage.setItem('wa_session', JSON.stringify(SESSION));
+        document.body.classList.remove('pre-login');
         showDash();
         checkPushStatus();
       } catch(e) {
@@ -535,6 +661,7 @@
     function doLogout() {
       SESSION = null;
       localStorage.removeItem('wa_session');
+      document.body.classList.add('pre-login');
       document.getElementById('loginSection').style.display = 'block';
       document.getElementById('dashSection').style.display = 'none';
       document.getElementById('pushSection').style.display = 'none';
@@ -542,12 +669,51 @@
 
     function showDash() {
       hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Painel do Afiliado';
+      document.getElementById('pageSubtitle').textContent = 'Início';
       document.getElementById('loginSection').style.display = 'none';
       document.getElementById('dashSection').style.display = 'block';
       document.getElementById('pushSection').style.display = 'block';
       const info = document.getElementById('affiliateInfo');
       info.innerHTML = '<strong>' + (SESSION.affiliate && SESSION.affiliate.name ? SESSION.affiliate.name : SESSION.name || 'Afiliado') + '</strong>' + (SESSION.affiliate && SESSION.affiliate.email ? SESSION.affiliate.email : SESSION.email || '');
+      loadReadyVideoGallery();
+    }
+
+    async function loadReadyVideoGallery() {
+      const grid = document.getElementById('readyVideoGrid');
+      if (!SESSION) return;
+      try {
+        const res = await fetch(API + '/api/video/ready', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao carregar vídeos');
+
+        const videos = data.videos || [];
+        if (videos.length === 0) {
+          grid.innerHTML = '<p style="font-size:12px;color:#888;grid-column:1/-1;">Nenhum vídeo pronto ainda.</p>';
+          return;
+        }
+
+        grid.innerHTML = videos.slice(0, 4).map(v => `
+          <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
+            <div class="video-thumb">▶️</div>
+            <div class="video-card-info">
+              <p class="video-card-title">${escapeHtml(v.title || v.product_name || 'Vídeo')}</p>
+              <p class="video-card-status">${v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar'}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        grid.innerHTML = '<p style="font-size:12px;color:#888;grid-column:1/-1;">Não foi possível carregar.</p>';
+      }
+    }
+
+    function showComingSoon(featureName) {
+      alert(featureName + ' — em breve! 🚀');
+    }
+
+    function showSettingsScreen() {
+      alert('Configurações — em construção! 🚧');
     }
 
     async function checkPushStatus() {
