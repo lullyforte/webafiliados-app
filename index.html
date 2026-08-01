@@ -5,21 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="WebAfiliados">
-  <title>WebAfiliados</title>
+  <meta name="apple-mobile-web-app-title" content="Afilia">
+  <title>Afilia</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: #161616;
+      --surface-2: #1f1f1f;
+      --border: #2a2a2a;
+      --red: #e62117;
+      --red-dark: #a3170f;
+      --text: #f5f5f5;
+      --text-dim: #9a9a9a;
+      --text-faint: #666;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { background: var(--bg); }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f0f0f;
-      color: #fff;
+      color: var(--text);
       min-height: 100vh;
+      padding-bottom: 84px;
+    }
+    a { color: inherit; }
+
+    body.pre-login {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
-    }
-    #loginSection {
+      padding: 48px 20px;
       position: relative;
     }
     body.pre-login::before {
@@ -30,112 +45,287 @@
       background-repeat: no-repeat;
       background-position: center 30%;
       background-size: 85% auto;
-      opacity: 0.08;
+      opacity: 0.07;
       pointer-events: none;
       z-index: 0;
     }
-    body.pre-login .card,
     body.pre-login .header-bar,
-    body.pre-login .subtitle {
+    body.pre-login .card {
       position: relative;
       z-index: 1;
     }
-    .logo {
-      font-size: 2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ff6b35, #f7c59f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
-    }
+    .subtitle { color: var(--text-dim); font-size: 0.9rem; margin: 4px 0 32px; }
+
     .header-bar {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
+      margin: 0 auto;
       display: flex;
-      justify-content: flex-start;
-      margin-bottom: 4px;
-    }
-    .brand-logo {
-      height: 40px;
-      width: auto;
-      display: block;
-    }
-    .icon-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-    .icon-card {
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 10px 4px;
-      text-align: center;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .icon-card:active { opacity: 0.7; }
-    .icon-card-ico { font-size: 20px; }
-    .icon-card p {
-      font-size: 11px;
-      margin: 6px 0 0;
-      line-height: 1.2;
-      color: #ddd;
-    }
-    .section-row {
-      display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+      padding: 16px 16px 4px;
     }
-    .section-title { font-size: 15px; font-weight: 600; margin: 0; color: #fff; }
-    .section-link { font-size: 13px; color: #ff6b35; cursor: pointer; }
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+    .brand-logo { height: 34px; width: auto; display: block; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-icon-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      position: relative;
     }
-    .video-card {
-      border-radius: 12px;
-      overflow: hidden;
-      background: #2a2a2a;
-      border: 1px solid #333;
+    .header-icon-btn .dot-badge {
+      position: absolute; top: -2px; right: -2px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red);
+      border: 1.5px solid var(--bg);
+    }
+    .avatar-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--text);
       cursor: pointer;
     }
-    .video-thumb {
-      aspect-ratio: 3/4;
-      background: linear-gradient(180deg, #333, #1a1a1a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      color: #666;
-    }
-    .video-card-info { padding: 8px 10px; }
-    .video-card-title {
-      font-size: 12px;
-      margin: 0 0 4px;
-      color: #ddd;
+
+    .shell { max-width: 420px; margin: 0 auto; padding: 0 16px; }
+
+    .hero {
+      position: relative;
+      border-radius: 18px;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      height: 220px;
+      margin: 12px 0 20px;
+      background: #111;
     }
-    .video-card-status { font-size: 11px; margin: 0; color: #888; }
-    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 40px; }
+    .hero-slide {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .hero-slide.active { opacity: 1; }
+    .hero-slide::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(100deg, rgba(10,10,10,0.92) 20%, rgba(10,10,10,0.55) 55%, rgba(230,33,23,0.25) 100%),
+        linear-gradient(0deg, rgba(10,10,10,0.75), transparent 55%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      height: 100%;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 20px 22px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+    .hero-title {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      max-width: 240px;
+    }
+    .hero-sub {
+      font-size: 12.5px;
+      color: #d5d5d5;
+      max-width: 230px;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+    .hero-cta {
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      width: fit-content;
+    }
+    .hero-dots {
+      position: absolute;
+      bottom: 12px; left: 22px;
+      display: flex; gap: 5px;
+      z-index: 2;
+    }
+    .hero-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: all 0.3s;
+    }
+    .hero-dot.active { background: #fff; width: 16px; border-radius: 3px; }
+    .hero-nav {
+      position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .icon-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 76px;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 26px;
+      scrollbar-width: none;
+    }
+    .icon-row::-webkit-scrollbar { display: none; }
+    .icon-item { text-align: center; cursor: pointer; }
+    .icon-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      margin: 0 auto 7px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .icon-item:active .icon-circle { transform: scale(0.93); border-color: var(--red); }
+    .icon-item p { font-size: 11px; color: #ccc; line-height: 1.25; }
+
+    .section-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 16px; font-weight: 700; color: #fff;
+      position: relative;
+      padding-bottom: 8px;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute; left: 0; bottom: 0;
+      width: 28px; height: 2.5px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .section-link { font-size: 13px; color: var(--red); cursor: pointer; font-weight: 600; }
+
+    .video-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+    .video-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      height: 150px;
+      background: linear-gradient(135deg, #222, #111);
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+    .video-card-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0.55;
+    }
+    .video-card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.35) 45%, rgba(10,10,10,0.92) 100%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 14px 16px;
+    }
+    .video-card-title {
+      font-size: 14px; font-weight: 700; color: #fff;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 78%;
+    }
+    .video-card-meta {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11.5px; color: #ccc;
+    }
+    .video-card-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #fff;
+      width: fit-content;
+    }
+    .video-card-play {
+      position: absolute; top: 12px; right: 12px;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #fff;
+    }
+    .empty-note { font-size: 12.5px; color: var(--text-dim); text-align: center; padding: 24px 0; }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(10,10,10,0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+      z-index: 50;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--text-faint);
+      font-size: 10px;
+      cursor: pointer;
+      flex: 1;
+    }
+    .nav-item.active { color: var(--red); }
+    .nav-icon { font-size: 19px; }
+    .nav-item.center .nav-icon {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      color: var(--red);
+      margin-bottom: 2px;
+    }
+
     .card {
-      background: #1a1a1a;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px;
+      padding: 22px;
       width: 100%;
-      max-width: 400px;
-      margin-bottom: 16px;
+      max-width: 420px;
+      margin: 0 auto 16px;
     }
-    .card h2 { font-size: 1rem; color: #aaa; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .card h2 { font-size: 0.95rem; color: #aaa; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
     input {
       width: 100%;
-      background: #2a2a2a;
-      border: 1px solid #333;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 14px 16px;
       color: #fff;
@@ -143,10 +333,10 @@
       margin-bottom: 12px;
       outline: none;
     }
-    input:focus { border-color: #ff6b35; }
+    input:focus { border-color: var(--red); }
     .btn {
       width: 100%;
-      background: linear-gradient(135deg, #ff6b35, #e55a25);
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
       border: none;
       border-radius: 10px;
       padding: 16px;
@@ -158,125 +348,28 @@
     }
     .btn:active { opacity: 0.8; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #ff6b35;
-      color: #ff6b35;
-    }
-    .btn-secondary {
-      background: #2a2a2a;
-      border: 1px solid #444;
-      color: #fff;
-      margin-top: 10px;
-    }
-    .status {
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      margin-top: 12px;
-      display: none;
-    }
+    .btn-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
+    .btn-secondary { background: var(--surface-2); border: 1px solid #3a3a3a; color: #fff; margin-top: 10px; }
+    .status { padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; margin-top: 12px; display: none; }
     .status.ok { background: #1a3a1a; color: #4caf50; display: block; }
     .status.err { background: #3a1a1a; color: #f44336; display: block; }
     .status.info { background: #1a2a3a; color: #64b5f6; display: block; }
-    .push-status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px;
-      background: #2a2a2a;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
+    .push-status { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--surface-2); border-radius: 10px; margin-bottom: 12px; }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: #555; flex-shrink: 0; }
-    .dot.green { background: #4caf50; }
-    .dot.yellow { background: #ff9800; }
-    .dot.red { background: #f44336; }
+    .dot.green { background: #4caf50; } .dot.yellow { background: #ff9800; } .dot.red { background: #f44336; }
     .push-text { font-size: 0.9rem; color: #ccc; }
-    .affiliate-info {
-      background: #2a2a2a;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      color: #ccc;
-    }
+    .affiliate-info { background: var(--surface-2); border-radius: 10px; padding: 14px; margin-bottom: 12px; font-size: 0.9rem; color: #ccc; }
     .affiliate-info strong { color: #fff; display: block; margin-bottom: 4px; }
     .prompt-box {
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 16px;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: #eee;
-      margin-bottom: 16px;
-      max-height: 320px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+      font-size: 0.95rem; line-height: 1.5; color: #eee; margin-bottom: 16px;
+      max-height: 320px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
     }
-    .product-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .product-meta {
-      font-size: 0.85rem;
-      color: #888;
-      margin-bottom: 16px;
-    }
-    .field-label {
-      font-size: 0.75rem;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      margin-top: 16px;
-    }
+    .product-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .product-meta { font-size: 0.85rem; color: #888; margin-bottom: 16px; }
+    .field-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 16px; }
     .field-label:first-child { margin-top: 0; }
-    select {
-      width: 100%;
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 14px 16px;
-      color: #fff;
-      font-size: 1rem;
-      margin-bottom: 12px;
-      outline: none;
-    }
-    select:focus { border-color: #ff6b35; }
-    .day-card {
-      background: #212121;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .day-card-row { display: flex; gap: 10px; }
-    .day-card-row > div { flex: 1; }
-    .day-active-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-    .day-active-label input[type="checkbox"] { width: auto; margin: 0; }
-    .day-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    .thumb {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      display: block;
-    }
+    .thumb { width: 100%; border-radius: 10px; margin-bottom: 16px; display: block; }
     .loading { text-align: center; color: #888; padding: 40px 0; }
   </style>
 </head>
@@ -284,8 +377,13 @@
 
   <div class="header-bar">
     <img src="./logo.png" alt="Afilia" class="brand-logo">
+    <div class="header-actions" id="headerActions" style="display:none;">
+      <div class="header-icon-btn" onclick="showComingSoon('Ajuda')">?</div>
+      <div class="header-icon-btn" onclick="showComingSoon('Notificações')">🔔<span class="dot-badge"></span></div>
+      <div class="avatar-btn" onclick="showAccountScreen()">A</div>
+    </div>
   </div>
-  <div class="subtitle" id="pageSubtitle">Painel do Afiliado</div>
+  <div class="subtitle" id="pageSubtitle" style="display:none;">Painel do Afiliado</div>
 
   <!-- LOGIN -->
   <div class="card" id="loginSection">
@@ -296,48 +394,59 @@
     <div class="status" id="loginStatus"></div>
   </div>
 
-  <!-- DASHBOARD / INÍCIO -->
-  <div class="card" id="dashSection" style="display:none;">
-    <div class="icon-grid">
-      <div class="icon-card" onclick="showSettingsScreen()">
-        <div class="icon-card-ico">⚙️</div>
-        <p>Configurações</p>
-      </div>
-      <div class="icon-card" onclick="showUploadScreen()">
-        <div class="icon-card-ico">🖼️</div>
-        <p>Galeria</p>
-      </div>
-      <div class="icon-card" onclick="showAiEditScreen()">
-        <div class="icon-card-ico">🪄</div>
-        <p>Editar com IA</p>
-      </div>
-      <div class="icon-card" onclick="openYoutubeCreate()">
-        <div class="icon-card-ico">🎬</div>
-        <p>Gerar vídeo</p>
-      </div>
-    </div>
+  <!-- INÍCIO -->
+  <div id="dashSection" style="display:none;">
+    <div class="shell">
 
-    <div class="section-row">
-      <p class="section-title">Vídeos prontos</p>
-      <span class="section-link" onclick="showUploadScreen()">Ver tudo</span>
-    </div>
-    <div class="video-grid" id="readyVideoGrid">
-      <div class="loading">Carregando...</div>
-    </div>
+      <div class="hero" id="heroCarousel">
+        <div class="loading">Carregando...</div>
+      </div>
 
-    <div class="affiliate-info" id="affiliateInfo" style="margin-top:20px;">Carregando...</div>
-    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:10px;">Sair</button>
+      <div class="icon-row">
+        <div class="icon-item" onclick="showUploadScreen()">
+          <div class="icon-circle">🖼️</div>
+          <p>Vídeos<br>Pendentes</p>
+        </div>
+        <div class="icon-item" onclick="openYoutubeCreate()">
+          <div class="icon-circle">🎬</div>
+          <p>Gerar<br>vídeo</p>
+        </div>
+        <div class="icon-item" onclick="showComingSoon('Editar com IA')">
+          <div class="icon-circle">🪄</div>
+          <p>Editar<br>com IA</p>
+        </div>
+        <div class="icon-item" onclick="showSettingsScreen()">
+          <div class="icon-circle">⚙️</div>
+          <p>Configu-<br>rações</p>
+        </div>
+      </div>
+
+      <div class="section-row">
+        <p class="section-title">Vídeos prontos</p>
+        <span class="section-link" onclick="showUploadScreen()">Ver tudo ›</span>
+      </div>
+      <div class="video-list" id="readyVideoGrid">
+        <div class="loading">Carregando...</div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- PUSH NOTIFICATIONS -->
-  <div class="card" id="pushSection" style="display:none;">
-    <h2>Notificações Push</h2>
-    <div class="push-status">
-      <div class="dot" id="pushDot"></div>
-      <div class="push-text" id="pushText">Verificando...</div>
+  <!-- VOCÊ / CONTA -->
+  <div id="accountSection" style="display:none;">
+    <div class="shell">
+      <div class="card" style="margin-top:12px;">
+        <h2>Minha Conta</h2>
+        <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
+        <div class="push-status">
+          <div class="dot" id="pushDot"></div>
+          <div class="push-text" id="pushText">Verificando...</div>
+        </div>
+        <button class="btn" id="pushBtn" onclick="requestPush()">Ativar Notificações</button>
+        <div class="status" id="pushStatus"></div>
+        <button class="btn btn-outline" onclick="doLogout()" style="margin-top:16px;">Sair</button>
+      </div>
     </div>
-    <button class="btn" id="pushBtn" onclick="requestPush()">Ativar Notificações</button>
-    <div class="status" id="pushStatus"></div>
   </div>
 
   <!-- TELA: PROMPT PRONTO (Push 1) -->
@@ -363,47 +472,35 @@
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
 
-  <!-- TELA: MENU DE CONFIGURAÇÕES -->
-  <div class="card" id="settingsMenuSection" style="display:none;">
-    <h2>⚙️ Configurações</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
-    <div class="icon-grid">
-      <div class="icon-card" onclick="showCalendarScreen()">
-        <div class="icon-card-ico">📅</div>
-        <p>Calendário</p>
-      </div>
-      <div class="icon-card" onclick="showComingSoon('API Afiliado')">
-        <div class="icon-card-ico">🔑</div>
-        <p>API Afiliado</p>
-      </div>
-      <div class="icon-card" onclick="showComingSoon('Notificações')">
-        <div class="icon-card-ico">🔔</div>
-        <p>Notificações</p>
-      </div>
-      <div class="icon-card" onclick="showComingSoon('Conta')">
-        <div class="icon-card-ico">👤</div>
-        <p>Conta</p>
-      </div>
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottomNav" style="display:none;">
+    <div class="nav-item active" id="navInicio" onclick="showDash()">
+      <div class="nav-icon">🏠</div>
+      <span>Início</span>
+    </div>
+    <div class="nav-item" id="navExplorar" onclick="showComingSoon('Explorar')">
+      <div class="nav-icon">🔍</div>
+      <span>Explorar</span>
+    </div>
+    <div class="nav-item center" onclick="openYoutubeCreate()">
+      <div class="nav-icon">+</div>
+    </div>
+    <div class="nav-item" id="navProjetos" onclick="showUploadScreen()">
+      <div class="nav-icon">📁</div>
+      <span>Projetos</span>
+    </div>
+    <div class="nav-item" id="navVoce" onclick="showAccountScreen()">
+      <div class="nav-icon">👤</div>
+      <span>Você</span>
     </div>
   </div>
 
-  <!-- TELA: CONFIGURAÇÕES > CALENDÁRIO EDITORIAL -->
-  <div class="card" id="settingsSection" style="display:none;">
-    <h2>📅 Calendário Editorial</h2>
-    <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
-    <div id="settingsContent" class="loading">Carregando...</div>
-  </div>
-
-  <!-- TELA: EDITAR COM IA -->
-  <div class="card" id="aiEditSection" style="display:none;">
-    <h2>🪄 Editar com IA</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
-    <div id="aiEditContent" class="loading">Carregando...</div>
-  </div>
-
   <script>
-    const API = 'https://api.webafliados.shop';
+    const API = 'https://webafiliados-backend-production.up.railway.app';
     let SESSION = null;
+    let heroTimer = null;
+    let heroIndex = 0;
+    let heroSlides = [];
 
     function urlB64ToUint8Array(base64String) {
       const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -423,9 +520,19 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','pushSection','promptSection','packageSection','uploadSection','settingsSection','settingsMenuSection','aiEditSection'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
       });
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('headerActions').style.display = 'none';
+    }
+
+    function setActiveNav(id) {
+      ['navInicio','navExplorar','navProjetos','navVoce'].forEach(n => {
+        document.getElementById(n).classList.remove('active');
+      });
+      if (id) document.getElementById(id).classList.add('active');
     }
 
     window.addEventListener('load', async () => {
@@ -462,19 +569,17 @@
         return;
       }
 
-      // Fluxo padrão: login/dashboard
       if (SESSION) {
         document.body.classList.remove('pre-login');
         showDash();
-        checkPushStatus();
       } else {
         document.body.classList.add('pre-login');
       }
     });
 
-    // ===== TELA DE PROMPT (Push 1) =====
     function renderPromptView(params) {
       hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
       document.getElementById('pageSubtitle').textContent = 'Vídeo pronto para gerar';
       document.getElementById('promptSection').style.display = 'block';
       const text = params.get('text') || '(prompt vazio)';
@@ -485,14 +590,11 @@
       const imageUrl = imageParam ? decodeURIComponent(imageParam) : '';
       window._currentProductImage = imageUrl;
       const imgEl = document.getElementById('promptProductImage');
-      const btnEl = document.getElementById('downloadImageBtn');
       if (imageUrl) {
         imgEl.src = imageUrl;
         imgEl.style.display = 'block';
-        btnEl.style.display = 'block';
       } else {
         imgEl.style.display = 'none';
-        btnEl.style.display = 'none';
       }
     }
 
@@ -511,23 +613,12 @@
     }
 
     function openYoutubeCreate() {
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
-      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-      const isAndroid = /android/i.test(ua);
-
-      if (isIOS) {
-        window.open('https://apps.apple.com/br/app/youtube-create/id6476327393', '_blank');
-      } else if (isAndroid) {
-        window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.producer', '_blank');
-      } else {
-        // Desktop: YouTube Create não tem versão web, só mobile.
-        window.open('https://www.youtube.com/creators/create/youtube-create-app/', '_blank');
-      }
+      window.open('https://www.youtube.com/create', '_blank');
     }
 
-    // ===== TELA DE PACOTE (Push 2) =====
     async function renderPackageView(params) {
       hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
       document.getElementById('pageSubtitle').textContent = 'Conferir e publicar';
       document.getElementById('packageSection').style.display = 'block';
       const content = document.getElementById('packageContent');
@@ -618,11 +709,14 @@
       window.open(link, '_blank');
     }
 
-    // ===== TELA DE UPLOAD (devolver vídeo gerado) =====
     function showUploadScreen() {
       hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
       document.getElementById('pageSubtitle').textContent = 'Vídeos pendentes';
       document.getElementById('uploadSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navProjetos');
       renderPendingList(document.getElementById('uploadContent'));
     }
 
@@ -712,7 +806,6 @@
         .replace(/"/g, '&quot;');
     }
 
-    // ===== LOGIN / DASHBOARD (fluxo original) =====
     async function doLogin() {
       const email = document.getElementById('emailInput').value.trim();
       const pass  = document.getElementById('passInput').value;
@@ -734,7 +827,6 @@
         localStorage.setItem('wa_session', JSON.stringify(SESSION));
         document.body.classList.remove('pre-login');
         showDash();
-        checkPushStatus();
       } catch(e) {
         showStatus(st, e.message, 'err');
       } finally {
@@ -747,24 +839,94 @@
       SESSION = null;
       localStorage.removeItem('wa_session');
       document.body.classList.add('pre-login');
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'none';
       document.getElementById('loginSection').style.display = 'block';
-      document.getElementById('dashSection').style.display = 'none';
-      document.getElementById('pushSection').style.display = 'none';
     }
 
     function showDash() {
       hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Início';
-      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('pageSubtitle').style.display = 'none';
       document.getElementById('dashSection').style.display = 'block';
-      document.getElementById('pushSection').style.display = 'block';
-      const info = document.getElementById('affiliateInfo');
-      info.innerHTML = '<strong>' + (SESSION.affiliate && SESSION.affiliate.name ? SESSION.affiliate.name : SESSION.name || 'Afiliado') + '</strong>' + (SESSION.affiliate && SESSION.affiliate.email ? SESSION.affiliate.email : SESSION.email || '');
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navInicio');
+      loadHeroCarousel();
       loadReadyVideoGallery();
     }
 
+    function showAccountScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'none';
+      document.getElementById('accountSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navVoce');
+      const info = document.getElementById('affiliateInfo');
+      if (SESSION) {
+        info.innerHTML = '<strong>' + (SESSION.affiliate && SESSION.affiliate.name ? SESSION.affiliate.name : SESSION.name || 'Afiliado') + '</strong>' + (SESSION.affiliate && SESSION.affiliate.email ? SESSION.affiliate.email : SESSION.email || '');
+      }
+      checkPushStatus();
+    }
+
+    async function loadHeroCarousel() {
+      const hero = document.getElementById('heroCarousel');
+      if (heroTimer) clearInterval(heroTimer);
+      hero.innerHTML = '<div class="loading">Carregando...</div>';
+      if (!SESSION) return;
+
+      let videos = [];
+      try {
+        const res = await fetch(API + '/api/video/ready', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        videos = (data.videos || []).slice(0, 5);
+      } catch(e) { /* segue com fallback */ }
+
+      heroSlides = videos.length > 0 ? videos : [null];
+      heroIndex = 0;
+
+      const slidesHtml = heroSlides.map((v, i) => {
+        const bg = v && v.image_url ? `style="background-image:url('${v.image_url}')"` : '';
+        return `<div class="hero-slide ${i === 0 ? 'active' : ''}" data-i="${i}" ${bg}></div>`;
+      }).join('');
+
+      const dotsHtml = heroSlides.length > 1
+        ? `<div class="hero-dots">${heroSlides.map((_, i) => `<div class="hero-dot ${i === 0 ? 'active' : ''}" data-dot="${i}"></div>`).join('')}</div>`
+        : '';
+
+      hero.innerHTML = `
+        ${slidesHtml}
+        <div class="hero-content">
+          <span class="hero-badge">NOVO</span>
+          <div class="hero-title">Edite com IA</div>
+          <div class="hero-sub">Crie, edite e publique vídeos de produtos com o poder da Inteligência Artificial.</div>
+          <button class="hero-cta" onclick="openYoutubeCreate()">Criar projeto <span>+</span></button>
+        </div>
+        ${dotsHtml}
+        ${heroSlides.length > 1 ? '<button class="hero-nav" onclick="advanceHero()">›</button>' : ''}
+      `;
+
+      if (heroSlides.length > 1) {
+        heroTimer = setInterval(advanceHero, 4500);
+      }
+    }
+
+    function advanceHero() {
+      const hero = document.getElementById('heroCarousel');
+      const slides = hero.querySelectorAll('.hero-slide');
+      const dots = hero.querySelectorAll('.hero-dot');
+      if (slides.length === 0) return;
+      slides[heroIndex].classList.remove('active');
+      if (dots[heroIndex]) dots[heroIndex].classList.remove('active');
+      heroIndex = (heroIndex + 1) % slides.length;
+      slides[heroIndex].classList.add('active');
+      if (dots[heroIndex]) dots[heroIndex].classList.add('active');
+    }
+
     async function loadReadyVideoGallery() {
-      const grid = document.getElementById('readyVideoGrid');
+      const list = document.getElementById('readyVideoGrid');
       if (!SESSION) return;
       try {
         const res = await fetch(API + '/api/video/ready', {
@@ -775,320 +937,30 @@
 
         const videos = data.videos || [];
         if (videos.length === 0) {
-          grid.innerHTML = '<p style="font-size:12px;color:#888;grid-column:1/-1;">Nenhum vídeo pronto ainda.</p>';
+          list.innerHTML = '<p class="empty-note">Nenhum vídeo pronto ainda. Gere um vídeo pra começar.</p>';
           return;
         }
 
-        grid.innerHTML = videos.slice(0, 4).map(v => `
-          <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
-            <div class="video-thumb">▶️</div>
-            <div class="video-card-info">
-              <p class="video-card-title">${escapeHtml(v.title || v.product_name || 'Vídeo')}</p>
-              <p class="video-card-status">${v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar'}</p>
-            </div>
-          </div>
-        `).join('');
-      } catch (e) {
-        grid.innerHTML = '<p style="font-size:12px;color:#888;grid-column:1/-1;">Não foi possível carregar.</p>';
-      }
-    }
-
-    // ===== TELA: EDITAR COM IA =====
-    function showAiEditScreen() {
-      hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Editar com IA';
-      document.getElementById('aiEditSection').style.display = 'block';
-      renderAiProductList();
-    }
-
-    async function renderAiProductList() {
-      const content = document.getElementById('aiEditContent');
-      content.innerHTML = '<div class="loading">Carregando produtos do dia...</div>';
-
-      if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">Faça login para continuar.</div>';
-        return;
-      }
-
-      try {
-        const res = await fetch(API + '/api/products', {
-          headers: { 'Authorization': 'Bearer ' + SESSION.token }
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao buscar produtos');
-
-        const products = Array.isArray(data) ? data : (data.products || []);
-
-        if (!products.length) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum produto selecionado hoje ainda. Volte mais tarde ou rode a seleção de produtos.</div>';
-          return;
-        }
-
-        content.innerHTML = `
-          <div class="field-label" style="margin-top:0;">Escolha um produto para gerar/editar o conteúdo:</div>
-          ${products.map(p => `
-            <div class="prompt-box" style="cursor:pointer;display:flex;gap:10px;align-items:center;" onclick="selectProductForAi(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
-              ${p.image_url ? `<img src="${p.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
-              <div>
-                <div style="font-weight:600;">${escapeHtml(p.name)}</div>
-                <div style="font-size:0.75rem;color:#999;">R$ ${p.price} • Score ${parseFloat(p.score || 0).toFixed(1)}</div>
+        list.innerHTML = videos.slice(0, 6).map(v => {
+          const bgStyle = v.image_url ? `style="background-image:url('${v.image_url}')"` : '';
+          const statusLabel = v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar';
+          const priceLabel = v.price ? ('R$ ' + v.price) : '';
+          return `
+            <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
+              <div class="video-card-bg" ${bgStyle}></div>
+              <div class="video-card-play">▶</div>
+              <div class="video-card-overlay">
+                <div class="video-card-title">${escapeHtml(v.title || v.product_name || 'Vídeo')}</div>
+                <div class="video-card-meta">
+                  <span class="video-card-status">${statusLabel}</span>
+                  ${priceLabel ? '<span>' + escapeHtml(priceLabel) + '</span>' : ''}
+                </div>
               </div>
             </div>
-          `).join('')}
-        `;
-      } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
-      }
-    }
-
-    async function selectProductForAi(productId, productName) {
-      const content = document.getElementById('aiEditContent');
-      content.innerHTML = `<div class="loading">🤖 Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
-
-      try {
-        const res = await fetch(API + '/api/ai/generate', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + SESSION.token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ productId })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteúdo');
-
-        renderAiContentEditor(data.content);
-      } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>' +
-          '<button class="btn btn-outline" onclick="renderAiProductList()" style="margin-top:12px;">← Escolher outro produto</button>';
-      }
-    }
-
-    function renderAiContentEditor(item) {
-      const content = document.getElementById('aiEditContent');
-      content.innerHTML = `
-        <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">← Escolher outro produto</button>
-
-        <div class="field-label" style="margin-top:0;">Título</div>
-        <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80" oninput="generateUnifiedText()">
-
-        <div class="field-label">Descrição</div>
-        <textarea id="ai-description" style="width:100%;min-height:90px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;" oninput="generateUnifiedText()">${escapeHtml(item.description || '')}</textarea>
-
-        <div class="field-label">Legenda</div>
-        <input type="text" id="ai-caption" value="${escapeHtml(item.caption || '')}" oninput="generateUnifiedText()">
-
-        <div class="field-label">Hashtags</div>
-        <input type="text" id="ai-hashtags" value="${escapeHtml(item.hashtags || '')}" oninput="generateUnifiedText()">
-
-        <div class="field-label">Narração</div>
-        <textarea id="ai-narration" style="width:100%;min-height:70px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.narration || '')}</textarea>
-
-        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">💾 Salvar alterações</button>
-        <div class="status" id="ai-save-status"></div>
-
-        <div class="field-label" style="margin-top:22px;border-top:1px solid #333;padding-top:16px;">📋 Texto unificado (pronto pra colar no Shopee)</div>
-        <textarea id="ai-unified" readonly style="width:100%;min-height:120px;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;"></textarea>
-        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">📋 Copiar tudo</button>
-        <div class="status" id="ai-copy-status"></div>
-
-        <div class="field-label" style="margin-top:22px;border-top:1px solid #333;padding-top:16px;">📦 Vídeo e Capa</div>
-        <div style="font-size:0.8rem;color:#999;margin-bottom:10px;">Já fez o vídeo no YouTube Create? Empacota aqui, envia o vídeo e escolhe a capa antes de publicar.</div>
-        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">📦 Empacotar (vídeo + capa)</button>
-        <div class="status" id="ai-package-status"></div>
-        <div id="ai-packaging-area"></div>
-      `;
-      generateUnifiedText();
-    }
-
-    function stripPrice(text) {
-      return (text || '')
-        .replace(/R\$\s?\d{1,3}(\.\d{3})*(,\d{2})?/g, '')
-        .replace(/\s{2,}/g, ' ')
-        .replace(/\s+([.,!?])/g, '$1')
-        .trim();
-    }
-
-    function generateUnifiedText() {
-      const title = (document.getElementById('ai-title')?.value || '').trim();
-      const description = stripPrice(document.getElementById('ai-description')?.value);
-      const caption = stripPrice(document.getElementById('ai-caption')?.value);
-      const hashtagsRaw = document.getElementById('ai-hashtags')?.value || '';
-
-      const topHashtags = hashtagsRaw
-        .split(/\s+/)
-        .filter(t => t.startsWith('#'))
-        .slice(0, 5)
-        .join(' ');
-
-      const parts = [title, description, caption, topHashtags].filter(Boolean);
-      const unified = parts.join('\n\n');
-
-      const unifiedEl = document.getElementById('ai-unified');
-      if (unifiedEl) unifiedEl.value = unified;
-    }
-
-    function copyUnifiedText() {
-      const el = document.getElementById('ai-unified');
-      const st = document.getElementById('ai-copy-status');
-      el.select();
-      el.setSelectionRange(0, 999999);
-      try {
-        navigator.clipboard.writeText(el.value).then(() => {
-          showStatus(st, '✅ Copiado! Cole no app da Shopee.', 'ok');
-        }).catch(() => {
-          document.execCommand('copy');
-          showStatus(st, '✅ Copiado!', 'ok');
-        });
-      } catch(e) {
-        document.execCommand('copy');
-        showStatus(st, '✅ Copiado!', 'ok');
-      }
-    }
-
-    // ===== EMPACOTAMENTO MANUAL: vídeo + capa =====
-    async function createPackageForContent(contentId) {
-      const st = document.getElementById('ai-package-status');
-      showStatus(st, 'Criando pacote...', 'info');
-      try {
-        const res = await fetch(API + '/api/packaging/create', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + SESSION.token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ contentId })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao criar pacote');
-        showStatus(st, '✅ Pacote criado! Envie o vídeo abaixo.', 'ok');
-        renderPackagingArea(data.videoId);
-      } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
-      }
-    }
-
-    function renderPackagingArea(videoId) {
-      const area = document.getElementById('ai-packaging-area');
-      area.innerHTML = `
-        <div class="field-label">Envie o vídeo (MP4)</div>
-        <input type="file" id="ai-video-file" accept="video/mp4" style="color:#fff;margin-bottom:10px;">
-        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">📤 Enviar vídeo</button>
-        <div id="ai-video-preview-area"></div>
-      `;
-    }
-
-    async function uploadAiVideo(videoId) {
-      const fileInput = document.getElementById('ai-video-file');
-      const st = document.getElementById('ai-package-status');
-      if (!fileInput.files || !fileInput.files.length) {
-        showStatus(st, 'Selecione um vídeo MP4 primeiro.', 'err');
-        return;
-      }
-      const file = fileInput.files[0];
-      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
-
-      try {
-        const formData = new FormData();
-        formData.append('video', file);
-        const res = await fetch(API + '/api/video/' + videoId + '/upload', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
-        showStatus(st, '✅ Vídeo enviado! Escolha o frame de capa abaixo.', 'ok');
-        renderVideoPreviewForCapture(videoId, data.fileUrl);
-      } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
-      }
-    }
-
-    function renderVideoPreviewForCapture(videoId, fileUrl) {
-      const area = document.getElementById('ai-video-preview-area');
-      area.innerHTML = `
-        <video id="ai-video-preview" src="${fileUrl}" controls playsinline style="width:100%;border-radius:10px;margin-top:12px;background:#000;"></video>
-        <div style="font-size:0.75rem;color:#999;margin-top:6px;">Pause no momento que quiser usar como capa e toque no botão abaixo.</div>
-        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})">📸 Capturar capa neste momento</button>
-        <canvas id="ai-thumb-canvas" style="display:none;"></canvas>
-        <div>
-          <div class="field-label" style="margin-top:10px;">Capa escolhida:</div>
-          <img id="ai-thumb-preview" style="display:none;max-width:160px;border-radius:8px;border:2px solid #ff6b35;">
-        </div>
-      `;
-    }
-
-    function captureThumbnailFrame(videoId) {
-      const video = document.getElementById('ai-video-preview');
-      const canvas = document.getElementById('ai-thumb-canvas');
-      if (!video || !video.videoWidth) {
-        const st = document.getElementById('ai-package-status');
-        showStatus(st, 'Aguarde o vídeo carregar antes de capturar.', 'err');
-        return;
-      }
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(blob => {
-        uploadThumbnailBlob(videoId, blob);
-      }, 'image/jpeg', 0.9);
-    }
-
-    async function uploadThumbnailBlob(videoId, blob) {
-      const st = document.getElementById('ai-package-status');
-      showStatus(st, 'Enviando capa...', 'info');
-      try {
-        const formData = new FormData();
-        formData.append('thumbnail', blob, 'capa.jpg');
-        const res = await fetch(API + '/api/video/' + videoId + '/thumbnail', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao salvar capa');
-
-        const preview = document.getElementById('ai-thumb-preview');
-        preview.src = URL.createObjectURL(blob);
-        preview.style.display = 'block';
-        showStatus(st, '✅ Capa salva com sucesso!', 'ok');
-      } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
-      }
-    }
-
-    async function saveAiContent(contentId) {
-      const st = document.getElementById('ai-save-status');
-      const btn = document.querySelector('#aiEditContent .btn-secondary');
-      btn.disabled = true;
-      const originalText = btn.textContent;
-      btn.textContent = 'Salvando...';
-
-      try {
-        const res = await fetch(API + '/api/ai/' + contentId, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': 'Bearer ' + SESSION.token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            title: document.getElementById('ai-title').value,
-            description: document.getElementById('ai-description').value,
-            caption: document.getElementById('ai-caption').value,
-            hashtags: document.getElementById('ai-hashtags').value,
-            narration: document.getElementById('ai-narration').value,
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, '✅ Salvo com sucesso!', 'ok');
-      } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
+          `;
+        }).join('');
+      } catch (e) {
+        list.innerHTML = '<p class="empty-note">Não foi possível carregar os vídeos.</p>';
       }
     }
 
@@ -1097,145 +969,7 @@
     }
 
     function showSettingsScreen() {
-      hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Configurações';
-      document.getElementById('settingsMenuSection').style.display = 'block';
-    }
-
-    function showCalendarScreen() {
-      hideAllCards();
-      document.getElementById('pageSubtitle').textContent = 'Calendário Editorial';
-      document.getElementById('settingsSection').style.display = 'block';
-      renderSettingsScreen();
-    }
-
-    async function renderSettingsScreen() {
-      const content = document.getElementById('settingsContent');
-      content.innerHTML = '<div class="loading">Carregando configurações...</div>';
-
-      if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
-        return;
-      }
-
-      try {
-        const [catRes, schedRes] = await Promise.all([
-          fetch(API + '/api/settings/categories', {
-            headers: { 'Authorization': 'Bearer ' + SESSION.token }
-          }),
-          fetch(API + '/api/settings/schedule', {
-            headers: { 'Authorization': 'Bearer ' + SESSION.token }
-          })
-        ]);
-        const catData = await catRes.json();
-        const schedData = await schedRes.json();
-        if (!catRes.ok) throw new Error(catData.error || 'Erro ao buscar categorias');
-        if (!schedRes.ok) throw new Error(schedData.error || 'Erro ao buscar calendário');
-
-        window.__SETTINGS_CATEGORIES = catData.categories || [];
-
-        content.innerHTML = schedData.schedule.map(day => renderDayCard(day)).join('');
-      } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
-      }
-    }
-
-    function renderDayCard(day) {
-      const categories = window.__SETTINGS_CATEGORIES || [];
-      const options = categories.map(c =>
-        `<option value="${c.key}" ${c.key === day.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
-      ).join('');
-
-      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
-
-      return `
-        <div class="day-card" id="day-card-${day.day_of_week}">
-          <div class="day-title">${escapeHtml(day.day_label)}</div>
-
-          <label class="day-active-label">
-            <input type="checkbox" id="day-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
-            Dia ativo
-          </label>
-
-          <select id="day-category-${day.day_of_week}">
-            <option value="">— Selecione a categoria —</option>
-            ${options}
-          </select>
-
-          <div class="day-card-row">
-            <div>
-              <div class="field-label" style="margin-top:0;">Preço mín. (R$)</div>
-              <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}">
-            </div>
-            <div>
-              <div class="field-label" style="margin-top:0;">Preço máx. (R$)</div>
-              <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}">
-            </div>
-          </div>
-
-          <div class="day-card-row">
-            <div>
-              <div class="field-label" style="margin-top:0;">Comissão mín. (%)</div>
-              <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}">
-            </div>
-            <div>
-              <div class="field-label" style="margin-top:0;">Vídeos/dia</div>
-              <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}">
-            </div>
-          </div>
-
-          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})">💾 Salvar ${escapeHtml(day.day_label)}</button>
-          <div class="status" id="day-status-${day.day_of_week}"></div>
-        </div>
-      `;
-    }
-
-    async function saveScheduleDay(dayOfWeek) {
-      const card = document.getElementById('day-card-' + dayOfWeek);
-      const btn = card.querySelector('.btn-secondary');
-      const st = document.getElementById('day-status-' + dayOfWeek);
-
-      const category = document.getElementById('day-category-' + dayOfWeek).value;
-      const price_min = parseFloat(document.getElementById('day-pricemin-' + dayOfWeek).value) || 0;
-      const price_max = parseFloat(document.getElementById('day-pricemax-' + dayOfWeek).value) || 99999;
-      const commissionPercent = parseFloat(document.getElementById('day-commission-' + dayOfWeek).value) || 0;
-      const videos_per_day = parseInt(document.getElementById('day-videos-' + dayOfWeek).value) || 1;
-      const active = document.getElementById('day-active-' + dayOfWeek).checked;
-
-      if (!category) {
-        showStatus(st, 'Selecione uma categoria antes de salvar.', 'err');
-        return;
-      }
-
-      btn.disabled = true;
-      const originalText = btn.textContent;
-      btn.textContent = 'Salvando...';
-
-      try {
-        const res = await fetch(API + '/api/settings/schedule/' + dayOfWeek, {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + SESSION.token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            category,
-            price_min,
-            price_max,
-            commission_min: commissionPercent / 100,
-            videos_per_day,
-            active
-          })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, '✅ Salvo com sucesso!', 'ok');
-      } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
-      }
+      alert('Configurações — em construção! 🚧');
     }
 
     async function checkPushStatus() {
