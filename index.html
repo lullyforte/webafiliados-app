@@ -549,7 +549,7 @@
         <div class="settings-menu-item-ico">📅</div>
         <p>Calendário</p>
       </div>
-      <div class="settings-menu-item" onclick="showComingSoon('API Afiliado')">
+      <div class="settings-menu-item" onclick="showApiAfiliadoScreen()">
         <div class="settings-menu-item-ico">🔑</div>
         <p>API Afiliado</p>
       </div>
@@ -569,6 +569,13 @@
     <h2>📅 Calendário Editorial</h2>
     <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="settingsContent" class="loading">Carregando...</div>
+  </div>
+
+  <!-- TELA: CONFIGURAÇÕES > API AFILIADO -->
+  <div class="card" id="apiAfiliadoSection" style="display:none;">
+    <h2>🔑 API Afiliado</h2>
+    <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
+    <div id="apiAfiliadoContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: EDITAR COM IA -->
@@ -626,7 +633,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -1241,6 +1248,139 @@
       document.getElementById('headerActions').style.display = 'flex';
       setActiveNav(null);
       renderSettingsScreen();
+    }
+
+    let _currentSubAccountId = null;
+
+    function showApiAfiliadoScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'API Afiliado';
+      document.getElementById('apiAfiliadoSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
+      renderApiAfiliadoScreen();
+    }
+
+    async function renderApiAfiliadoScreen() {
+      const content = document.getElementById('apiAfiliadoContent');
+      content.innerHTML = '<div class="loading">Carregando...</div>';
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/api/subaccounts', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao carregar sub-contas');
+
+        const subs = data.subAccounts || [];
+        if (subs.length === 0) {
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhuma sub-conta encontrada.</div>';
+          return;
+        }
+
+        const sub = subs[0];
+        _currentSubAccountId = sub.id;
+
+        content.innerHTML = `
+          <div class="field-label">Sub-conta</div>
+          <div class="prompt-box" style="max-height:60px;">${escapeHtml(sub.name)}</div>
+
+          <div class="field-label">Enviar print da tela "Meu API" da Shopee</div>
+          <input type="file" id="apiScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
+          <button class="btn btn-secondary" onclick="doOcrExtract()" id="ocrBtn">🪄 Ler print com IA</button>
+          <div class="status" id="ocrStatus"></div>
+
+          <div class="field-label" style="margin-top:20px;">App ID</div>
+          <input type="text" id="appIdInput" placeholder="AppID da Shopee" value="${escapeHtml(sub.shopee_app_id || '')}">
+
+          <div class="field-label">App Secret</div>
+          <input type="password" id="appSecretInput" placeholder="Deixe em branco para manter o atual">
+
+          <button class="btn" onclick="saveCredentials()" id="saveCredsBtn" style="margin-top:12px;">💾 Salvar Credenciais</button>
+          <div class="status" id="saveCredsStatus"></div>
+        `;
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function doOcrExtract() {
+      const fileInput = document.getElementById('apiScreenshotInput');
+      const btn = document.getElementById('ocrBtn');
+      const st = document.getElementById('ocrStatus');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione uma imagem primeiro.', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Lendo imagem...';
+      showStatus(st, 'A IA está lendo o print, aguarde...', 'info');
+
+      try {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+
+        const res = await fetch(API + '/api/subaccounts/' + _currentSubAccountId + '/ocr-credentials', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao ler imagem');
+
+        const extracted = data.extracted || {};
+        if (extracted.appId) document.getElementById('appIdInput').value = extracted.appId;
+        if (extracted.appSecret) document.getElementById('appSecretInput').value = extracted.appSecret;
+
+        showStatus(st, '✅ Dados extraídos! Confira antes de salvar.', 'ok');
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🪄 Ler print com IA';
+      }
+    }
+
+    async function saveCredentials() {
+      const btn = document.getElementById('saveCredsBtn');
+      const st = document.getElementById('saveCredsStatus');
+      const appId = document.getElementById('appIdInput').value.trim();
+      const appSecret = document.getElementById('appSecretInput').value.trim();
+
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      try {
+        const res = await fetch(API + '/api/subaccounts/' + _currentSubAccountId + '/credentials', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SESSION.token
+          },
+          body: JSON.stringify({
+            shopeeAppId: appId || null,
+            shopeeAppSecret: appSecret || null,
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+
+        showStatus(st, '✅ Credenciais salvas!', 'ok');
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Salvar Credenciais';
+      }
     }
 
     async function renderSettingsScreen() {
