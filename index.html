@@ -840,6 +840,8 @@
           return;
         }
 
+        window.__PENDING_VIDEOS = data.videos;
+
         content.innerHTML = data.videos.map(v => `
           <div class="prompt-box" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
             <strong>${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</strong>
@@ -852,11 +854,29 @@
 
     function renderSingleUpload(videoId) {
       const content = document.getElementById('uploadContent');
+      const video = (window.__PENDING_VIDEOS || []).find(v => v.id === videoId) || {};
+
+      window._currentPrompt = video.video_prompt || '';
+      window._currentProductImage = video.image_url || '';
+
       content.innerHTML = `
-        <div class="field-label">Vídeo #${videoId}</div>
+        <button class="btn btn-outline" onclick="showUploadScreen()" style="margin-bottom:16px;">← Ver outros pendentes</button>
+
+        <div class="field-label" style="margin-top:0;">${escapeHtml(video.title || video.product_name || ('Vídeo #' + videoId))}</div>
+
+        ${video.image_url ? `<img src="${video.image_url}" class="thumb" alt="Foto do produto">` : ''}
+
+        ${video.video_prompt ? `
+          <div class="field-label">Prompt do vídeo (YouTube Create)</div>
+          <div class="prompt-box">${escapeHtml(video.video_prompt)}</div>
+          <button class="btn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
+          <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:8px;">▶️ Abrir YouTube Create</button>
+          <div class="status" id="promptStatus"></div>
+        ` : ''}
+
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Já tem o vídeo pronto? Envie aqui:</div>
         <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
         <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">📤 Enviar Vídeo</button>
-        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">← Ver outros pendentes</button>
         <div class="status" id="uploadStatus"></div>
       `;
     }
