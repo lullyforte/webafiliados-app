@@ -432,7 +432,7 @@
     <img src="./logo.png" alt="Afilia" class="brand-logo">
     <div class="header-actions" id="headerActions" style="display:none;">
       <div class="header-icon-btn" onclick="showComingSoon('Ajuda')">?</div>
-      <div class="header-icon-btn" onclick="showComingSoon('NotificaÃ§Ãµes')">ðŸ””<span class="dot-badge"></span></div>
+      <div class="header-icon-btn" onclick="showComingSoon('Notificações')">🔔<span class="dot-badge"></span></div>
       <div class="avatar-btn" onclick="showAccountScreen()">A</div>
     </div>
   </div>
@@ -447,7 +447,7 @@
     <div class="status" id="loginStatus"></div>
   </div>
 
-  <!-- INÃCIO -->
+  <!-- INÍCIO -->
   <div id="dashSection" style="display:none;">
     <div class="shell">
 
@@ -457,26 +457,26 @@
 
       <div class="icon-row">
         <div class="icon-item" onclick="showUploadScreen()">
-          <div class="icon-circle">ðŸ–¼ï¸</div>
-          <p>VÃ­deos<br>Pendentes</p>
+          <div class="icon-circle">🖼️</div>
+          <p>Vídeos<br>Pendentes</p>
         </div>
         <div class="icon-item" onclick="openYoutubeCreate()">
-          <div class="icon-circle">ðŸŽ¬</div>
-          <p>Gerar<br>vÃ­deo</p>
+          <div class="icon-circle">🎬</div>
+          <p>Gerar<br>vídeo</p>
         </div>
         <div class="icon-item" onclick="showAiEditScreen()">
-          <div class="icon-circle">ðŸª„</div>
+          <div class="icon-circle">🪄</div>
           <p>Editar<br>com IA</p>
         </div>
         <div class="icon-item" onclick="showSettingsScreen()">
-          <div class="icon-circle">âš™ï¸</div>
-          <p>Configu-<br>raÃ§Ãµes</p>
+          <div class="icon-circle">⚙️</div>
+          <p>Configu-<br>rações</p>
         </div>
       </div>
 
       <div class="section-row">
-        <p class="section-title">VÃ­deos prontos</p>
-        <span class="section-link" onclick="showUploadScreen()">Ver tudo â€º</span>
+        <p class="section-title">Vídeos prontos</p>
+        <span class="section-link" onclick="showUploadScreen()">Ver tudo ›</span>
       </div>
       <div class="video-list" id="readyVideoGrid">
         <div class="loading">Carregando...</div>
@@ -485,7 +485,7 @@
     </div>
   </div>
 
-  <!-- VOCÃŠ / CONTA -->
+  <!-- VOCÊ / CONTA -->
   <div id="accountSection" style="display:none;">
     <div class="shell">
       <div class="card" style="margin-top:12px;">
@@ -495,7 +495,7 @@
           <div class="dot" id="pushDot"></div>
           <div class="push-text" id="pushText">Verificando...</div>
         </div>
-        <button class="btn" id="pushBtn" onclick="requestPush()">Ativar NotificaÃ§Ãµes</button>
+        <button class="btn" id="pushBtn" onclick="requestPush()">Ativar Notificações</button>
         <div class="status" id="pushStatus"></div>
         <button class="btn btn-outline" onclick="doLogout()" style="margin-top:16px;">Sair</button>
       </div>
@@ -504,85 +504,85 @@
 
   <!-- TELA: PROMPT PRONTO (Push 1) -->
   <div class="card" id="promptSection" style="display:none;">
-    <h2>ðŸŽ¬ Prompt do VÃ­deo</h2>
+    <h2>🎬 Prompt do Vídeo</h2>
     <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
-    <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">ðŸ“‹ðŸ–¼ï¸ Copiar Prompt + Imagem</button>
-    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">â–¶ï¸ Abrir YouTube Create</button>
+    <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
+    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">▶️ Abrir YouTube Create</button>
     <div class="status" id="promptStatus"></div>
   </div>
 
-  <!-- TELA: PACOTE / VÃDEO PRONTO (Push 2) -->
+  <!-- TELA: PACOTE / VÍDEO PRONTO (Push 2) -->
   <div class="card" id="packageSection" style="display:none;">
-    <h2>ðŸ“¦ Pacote do VÃ­deo</h2>
+    <h2>📦 Pacote do Vídeo</h2>
     <div id="packageContent" class="loading">Carregando pacote...</div>
   </div>
 
-  <!-- TELA: UPLOAD DE VÃDEO -->
+  <!-- TELA: UPLOAD DE VÍDEO -->
   <div class="card" id="uploadSection" style="display:none;">
-    <h2>â¬†ï¸ Enviar VÃ­deo</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">â† Voltar</button>
+    <h2>⬆️ Enviar Vídeo</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
 
-  <!-- TELA: MENU DE CONFIGURAÃ‡Ã•ES -->
+  <!-- TELA: MENU DE CONFIGURAÇÕES -->
   <div class="card" id="settingsMenuSection" style="display:none;">
-    <h2>âš™ï¸ ConfiguraÃ§Ãµes</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">â† Voltar</button>
+    <h2>⚙️ Configurações</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <div class="settings-menu-grid">
       <div class="settings-menu-item" onclick="showCalendarScreen()">
-        <div class="settings-menu-item-ico">ðŸ“…</div>
-        <p>CalendÃ¡rio</p>
+        <div class="settings-menu-item-ico">📅</div>
+        <p>Calendário</p>
       </div>
       <div class="settings-menu-item" onclick="showComingSoon('API Afiliado')">
-        <div class="settings-menu-item-ico">ðŸ”‘</div>
+        <div class="settings-menu-item-ico">🔑</div>
         <p>API Afiliado</p>
       </div>
-      <div class="settings-menu-item" onclick="showComingSoon('NotificaÃ§Ãµes')">
-        <div class="settings-menu-item-ico">ðŸ””</div>
-        <p>NotificaÃ§Ãµes</p>
+      <div class="settings-menu-item" onclick="showComingSoon('Notificações')">
+        <div class="settings-menu-item-ico">🔔</div>
+        <p>Notificações</p>
       </div>
       <div class="settings-menu-item" onclick="showComingSoon('Conta')">
-        <div class="settings-menu-item-ico">ðŸ‘¤</div>
+        <div class="settings-menu-item-ico">👤</div>
         <p>Conta</p>
       </div>
     </div>
   </div>
 
-  <!-- TELA: CONFIGURAÃ‡Ã•ES > CALENDÃRIO EDITORIAL -->
+  <!-- TELA: CONFIGURAÇÕES > CALENDÁRIO EDITORIAL -->
   <div class="card" id="settingsSection" style="display:none;">
-    <h2>ðŸ“… CalendÃ¡rio Editorial</h2>
-    <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">â† Voltar</button>
+    <h2>📅 Calendário Editorial</h2>
+    <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="settingsContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: EDITAR COM IA -->
   <div class="card" id="aiEditSection" style="display:none;">
-    <h2>ðŸª„ Editar com IA</h2>
-    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">â† Voltar</button>
+    <h2>🪄 Editar com IA</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <div id="aiEditContent" class="loading">Carregando...</div>
   </div>
 
   <!-- BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav" style="display:none;">
     <div class="nav-item active" id="navInicio" onclick="showDash()">
-      <div class="nav-icon">ðŸ </div>
-      <span>InÃ­cio</span>
+      <div class="nav-icon">🏠</div>
+      <span>Início</span>
     </div>
     <div class="nav-item" id="navExplorar" onclick="showComingSoon('Explorar')">
-      <div class="nav-icon">ðŸ”</div>
+      <div class="nav-icon">🔍</div>
       <span>Explorar</span>
     </div>
     <div class="nav-item center" onclick="openYoutubeCreate()">
       <div class="nav-icon">+</div>
     </div>
     <div class="nav-item" id="navProjetos" onclick="showUploadScreen()">
-      <div class="nav-icon">ðŸ“</div>
+      <div class="nav-icon">📁</div>
       <span>Projetos</span>
     </div>
     <div class="nav-item" id="navVoce" onclick="showAccountScreen()">
-      <div class="nav-icon">ðŸ‘¤</div>
-      <span>VocÃª</span>
+      <div class="nav-icon">👤</div>
+      <span>Você</span>
     </div>
   </div>
 
@@ -671,7 +671,7 @@
     function renderPromptView(params) {
       hideAllCards();
       document.getElementById('pageSubtitle').style.display = 'block';
-      document.getElementById('pageSubtitle').textContent = 'VÃ­deo pronto para gerar';
+      document.getElementById('pageSubtitle').textContent = 'Vídeo pronto para gerar';
       document.getElementById('promptSection').style.display = 'block';
       const text = params.get('text') || '(prompt vazio)';
       document.getElementById('promptText').textContent = decodeURIComponent(text);
@@ -695,12 +695,12 @@
         .then(() => {
           if (window._currentProductImage) {
             window.open(window._currentProductImage, '_blank');
-            showStatus(st, 'âœ… Prompt copiado e imagem aberta! Cole o texto e anexe a imagem no YouTube Create.', 'ok');
+            showStatus(st, '✅ Prompt copiado e imagem aberta! Cole o texto e anexe a imagem no YouTube Create.', 'ok');
           } else {
-            showStatus(st, 'âœ… Prompt copiado! (este produto nÃ£o tem foto disponÃ­vel)', 'ok');
+            showStatus(st, '✅ Prompt copiado! (este produto não tem foto disponível)', 'ok');
           }
         })
-        .catch(() => showStatus(st, 'âŒ NÃ£o foi possÃ­vel copiar automaticamente. Selecione o texto manualmente.', 'err'));
+        .catch(() => showStatus(st, '❌ Não foi possível copiar automaticamente. Selecione o texto manualmente.', 'err'));
     }
 
     function openYoutubeCreate() {
@@ -725,11 +725,11 @@
       const packageId = params.get('id');
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login no app para ver este pacote.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login no app para ver este pacote.</div>';
         return;
       }
       if (!packageId) {
-        content.innerHTML = '<div class="status err" style="display:block;">Pacote nÃ£o identificado.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Pacote não identificado.</div>';
         return;
       }
 
@@ -741,33 +741,33 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao buscar pacote');
 
         const pkg = (data.packages || []).find(p => String(p.id) === String(packageId));
-        if (!pkg) throw new Error('Pacote nÃ£o encontrado na lista de prontos');
+        if (!pkg) throw new Error('Pacote não encontrado na lista de prontos');
 
         window._currentPackageCaption = (pkg.caption || '') + '\n' + (pkg.hashtags || '');
         window._currentPackageLink = pkg.affiliate_link || '';
 
         content.innerHTML = `
           <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
-          <div class="product-meta">R$ ${pkg.price || ''} â€¢ Status: ${escapeHtml(pkg.status)}</div>
+          <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
 
           <div class="field-label">Legenda</div>
-          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || 'â€”')}</div>
+          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || '—')}</div>
 
           <div class="field-label">Hashtags</div>
-          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || 'â€”')}</div>
+          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || '—')}</div>
 
           <div class="field-label">Link de Afiliado</div>
-          <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || 'â€”')}</div>
+          <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
 
-          <button class="btn btn-secondary" onclick="copyPackageCaption()">ðŸ“‹ Copiar Legenda + Hashtags</button>
-          <button class="btn btn-secondary" onclick="openProductOnShopee()" style="margin-top:10px;">ðŸ›ï¸ Favoritar na Shopee</button>
+          <button class="btn btn-secondary" onclick="copyPackageCaption()">📋 Copiar Legenda + Hashtags</button>
+          <button class="btn btn-secondary" onclick="openProductOnShopee()" style="margin-top:10px;">🛍️ Favoritar na Shopee</button>
           <div class="status" id="copyPackageStatus"></div>
 
-          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn" style="margin-top:16px;">âœ… Confirmar PublicaÃ§Ã£o</button>
+          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn" style="margin-top:16px;">✅ Confirmar Publicação</button>
           <div class="status" id="confirmStatus"></div>
         `;
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -783,27 +783,27 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao confirmar');
-        showStatus(st, 'âœ… PublicaÃ§Ã£o confirmada!', 'ok');
-        btn.textContent = 'Confirmado âœ“';
+        showStatus(st, '✅ Publicação confirmada!', 'ok');
+        btn.textContent = 'Confirmado ✓';
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = 'âœ… Confirmar PublicaÃ§Ã£o';
+        btn.textContent = '✅ Confirmar Publicação';
       }
     }
 
     function copyPackageCaption() {
       const st = document.getElementById('copyPackageStatus');
       navigator.clipboard.writeText(window._currentPackageCaption || '')
-        .then(() => showStatus(st, 'âœ… Legenda e hashtags copiadas!', 'ok'))
-        .catch(() => showStatus(st, 'âŒ NÃ£o foi possÃ­vel copiar. Selecione o texto manualmente.', 'err'));
+        .then(() => showStatus(st, '✅ Legenda e hashtags copiadas!', 'ok'))
+        .catch(() => showStatus(st, '❌ Não foi possível copiar. Selecione o texto manualmente.', 'err'));
     }
 
     function openProductOnShopee() {
       const link = window._currentPackageLink;
       if (!link) {
         const st = document.getElementById('copyPackageStatus');
-        showStatus(st, 'âŒ Link de afiliado nÃ£o disponÃ­vel.', 'err');
+        showStatus(st, '❌ Link de afiliado não disponível.', 'err');
         return;
       }
       window.open(link, '_blank');
@@ -812,7 +812,7 @@
     function showUploadScreen() {
       hideAllCards();
       document.getElementById('pageSubtitle').style.display = 'block';
-      document.getElementById('pageSubtitle').textContent = 'VÃ­deos pendentes';
+      document.getElementById('pageSubtitle').textContent = 'Vídeos pendentes';
       document.getElementById('uploadSection').style.display = 'block';
       document.getElementById('bottomNav').style.display = 'flex';
       document.getElementById('headerActions').style.display = 'flex';
@@ -821,10 +821,10 @@
     }
 
     async function renderPendingList(content) {
-      content.innerHTML = '<div class="loading">Carregando vÃ­deos pendentes...</div>';
+      content.innerHTML = '<div class="loading">Carregando vídeos pendentes...</div>';
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login para ver os vÃ­deos pendentes.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para ver os vídeos pendentes.</div>';
         return;
       }
 
@@ -836,27 +836,27 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao buscar pendentes');
 
         if (!data.videos || data.videos.length === 0) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vÃ­deo pendente no momento. ðŸŽ‰</div>';
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vídeo pendente no momento. 🎉</div>';
           return;
         }
 
         content.innerHTML = data.videos.map(v => `
           <div class="prompt-box" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
-            <strong>${escapeHtml(v.title || v.product_name || ('VÃ­deo #' + v.id))}</strong>
+            <strong>${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</strong>
           </div>
         `).join('');
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
     function renderSingleUpload(videoId) {
       const content = document.getElementById('uploadContent');
       content.innerHTML = `
-        <div class="field-label">VÃ­deo #${videoId}</div>
+        <div class="field-label">Vídeo #${videoId}</div>
         <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
-        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">ðŸ“¤ Enviar VÃ­deo</button>
-        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">â† Ver outros pendentes</button>
+        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">📤 Enviar Vídeo</button>
+        <button class="btn btn-secondary" onclick="showUploadScreen()" style="margin-top:8px;">← Ver outros pendentes</button>
         <div class="status" id="uploadStatus"></div>
       `;
     }
@@ -874,7 +874,7 @@
       const file = fileInput.files[0];
       btn.disabled = true;
       btn.textContent = 'Enviando...';
-      showStatus(st, 'Enviando vÃ­deo, aguarde...', 'info');
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
 
       try {
         const formData = new FormData();
@@ -886,14 +886,14 @@
           body: formData
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vÃ­deo');
+        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
 
-        showStatus(st, 'âœ… VÃ­deo enviado com sucesso!', 'ok');
-        btn.textContent = 'Enviado âœ“';
+        showStatus(st, '✅ Vídeo enviado com sucesso!', 'ok');
+        btn.textContent = 'Enviado ✓';
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = 'ðŸ“¤ Enviar VÃ­deo';
+        btn.textContent = '📤 Enviar Vídeo';
       }
     }
 
@@ -1001,11 +1001,11 @@
         <div class="hero-content">
           <span class="hero-badge">NOVO</span>
           <div class="hero-title">Edite com IA</div>
-          <div class="hero-sub">Crie, edite e publique vÃ­deos de produtos com o poder da InteligÃªncia Artificial.</div>
+          <div class="hero-sub">Crie, edite e publique vídeos de produtos com o poder da Inteligência Artificial.</div>
           <button class="hero-cta" onclick="showAiEditScreen()">Criar projeto <span>+</span></button>
         </div>
         ${dotsHtml}
-        ${heroSlides.length > 1 ? '<button class="hero-nav" onclick="advanceHero()">â€º</button>' : ''}
+        ${heroSlides.length > 1 ? '<button class="hero-nav" onclick="advanceHero()">›</button>' : ''}
       `;
 
       if (heroSlides.length > 1) {
@@ -1033,24 +1033,24 @@
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao carregar vÃ­deos');
+        if (!res.ok) throw new Error(data.error || 'Erro ao carregar vídeos');
 
         const videos = data.videos || [];
         if (videos.length === 0) {
-          list.innerHTML = '<p class="empty-note">Nenhum vÃ­deo pronto ainda. Gere um vÃ­deo pra comeÃ§ar.</p>';
+          list.innerHTML = '<p class="empty-note">Nenhum vídeo pronto ainda. Gere um vídeo pra começar.</p>';
           return;
         }
 
         list.innerHTML = videos.slice(0, 6).map(v => {
           const bgStyle = v.image_url ? `style="background-image:url('${v.image_url}')"` : '';
-          const statusLabel = v.package_status === 'confirmed' ? 'âœ… Publicado' : 'ðŸ“¦ Pronto para publicar';
+          const statusLabel = v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar';
           const priceLabel = v.price ? ('R$ ' + v.price) : '';
           return `
             <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
               <div class="video-card-bg" ${bgStyle}></div>
-              <div class="video-card-play">â–¶</div>
+              <div class="video-card-play">▶</div>
               <div class="video-card-overlay">
-                <div class="video-card-title">${escapeHtml(v.title || v.product_name || 'VÃ­deo')}</div>
+                <div class="video-card-title">${escapeHtml(v.title || v.product_name || 'Vídeo')}</div>
                 <div class="video-card-meta">
                   <span class="video-card-status">${statusLabel}</span>
                   ${priceLabel ? '<span>' + escapeHtml(priceLabel) + '</span>' : ''}
@@ -1060,18 +1060,18 @@
           `;
         }).join('');
       } catch (e) {
-        list.innerHTML = '<p class="empty-note">NÃ£o foi possÃ­vel carregar os vÃ­deos.</p>';
+        list.innerHTML = '<p class="empty-note">Não foi possível carregar os vídeos.</p>';
       }
     }
 
     function showComingSoon(featureName) {
-      alert(featureName + ' â€” em breve! ðŸš€');
+      alert(featureName + ' — em breve! 🚀');
     }
 
     function showSettingsScreen() {
       hideAllCards();
       document.getElementById('pageSubtitle').style.display = 'block';
-      document.getElementById('pageSubtitle').textContent = 'ConfiguraÃ§Ãµes';
+      document.getElementById('pageSubtitle').textContent = 'Configurações';
       document.getElementById('settingsMenuSection').style.display = 'block';
       document.getElementById('bottomNav').style.display = 'flex';
       document.getElementById('headerActions').style.display = 'flex';
@@ -1081,7 +1081,7 @@
     function showCalendarScreen() {
       hideAllCards();
       document.getElementById('pageSubtitle').style.display = 'block';
-      document.getElementById('pageSubtitle').textContent = 'CalendÃ¡rio Editorial';
+      document.getElementById('pageSubtitle').textContent = 'Calendário Editorial';
       document.getElementById('settingsSection').style.display = 'block';
       document.getElementById('bottomNav').style.display = 'flex';
       document.getElementById('headerActions').style.display = 'flex';
@@ -1091,10 +1091,10 @@
 
     async function renderSettingsScreen() {
       const content = document.getElementById('settingsContent');
-      content.innerHTML = '<div class="loading">Carregando configuraÃ§Ãµes...</div>';
+      content.innerHTML = '<div class="loading">Carregando configurações...</div>';
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login para configurar.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
         return;
       }
 
@@ -1110,13 +1110,13 @@
         const catData = await catRes.json();
         const schedData = await schedRes.json();
         if (!catRes.ok) throw new Error(catData.error || 'Erro ao buscar categorias');
-        if (!schedRes.ok) throw new Error(schedData.error || 'Erro ao buscar calendÃ¡rio');
+        if (!schedRes.ok) throw new Error(schedData.error || 'Erro ao buscar calendário');
 
         window.__SETTINGS_CATEGORIES = catData.categories || [];
 
         content.innerHTML = schedData.schedule.map(day => renderDayCard(day)).join('');
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -1138,33 +1138,33 @@
           </label>
 
           <select id="day-category-${day.day_of_week}">
-            <option value="">â€” Selecione a categoria â€”</option>
+            <option value="">— Selecione a categoria —</option>
             ${options}
           </select>
 
           <div class="day-card-row">
             <div>
-              <div class="field-label" style="margin-top:0;">PreÃ§o mÃ­n. (R$)</div>
+              <div class="field-label" style="margin-top:0;">Preço mín. (R$)</div>
               <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}">
             </div>
             <div>
-              <div class="field-label" style="margin-top:0;">PreÃ§o mÃ¡x. (R$)</div>
+              <div class="field-label" style="margin-top:0;">Preço máx. (R$)</div>
               <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}">
             </div>
           </div>
 
           <div class="day-card-row">
             <div>
-              <div class="field-label" style="margin-top:0;">ComissÃ£o mÃ­n. (%)</div>
+              <div class="field-label" style="margin-top:0;">Comissão mín. (%)</div>
               <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}">
             </div>
             <div>
-              <div class="field-label" style="margin-top:0;">VÃ­deos/dia</div>
+              <div class="field-label" style="margin-top:0;">Vídeos/dia</div>
               <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}">
             </div>
           </div>
 
-          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})">ðŸ’¾ Salvar ${escapeHtml(day.day_label)}</button>
+          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})">💾 Salvar ${escapeHtml(day.day_label)}</button>
           <div class="status" id="day-status-${day.day_of_week}"></div>
         </div>
       `;
@@ -1209,9 +1209,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, 'âœ… Salvo com sucesso!', 'ok');
+        showStatus(st, '✅ Salvo com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -1235,7 +1235,7 @@
       content.innerHTML = '<div class="loading">Carregando produtos do dia...</div>';
 
       if (!SESSION) {
-        content.innerHTML = '<div class="status err" style="display:block;">FaÃ§a login para continuar.</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para continuar.</div>';
         return;
       }
 
@@ -1249,30 +1249,30 @@
         const products = Array.isArray(data) ? data : (data.products || []);
 
         if (!products.length) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum produto selecionado hoje ainda. Volte mais tarde ou rode a seleÃ§Ã£o de produtos.</div>';
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum produto selecionado hoje ainda. Volte mais tarde ou rode a seleção de produtos.</div>';
           return;
         }
 
         content.innerHTML = `
-          <div class="field-label" style="margin-top:0;">Escolha um produto para gerar/editar o conteÃºdo:</div>
+          <div class="field-label" style="margin-top:0;">Escolha um produto para gerar/editar o conteúdo:</div>
           ${products.map(p => `
             <div class="prompt-box" style="cursor:pointer;display:flex;gap:10px;align-items:center;" onclick="selectProductForAi(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
               ${p.image_url ? `<img src="${p.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
               <div>
                 <div style="font-weight:600;">${escapeHtml(p.name)}</div>
-                <div style="font-size:0.75rem;color:#999;">R$ ${p.price} â€¢ Score ${parseFloat(p.score || 0).toFixed(1)}</div>
+                <div style="font-size:0.75rem;color:#999;">R$ ${p.price} • Score ${parseFloat(p.score || 0).toFixed(1)}</div>
               </div>
             </div>
           `).join('')}
         `;
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
     async function selectProductForAi(productId, productName) {
       const content = document.getElementById('aiEditContent');
-      content.innerHTML = `<div class="loading">ðŸ¤– Gerando conteÃºdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
+      content.innerHTML = `<div class="loading">🤖 Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
 
       try {
         const res = await fetch(API + '/api/ai/generate', {
@@ -1284,24 +1284,24 @@
           body: JSON.stringify({ productId })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteÃºdo');
+        if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteúdo');
 
         renderAiContentEditor(data.content);
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">âŒ ' + escapeHtml(e.message) + '</div>' +
-          '<button class="btn btn-outline" onclick="renderAiProductList()" style="margin-top:12px;">â† Escolher outro produto</button>';
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>' +
+          '<button class="btn btn-outline" onclick="renderAiProductList()" style="margin-top:12px;">← Escolher outro produto</button>';
       }
     }
 
     function renderAiContentEditor(item) {
       const content = document.getElementById('aiEditContent');
       content.innerHTML = `
-        <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">â† Escolher outro produto</button>
+        <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">← Escolher outro produto</button>
 
-        <div class="field-label" style="margin-top:0;">TÃ­tulo</div>
+        <div class="field-label" style="margin-top:0;">Título</div>
         <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80" oninput="generateUnifiedText()">
 
-        <div class="field-label">DescriÃ§Ã£o</div>
+        <div class="field-label">Descrição</div>
         <textarea id="ai-description" style="width:100%;min-height:90px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;" oninput="generateUnifiedText()">${escapeHtml(item.description || '')}</textarea>
 
         <div class="field-label">Legenda</div>
@@ -1310,20 +1310,20 @@
         <div class="field-label">Hashtags</div>
         <input type="text" id="ai-hashtags" value="${escapeHtml(item.hashtags || '')}" oninput="generateUnifiedText()">
 
-        <div class="field-label">NarraÃ§Ã£o</div>
+        <div class="field-label">Narração</div>
         <textarea id="ai-narration" style="width:100%;min-height:70px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.narration || '')}</textarea>
 
-        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">ðŸ’¾ Salvar alteraÃ§Ãµes</button>
+        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">💾 Salvar alterações</button>
         <div class="status" id="ai-save-status"></div>
 
-        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">ðŸ“‹ Texto unificado (pronto pra colar no Shopee)</div>
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">📋 Texto unificado (pronto pra colar no Shopee)</div>
         <textarea id="ai-unified" readonly style="width:100%;min-height:120px;background:#141414;border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;"></textarea>
-        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">ðŸ“‹ Copiar tudo</button>
+        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">📋 Copiar tudo</button>
         <div class="status" id="ai-copy-status"></div>
 
-        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">ðŸ“¦ VÃ­deo e Capa</div>
-        <div style="font-size:0.8rem;color:#999;margin-bottom:10px;">JÃ¡ fez o vÃ­deo no YouTube Create? Empacota aqui, envia o vÃ­deo e escolhe a capa antes de publicar.</div>
-        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">ðŸ“¦ Empacotar (vÃ­deo + capa)</button>
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">📦 Vídeo e Capa</div>
+        <div style="font-size:0.8rem;color:#999;margin-bottom:10px;">Já fez o vídeo no YouTube Create? Empacota aqui, envia o vídeo e escolhe a capa antes de publicar.</div>
+        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">📦 Empacotar (vídeo + capa)</button>
         <div class="status" id="ai-package-status"></div>
         <div id="ai-packaging-area"></div>
       `;
@@ -1354,9 +1354,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, 'âœ… Salvo com sucesso!', 'ok');
+        showStatus(st, '✅ Salvo com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -1397,18 +1397,18 @@
       el.setSelectionRange(0, 999999);
       try {
         navigator.clipboard.writeText(el.value).then(() => {
-          showStatus(st, 'âœ… Copiado! Cole no app da Shopee.', 'ok');
+          showStatus(st, '✅ Copiado! Cole no app da Shopee.', 'ok');
         }).catch(() => {
           document.execCommand('copy');
-          showStatus(st, 'âœ… Copiado!', 'ok');
+          showStatus(st, '✅ Copiado!', 'ok');
         });
       } catch(e) {
         document.execCommand('copy');
-        showStatus(st, 'âœ… Copiado!', 'ok');
+        showStatus(st, '✅ Copiado!', 'ok');
       }
     }
 
-    // ===== EMPACOTAMENTO MANUAL: vÃ­deo + capa =====
+    // ===== EMPACOTAMENTO MANUAL: vídeo + capa =====
     async function createPackageForContent(contentId) {
       const st = document.getElementById('ai-package-status');
       showStatus(st, 'Criando pacote...', 'info');
@@ -1423,19 +1423,19 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao criar pacote');
-        showStatus(st, 'âœ… Pacote criado! Envie o vÃ­deo abaixo.', 'ok');
+        showStatus(st, '✅ Pacote criado! Envie o vídeo abaixo.', 'ok');
         renderPackagingArea(data.videoId);
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       }
     }
 
     function renderPackagingArea(videoId) {
       const area = document.getElementById('ai-packaging-area');
       area.innerHTML = `
-        <div class="field-label">Envie o vÃ­deo (MP4)</div>
+        <div class="field-label">Envie o vídeo (MP4)</div>
         <input type="file" id="ai-video-file" accept="video/mp4" style="color:#fff;margin-bottom:10px;">
-        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">ðŸ“¤ Enviar vÃ­deo</button>
+        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">📤 Enviar vídeo</button>
         <div id="ai-video-preview-area"></div>
       `;
     }
@@ -1444,11 +1444,11 @@
       const fileInput = document.getElementById('ai-video-file');
       const st = document.getElementById('ai-package-status');
       if (!fileInput.files || !fileInput.files.length) {
-        showStatus(st, 'Selecione um vÃ­deo MP4 primeiro.', 'err');
+        showStatus(st, 'Selecione um vídeo MP4 primeiro.', 'err');
         return;
       }
       const file = fileInput.files[0];
-      showStatus(st, 'Enviando vÃ­deo, aguarde...', 'info');
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
 
       try {
         const formData = new FormData();
@@ -1459,11 +1459,11 @@
           body: formData
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vÃ­deo');
-        showStatus(st, 'âœ… VÃ­deo enviado! Escolha o frame de capa abaixo.', 'ok');
+        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
+        showStatus(st, '✅ Vídeo enviado! Escolha o frame de capa abaixo.', 'ok');
         renderVideoPreviewForCapture(videoId, data.fileUrl);
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       }
     }
 
@@ -1471,8 +1471,8 @@
       const area = document.getElementById('ai-video-preview-area');
       area.innerHTML = `
         <video id="ai-video-preview" src="${fileUrl}" controls playsinline style="width:100%;border-radius:10px;margin-top:12px;background:#000;"></video>
-        <div style="font-size:0.75rem;color:#999;margin-top:6px;">Pause no momento que quiser usar como capa e toque no botÃ£o abaixo.</div>
-        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})">ðŸ“¸ Capturar capa neste momento</button>
+        <div style="font-size:0.75rem;color:#999;margin-top:6px;">Pause no momento que quiser usar como capa e toque no botão abaixo.</div>
+        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})">📸 Capturar capa neste momento</button>
         <canvas id="ai-thumb-canvas" style="display:none;"></canvas>
         <div>
           <div class="field-label" style="margin-top:10px;">Capa escolhida:</div>
@@ -1486,7 +1486,7 @@
       const canvas = document.getElementById('ai-thumb-canvas');
       if (!video || !video.videoWidth) {
         const st = document.getElementById('ai-package-status');
-        showStatus(st, 'Aguarde o vÃ­deo carregar antes de capturar.', 'err');
+        showStatus(st, 'Aguarde o vídeo carregar antes de capturar.', 'err');
         return;
       }
       canvas.width = video.videoWidth;
@@ -1515,9 +1515,9 @@
         const preview = document.getElementById('ai-thumb-preview');
         preview.src = URL.createObjectURL(blob);
         preview.style.display = 'block';
-        showStatus(st, 'âœ… Capa salva com sucesso!', 'ok');
+        showStatus(st, '✅ Capa salva com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       }
     }
 
@@ -1527,7 +1527,7 @@
       const btn  = document.getElementById('pushBtn');
       if (!('PushManager' in window)) {
         dot.className = 'dot red';
-        text.textContent = 'Push nÃ£o suportado â€” instale como app';
+        text.textContent = 'Push não suportado — instale como app';
         btn.style.display = 'none';
         return;
       }
@@ -1537,25 +1537,25 @@
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
           dot.className = 'dot green';
-          text.textContent = 'NotificaÃ§Ãµes ativas âœ“';
+          text.textContent = 'Notificações ativas ✓';
           btn.textContent = 'Reativar';
           return;
         }
       }
       if (perm === 'denied') {
         dot.className = 'dot red';
-        text.textContent = 'Bloqueado â€” libere nas configuraÃ§Ãµes';
+        text.textContent = 'Bloqueado — libere nas configurações';
         btn.style.display = 'none';
         return;
       }
       dot.className = 'dot yellow';
-      text.textContent = 'NotificaÃ§Ãµes nÃ£o ativadas';
+      text.textContent = 'Notificações não ativadas';
     }
 
     async function requestPush() {
       const btn = document.getElementById('pushBtn');
       const st  = document.getElementById('pushStatus');
-      if (!SESSION) { showStatus(st, 'FaÃ§a login primeiro.', 'err'); return; }
+      if (!SESSION) { showStatus(st, 'Faça login primeiro.', 'err'); return; }
       btn.disabled = true;
       btn.textContent = 'Ativando...';
       try {
@@ -1565,7 +1565,7 @@
 
         const reg  = await navigator.serviceWorker.ready;
         const perm = await Notification.requestPermission();
-        if (perm !== 'granted') throw new Error('PermissÃ£o negada');
+        if (perm !== 'granted') throw new Error('Permissão negada');
 
         const sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
@@ -1589,13 +1589,13 @@
           throw new Error(errData.error || 'Erro ao salvar');
         }
 
-        showStatus(st, 'âœ… NotificaÃ§Ãµes ativadas!', 'ok');
+        showStatus(st, '✅ Notificações ativadas!', 'ok');
         checkPushStatus();
       } catch(e) {
-        showStatus(st, 'âŒ ' + e.message, 'err');
+        showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Ativar NotificaÃ§Ãµes';
+        btn.textContent = 'Ativar Notificações';
       }
     }
 
