@@ -981,14 +981,15 @@
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
-        videos = (data.videos || []).slice(0, 5);
+        videos = (data.videos || []).slice(0, 3);
       } catch(e) { /* segue com fallback */ }
 
       heroSlides = videos.length > 0 ? videos : [null];
       heroIndex = 0;
 
       const slidesHtml = heroSlides.map((v, i) => {
-        const bg = v && v.image_url ? `style="background-image:url('${v.image_url}')"` : '';
+        const cover = v ? (v.thumbnail_url || v.image_url) : '';
+        const bg = cover ? `style="background-image:url('${cover}')"` : '';
         return `<div class="hero-slide ${i === 0 ? 'active' : ''}" data-i="${i}" ${bg}></div>`;
       }).join('');
 
@@ -1042,7 +1043,8 @@
         }
 
         list.innerHTML = videos.slice(0, 6).map(v => {
-          const bgStyle = v.image_url ? `style="background-image:url('${v.image_url}')"` : '';
+          const cover = v.thumbnail_url || v.image_url;
+          const bgStyle = cover ? `style="background-image:url('${cover}')"` : '';
           const statusLabel = v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar';
           const priceLabel = v.price ? ('R$ ' + v.price) : '';
           return `
