@@ -522,7 +522,22 @@
   <div class="card" id="uploadSection" style="display:none;">
     <h2>⬆️ Enviar Vídeo</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <button class="btn btn-secondary" onclick="showPromptsScreen()" style="margin-bottom:16px;">📋 Ver todos os Prompts Prontos</button>
     <div id="uploadContent" class="loading">Carregando...</div>
+  </div>
+
+  <!-- TELA: PROMPTS PRONTOS (histórico permanente) -->
+  <div class="card" id="promptsListSection" style="display:none;">
+    <h2>📋 Prompts Prontos</h2>
+    <button class="btn btn-outline" onclick="showUploadScreen()" style="margin-bottom:16px;">← Voltar</button>
+    <div id="promptsListContent" class="loading">Carregando...</div>
+  </div>
+
+  <!-- TELA: DETALHE DE UM PROMPT PRONTO -->
+  <div class="card" id="promptDetailSection" style="display:none;">
+    <h2>🎬 Prompt Pronto</h2>
+    <button class="btn btn-outline" onclick="showPromptsScreen()" style="margin-bottom:16px;">← Voltar à lista</button>
+    <div id="promptDetailContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: MENU DE CONFIGURAÇÕES -->
@@ -611,7 +626,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','aiEditSection'].forEach(id => {
+      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -915,6 +930,123 @@
         btn.disabled = false;
         btn.textContent = '📤 Enviar Vídeo';
       }
+    }
+
+    // ===== TELA: PROMPTS PRONTOS (histórico permanente) =====
+    function showPromptsScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Prompts Prontos';
+      document.getElementById('promptsListSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navProjetos');
+      renderPromptsList();
+    }
+
+    async function renderPromptsList() {
+      const content = document.getElementById('promptsListContent');
+      content.innerHTML = '<div class="loading">Carregando prompts...</div>';
+
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para continuar.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/api/ai/list', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao buscar prompts');
+
+        window.__PROMPTS_LIST = data.items || [];
+
+        if (!window.__PROMPTS_LIST.length) {
+          content.innerHTML = '<div class="status info" style="display:block;">Nenhum prompt gerado ainda. Vá em "Editar com IA" para criar um.</div>';
+          return;
+        }
+
+        content.innerHTML = window.__PROMPTS_LIST.map(item => `
+          <div class="prompt-box" style="display:flex;gap:10px;align-items:center;">
+            <div style="flex:1;cursor:pointer;" onclick="showPromptDetail(${item.id})">
+              ${item.image_url ? `<img src="${item.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;float:left;margin-right:10px;">` : ''}
+              <strong>${escapeHtml(item.title || item.product_name || ('Prompt #' + item.id))}</strong>
+            </div>
+            <button onclick="archivePrompt(${item.id})" title="Remover da lista" style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;">🗑️</button>
+          </div>
+        `).join('');
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function archivePrompt(contentId) {
+      if (!confirm('Remover este prompt da lista? Ele não será mais exibido aqui.')) return;
+      try {
+        const res = await fetch(API + '/api/ai/' + contentId, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ archived: true })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao remover');
+        renderPromptsList();
+      } catch(e) {
+        alert('❌ ' + e.message);
+      }
+    }
+
+    function showPromptDetail(contentId) {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Prompt Pronto';
+      document.getElementById('promptDetailSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navProjetos');
+
+      const item = (window.__PROMPTS_LIST || []).find(p => p.id === contentId);
+      const content = document.getElementById('promptDetailContent');
+
+      if (!item) {
+        content.innerHTML = '<div class="status err" style="display:block;">Prompt não encontrado.</div>';
+        return;
+      }
+
+      window._currentPrompt = item.video_prompt || '';
+      window._currentProductImage = item.image_url || '';
+
+      content.innerHTML = `
+        <div class="field-label" style="margin-top:0;">${escapeHtml(item.title || item.product_name || '')}</div>
+        ${item.image_url ? `<img src="${item.image_url}" class="thumb" alt="Foto do produto">` : ''}
+
+        <div class="field-label">Prompt do vídeo</div>
+        <div class="prompt-box">${escapeHtml(item.video_prompt || '(sem prompt)')}</div>
+
+        <button class="btn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
+        <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">▶️ Abrir YouTube Create</button>
+        <button class="btn btn-secondary" onclick="downloadPromptFile('${escapeHtml((item.title || 'prompt').replace(/'/g, "\\'"))}')" style="margin-top:10px;">⬇️ Salvar Prompt (.txt)</button>
+        ${item.image_url ? `<button class="btn btn-secondary" onclick="window.open('${item.image_url}', '_blank')" style="margin-top:10px;">⬇️ Abrir Imagem (salvar)</button>` : ''}
+        <div class="status" id="promptStatus"></div>
+      `;
+    }
+
+    function downloadPromptFile(titleForFileName) {
+      const text = window._currentPrompt || '';
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const safeName = (titleForFileName || 'prompt').replace(/[^a-z0-9]+/gi, '_').slice(0, 60);
+      a.download = safeName + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function escapeHtml(str) {
