@@ -870,23 +870,193 @@
         <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">← Escolher outro produto</button>
 
         <div class="field-label" style="margin-top:0;">Título</div>
-        <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80">
+        <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80" oninput="generateUnifiedText()">
 
         <div class="field-label">Descrição</div>
-        <textarea id="ai-description" style="width:100%;min-height:90px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.description || '')}</textarea>
+        <textarea id="ai-description" style="width:100%;min-height:90px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;" oninput="generateUnifiedText()">${escapeHtml(item.description || '')}</textarea>
 
         <div class="field-label">Legenda</div>
-        <input type="text" id="ai-caption" value="${escapeHtml(item.caption || '')}">
+        <input type="text" id="ai-caption" value="${escapeHtml(item.caption || '')}" oninput="generateUnifiedText()">
 
         <div class="field-label">Hashtags</div>
-        <input type="text" id="ai-hashtags" value="${escapeHtml(item.hashtags || '')}">
+        <input type="text" id="ai-hashtags" value="${escapeHtml(item.hashtags || '')}" oninput="generateUnifiedText()">
 
         <div class="field-label">Narração</div>
         <textarea id="ai-narration" style="width:100%;min-height:70px;background:#2a2a2a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.narration || '')}</textarea>
 
         <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">💾 Salvar alterações</button>
         <div class="status" id="ai-save-status"></div>
+
+        <div class="field-label" style="margin-top:22px;border-top:1px solid #333;padding-top:16px;">📋 Texto unificado (pronto pra colar no Shopee)</div>
+        <textarea id="ai-unified" readonly style="width:100%;min-height:120px;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;"></textarea>
+        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">📋 Copiar tudo</button>
+        <div class="status" id="ai-copy-status"></div>
+
+        <div class="field-label" style="margin-top:22px;border-top:1px solid #333;padding-top:16px;">📦 Vídeo e Capa</div>
+        <div style="font-size:0.8rem;color:#999;margin-bottom:10px;">Já fez o vídeo no YouTube Create? Empacota aqui, envia o vídeo e escolhe a capa antes de publicar.</div>
+        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">📦 Empacotar (vídeo + capa)</button>
+        <div class="status" id="ai-package-status"></div>
+        <div id="ai-packaging-area"></div>
       `;
+      generateUnifiedText();
+    }
+
+    function stripPrice(text) {
+      return (text || '')
+        .replace(/R\$\s?\d{1,3}(\.\d{3})*(,\d{2})?/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/\s+([.,!?])/g, '$1')
+        .trim();
+    }
+
+    function generateUnifiedText() {
+      const title = (document.getElementById('ai-title')?.value || '').trim();
+      const description = stripPrice(document.getElementById('ai-description')?.value);
+      const caption = stripPrice(document.getElementById('ai-caption')?.value);
+      const hashtagsRaw = document.getElementById('ai-hashtags')?.value || '';
+
+      const topHashtags = hashtagsRaw
+        .split(/\s+/)
+        .filter(t => t.startsWith('#'))
+        .slice(0, 5)
+        .join(' ');
+
+      const parts = [title, description, caption, topHashtags].filter(Boolean);
+      const unified = parts.join('\n\n');
+
+      const unifiedEl = document.getElementById('ai-unified');
+      if (unifiedEl) unifiedEl.value = unified;
+    }
+
+    function copyUnifiedText() {
+      const el = document.getElementById('ai-unified');
+      const st = document.getElementById('ai-copy-status');
+      el.select();
+      el.setSelectionRange(0, 999999);
+      try {
+        navigator.clipboard.writeText(el.value).then(() => {
+          showStatus(st, '✅ Copiado! Cole no app da Shopee.', 'ok');
+        }).catch(() => {
+          document.execCommand('copy');
+          showStatus(st, '✅ Copiado!', 'ok');
+        });
+      } catch(e) {
+        document.execCommand('copy');
+        showStatus(st, '✅ Copiado!', 'ok');
+      }
+    }
+
+    // ===== EMPACOTAMENTO MANUAL: vídeo + capa =====
+    async function createPackageForContent(contentId) {
+      const st = document.getElementById('ai-package-status');
+      showStatus(st, 'Criando pacote...', 'info');
+      try {
+        const res = await fetch(API + '/api/packaging/create', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ contentId })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao criar pacote');
+        showStatus(st, '✅ Pacote criado! Envie o vídeo abaixo.', 'ok');
+        renderPackagingArea(data.videoId);
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      }
+    }
+
+    function renderPackagingArea(videoId) {
+      const area = document.getElementById('ai-packaging-area');
+      area.innerHTML = `
+        <div class="field-label">Envie o vídeo (MP4)</div>
+        <input type="file" id="ai-video-file" accept="video/mp4" style="color:#fff;margin-bottom:10px;">
+        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">📤 Enviar vídeo</button>
+        <div id="ai-video-preview-area"></div>
+      `;
+    }
+
+    async function uploadAiVideo(videoId) {
+      const fileInput = document.getElementById('ai-video-file');
+      const st = document.getElementById('ai-package-status');
+      if (!fileInput.files || !fileInput.files.length) {
+        showStatus(st, 'Selecione um vídeo MP4 primeiro.', 'err');
+        return;
+      }
+      const file = fileInput.files[0];
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+
+      try {
+        const formData = new FormData();
+        formData.append('video', file);
+        const res = await fetch(API + '/api/video/' + videoId + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
+        showStatus(st, '✅ Vídeo enviado! Escolha o frame de capa abaixo.', 'ok');
+        renderVideoPreviewForCapture(videoId, data.fileUrl);
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      }
+    }
+
+    function renderVideoPreviewForCapture(videoId, fileUrl) {
+      const area = document.getElementById('ai-video-preview-area');
+      area.innerHTML = `
+        <video id="ai-video-preview" src="${fileUrl}" controls playsinline style="width:100%;border-radius:10px;margin-top:12px;background:#000;"></video>
+        <div style="font-size:0.75rem;color:#999;margin-top:6px;">Pause no momento que quiser usar como capa e toque no botão abaixo.</div>
+        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})">📸 Capturar capa neste momento</button>
+        <canvas id="ai-thumb-canvas" style="display:none;"></canvas>
+        <div>
+          <div class="field-label" style="margin-top:10px;">Capa escolhida:</div>
+          <img id="ai-thumb-preview" style="display:none;max-width:160px;border-radius:8px;border:2px solid #ff6b35;">
+        </div>
+      `;
+    }
+
+    function captureThumbnailFrame(videoId) {
+      const video = document.getElementById('ai-video-preview');
+      const canvas = document.getElementById('ai-thumb-canvas');
+      if (!video || !video.videoWidth) {
+        const st = document.getElementById('ai-package-status');
+        showStatus(st, 'Aguarde o vídeo carregar antes de capturar.', 'err');
+        return;
+      }
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        uploadThumbnailBlob(videoId, blob);
+      }, 'image/jpeg', 0.9);
+    }
+
+    async function uploadThumbnailBlob(videoId, blob) {
+      const st = document.getElementById('ai-package-status');
+      showStatus(st, 'Enviando capa...', 'info');
+      try {
+        const formData = new FormData();
+        formData.append('thumbnail', blob, 'capa.jpg');
+        const res = await fetch(API + '/api/video/' + videoId + '/thumbnail', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao salvar capa');
+
+        const preview = document.getElementById('ai-thumb-preview');
+        preview.src = URL.createObjectURL(blob);
+        preview.style.display = 'block';
+        showStatus(st, '✅ Capa salva com sucesso!', 'ok');
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      }
     }
 
     async function saveAiContent(contentId) {
