@@ -59,6 +59,21 @@
     }
     .subtitle { color: var(--text-dim); font-size: 0.9rem; margin: 4px 0 32px; }
 
+    #onboardingSection { position: relative; min-height: 100vh; }
+    #onboardingSection::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url('./logo-completa.png');
+      background-repeat: no-repeat;
+      background-position: center 30%;
+      background-size: 85% auto;
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #onboardingSection .shell { position: relative; z-index: 1; padding-top: 24px; }
+
     .header-bar {
       width: 100%;
       max-width: 420px;
@@ -1198,6 +1213,20 @@
     </div>
   </div>
 
+  <!-- TELA: ONBOARDING AUTOMATICO (primeiro login, sem sub-conta) -->
+  <div id="onboardingSection" style="display:none;">
+    <div class="shell">
+      <div class="card">
+        <h2>Conectar minha Shopee</h2>
+        <p class="subtitle" style="margin:4px 0 24px;">Para concluir seu cadastro, envie o print da tela "Meu API" do app da Shopee.</p>
+        <div class="field-label" style="margin-top:0;">Print da tela "Meu API"</div>
+        <input type="file" id="onboardScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
+        <button class="btn" onclick="doOnboardConnect()" id="onboardBtn">Conectar automaticamente</button>
+        <div class="status" id="onboardStatus"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- TELA: CONFIGURAÇÕES > API AFILIADO -->
   <div id="apiAfiliadoSection" style="display:none;">
     <div class="inner-header">
@@ -1475,7 +1504,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -1539,7 +1568,7 @@
       if (SESSION) {
         document.body.classList.remove('pre-login');
         await _ensureSubAccounts();
-        showDash();
+        _goToDashOrOnboarding();
       } else {
         document.body.classList.add('pre-login');
       }
@@ -1952,7 +1981,7 @@
         document.body.classList.remove('pre-login');
         _subAccounts = [];
         await _ensureSubAccounts();
-        showDash();
+        _goToDashOrOnboarding();
       } catch(e) {
         showStatus(st, e.message, 'err');
       } finally {
@@ -1972,6 +2001,60 @@
       _updateSubAccountChip();
       document.getElementById('pageSubtitle').style.display = 'none';
       document.getElementById('loginSection').style.display = 'block';
+    }
+
+    async function _goToDashOrOnboarding() {
+      if (!_subAccounts.length) {
+        showOnboardingScreen();
+      } else {
+        showDash();
+      }
+    }
+
+    function showOnboardingScreen() {
+      hideAllCards();
+      document.body.classList.remove('pre-login');
+      document.getElementById('pageSubtitle').style.display = 'none';
+      document.getElementById('onboardingSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'none';
+      document.getElementById('headerActions').style.display = 'none';
+      const st = document.getElementById('onboardStatus');
+      if (st) { st.style.display = 'none'; st.textContent = ''; }
+      const fi = document.getElementById('onboardScreenshotInput');
+      if (fi) fi.value = '';
+    }
+
+    async function doOnboardConnect() {
+      const fileInput = document.getElementById('onboardScreenshotInput');
+      const btn = document.getElementById('onboardBtn');
+      const st = document.getElementById('onboardStatus');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione o print da tela "Meu API" primeiro.', 'err');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Conectando...';
+      showStatus(st, 'Lendo o print e conectando sua conta...', 'info');
+      try {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        const res = await fetch(API + '/api/subaccounts/onboard', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao conectar');
+        showStatus(st, 'Conectado com sucesso!', 'ok');
+        _subAccounts = [];
+        await _ensureSubAccounts();
+        setTimeout(() => { showDash(); }, 900);
+      } catch(e) {
+        showStatus(st, e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Conectar automaticamente';
+      }
     }
 
     function showDash() {
