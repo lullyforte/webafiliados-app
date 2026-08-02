@@ -2771,6 +2771,18 @@
       renderAiProductList();
     }
 
+    async function ensureSubAccountId() {
+      if (_currentSubAccountId) return _currentSubAccountId;
+      const res = await fetch(API + '/api/subaccounts', {
+        headers: { 'Authorization': 'Bearer ' + SESSION.token }
+      });
+      const data = await res.json();
+      const subs = data.subAccounts || [];
+      if (!subs.length) throw new Error('Nenhuma sub-conta encontrada');
+      _currentSubAccountId = subs[0].id;
+      return _currentSubAccountId;
+    }
+
     async function renderAiProductList() {
       const content = document.getElementById('aiEditContent');
       content.innerHTML = '<div class="loading">Carregando produtos do dia...</div>';
@@ -2781,7 +2793,8 @@
       }
 
       try {
-        const res = await fetch(API + '/api/products', {
+        const subAccountId = await ensureSubAccountId();
+        const res = await fetch(API + '/api/products?subAccountId=' + subAccountId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
@@ -2816,13 +2829,14 @@
       content.innerHTML = `<div class="loading">🤖 Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
 
       try {
+        const subAccountId = await ensureSubAccountId();
         const res = await fetch(API + '/api/ai/generate', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + SESSION.token,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ productId })
+          body: JSON.stringify({ productId, subAccountId })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao gerar conteúdo');
