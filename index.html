@@ -1133,6 +1133,12 @@
         <p class="desc">Gerencie seu perfil, assinatura e segurança</p>
         <div class="settings-menu-item-arrow">›</div>
       </div>
+      <div class="settings-menu-item" onclick="showAiSettingsScreen()">
+        <div class="settings-menu-item-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg></div>
+        <p class="title">Ajustes de IA</p>
+        <p class="desc">Tom, estilo, público e chave de IA por conta</p>
+        <div class="settings-menu-item-arrow">&#8250;</div>
+      </div>
     </div>
     </div><!-- /card -->
   </div><!-- /settingsMenuSection -->
@@ -1166,6 +1172,18 @@
     </div>
     <div class="card" style="margin-top:12px;">
     <div id="apiAfiliadoContent" class="loading">Carregando...</div>
+    </div>
+  </div>
+
+  <!-- TELA: CONFIGURAÇÕES > AJUSTES DE IA -->
+  <div id="aiSettingsSection" style="display:none;">
+    <div class="inner-header">
+      <div class="inner-header-btn" onclick="showDash()" title="Início"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
+      <div class="inner-header-btn" onclick="showSettingsScreen()" title="Voltar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      <span class="inner-header-title">Ajustes de IA</span>
+    </div>
+    <div class="shell" style="margin-top:12px;">
+      <div id="aiSettingsContent" class="loading">Carregando...</div>
     </div>
   </div>
 
@@ -1421,7 +1439,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -2057,6 +2075,209 @@
     }
 
     let _currentSubAccountId = null;
+
+    function showAiSettingsScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Ajustes de IA';
+      document.getElementById('aiSettingsSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
+      renderAiSettingsScreen();
+    }
+
+    async function renderAiSettingsScreen() {
+      const content = document.getElementById('aiSettingsContent');
+      content.innerHTML = '<div class="loading">Carregando...</div>';
+      if (!SESSION) {
+        content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
+        return;
+      }
+      const subId = SESSION._activeSubId || (SESSION.affiliate && SESSION.affiliate.id) || SESSION.id;
+      try {
+        const res = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao carregar ajustes');
+        const s = data.settings || {};
+        content.innerHTML = renderAiSettingsLayout(s, subId);
+      } catch(e) {
+        content.innerHTML = '<div class="status err" style="display:block;">&#10060; ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function renderAiSettingsLayout(s, subId) {
+      return \`
+        <div class="cal-hero">
+          <div class="cal-hero-ico">
+            <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="65" cy="124" rx="40" ry="6" fill="rgba(200,0,0,0.2)"/>
+              <circle cx="65" cy="58" r="36" fill="#1a0000" stroke="#cc1010" stroke-width="1.5"/>
+              <circle cx="65" cy="58" r="22" fill="#2a0000" stroke="#cc1010" stroke-width="1"/>
+              <path d="M55 58c0-5.5 4.5-10 10-10s10 4.5 10 10-4.5 10-10 10-10-4.5-10-10z" fill="#cc1010" opacity="0.9"/>
+              <path d="M58 44v-8M72 44v-8M50 50l-6-4M80 50l6-4M50 66l-6 4M80 66l6 4" stroke="#ff4444" stroke-width="2" stroke-linecap="round"/>
+              <rect x="59" y="80" width="12" height="24" rx="4" fill="#cc1010"/>
+              <rect x="55" y="100" width="20" height="6" rx="3" fill="#880808"/>
+            </svg>
+          </div>
+          <div class="cal-hero-title">Ajustes de IA</div>
+          <div class="cal-hero-desc">Configure como a IA gera conteúdo para esta conta.</div>
+        </div>
+
+        <div class="cal-day-card">
+          <div class="cal-day-card-head">
+            <h3>Conteúdo</h3>
+            <span class="cal-status-badge active">Texto</span>
+          </div>
+          <div class="cal-category-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Tom e estilo do conteúdo
+          </div>
+
+          <div class="field-label">Tom de voz</div>
+          <select id="ais-tom" onchange="aiSettingsPreviewChips()">
+            <option value="descontraido" \${(!s.tom || s.tom==='descontraido') ? 'selected' : ''}>&#128515; Descontraído</option>
+            <option value="vendedor" \${s.tom==='vendedor' ? 'selected' : ''}>&#128176; Vendedor</option>
+            <option value="formal" \${s.tom==='formal' ? 'selected' : ''}>&#128084; Formal</option>
+          </select>
+
+          <div class="field-label">Foco do conteúdo</div>
+          <select id="ais-foco" onchange="aiSettingsPreviewChips()">
+            <option value="beneficio" \${(!s.foco || s.foco==='beneficio') ? 'selected' : ''}>&#10024; Destacar benefício</option>
+            <option value="preco" \${s.foco==='preco' ? 'selected' : ''}>&#128178; Destacar preço</option>
+            <option value="urgencia" \${s.foco==='urgencia' ? 'selected' : ''}>&#9889; Criar urgência</option>
+          </select>
+
+          <div class="field-label">Tamanho do texto</div>
+          <select id="ais-tamanho" onchange="aiSettingsPreviewChips()">
+            <option value="curto" \${s.tamanho==='curto' ? 'selected' : ''}>Curto</option>
+            <option value="medio" \${(!s.tamanho || s.tamanho==='medio') ? 'selected' : ''}>Médio</option>
+            <option value="longo" \${s.tamanho==='longo' ? 'selected' : ''}>Longo</option>
+          </select>
+
+          <div class="field-label">Público-alvo (texto livre)</div>
+          <input type="text" id="ais-publico" placeholder="Ex: mães de primeira viagem, gamers..." value="\${escapeHtml(s.publico || '')}">
+
+          <div class="cal-chips" id="ais-chips-texto">
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 9.5-9.5z"/></svg></div>
+              <div class="cal-chip-label">Tom</div>
+              <div class="cal-chip-value" id="ais-chip-tom">\${s.tom || 'descontraido'}</div>
+            </div>
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+              <div class="cal-chip-label">Foco</div>
+              <div class="cal-chip-value" id="ais-chip-foco">\${s.foco || 'beneficio'}</div>
+            </div>
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg></div>
+              <div class="cal-chip-label">Tamanho</div>
+              <div class="cal-chip-value" id="ais-chip-tamanho">\${s.tamanho || 'medio'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cal-day-card">
+          <div class="cal-day-card-head">
+            <h3>Vídeo / Prompt</h3>
+            <span class="cal-status-badge active">Vídeo</span>
+          </div>
+          <div class="cal-category-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 9 6 3-6 3V9Z" fill="currentColor" stroke="none"/></svg>
+            Estilo visual e formato
+          </div>
+
+          <div class="field-label">Estilo visual</div>
+          <select id="ais-estilo">
+            <option value="dinamico" \${(!s.estilo_video || s.estilo_video==='dinamico') ? 'selected' : ''}>&#9889; Dinâmico</option>
+            <option value="minimalista" \${s.estilo_video==='minimalista' ? 'selected' : ''}>&#11036; Minimalista</option>
+            <option value="elegante" \${s.estilo_video==='elegante' ? 'selected' : ''}>&#10024; Elegante</option>
+          </select>
+
+          <div class="field-label">Duração alvo do vídeo</div>
+          <select id="ais-duracao">
+            <option value="15" \${s.duracao_video===15 || s.duracao_video==='15' ? 'selected' : ''}>15 segundos</option>
+            <option value="30" \${(!s.duracao_video || s.duracao_video===30 || s.duracao_video==='30') ? 'selected' : ''}>30 segundos</option>
+            <option value="60" \${s.duracao_video===60 || s.duracao_video==='60' ? 'selected' : ''}>60 segundos</option>
+          </select>
+
+          <div class="field-label">Narração</div>
+          <select id="ais-narracao">
+            <option value="sim" \${(!s.narracao || s.narracao==='sim') ? 'selected' : ''}>&#127908; Com narração</option>
+            <option value="nao" \${s.narracao==='nao' ? 'selected' : ''}>&#128263; Sem narração</option>
+          </select>
+
+          <div class="field-label">Gancho inicial</div>
+          <select id="ais-gancho">
+            <option value="pergunta" \${(!s.gancho || s.gancho==='pergunta') ? 'selected' : ''}>&#10067; Pergunta</option>
+            <option value="afirmacao" \${s.gancho==='afirmacao' ? 'selected' : ''}>&#9889; Afirmação</option>
+            <option value="numero" \${s.gancho==='numero' ? 'selected' : ''}>&#128178; Número / dado</option>
+          </select>
+        </div>
+
+        <div class="cal-day-card">
+          <div class="cal-day-card-head">
+            <h3>Chave de IA</h3>
+            <span class="cal-status-badge inactive">Opcional</span>
+          </div>
+          <div class="cal-category-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7 20 3M16.5 6.5 19 9M14 9l2 2"/></svg>
+            Chave OpenRouter desta conta
+          </div>
+          <div class="field-label">API Key OpenRouter (deixe vazio para usar a chave global)</div>
+          <input type="password" id="ais-openrouter-key" placeholder="sk-or-..." value="\${escapeHtml(s.openrouter_api_key || '')}">
+          <div style="font-size:0.75rem; color:var(--text-faint); margin-bottom:14px; line-height:1.4;">Se não configurada, o sistema usa a chave global do servidor automaticamente.</div>
+        </div>
+
+        <div class="status" id="ais-status"></div>
+        <button class="btn" onclick="saveAiSettings(\${subId})" style="margin-bottom:32px;">Salvar Ajustes de IA</button>
+      \`;
+    }
+
+    function aiSettingsPreviewChips() {
+      const tom = document.getElementById('ais-tom');
+      const foco = document.getElementById('ais-foco');
+      const tamanho = document.getElementById('ais-tamanho');
+      if (tom) document.getElementById('ais-chip-tom').textContent = tom.value;
+      if (foco) document.getElementById('ais-chip-foco').textContent = foco.value;
+      if (tamanho) document.getElementById('ais-chip-tamanho').textContent = tamanho.value;
+    }
+
+    async function saveAiSettings(subId) {
+      const st = document.getElementById('ais-status');
+      const btn = document.querySelector('#aiSettingsContent .btn');
+      if (!SESSION) return;
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+      const payload = {
+        tom: document.getElementById('ais-tom').value,
+        foco: document.getElementById('ais-foco').value,
+        tamanho: document.getElementById('ais-tamanho').value,
+        publico: document.getElementById('ais-publico').value.trim(),
+        estilo_video: document.getElementById('ais-estilo').value,
+        duracao_video: parseInt(document.getElementById('ais-duracao').value),
+        narracao: document.getElementById('ais-narracao').value,
+        gancho: document.getElementById('ais-gancho').value,
+        openrouter_api_key: document.getElementById('ais-openrouter-key').value.trim()
+      };
+      try {
+        const res = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
+          method: 'PATCH',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+        showStatus(st, '&#10003; Ajustes salvos com sucesso!', 'ok');
+      } catch(e) {
+        showStatus(st, '&#10060; ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Ajustes de IA';
+      }
+    }
 
     function showApiAfiliadoScreen() {
       hideAllCards();
