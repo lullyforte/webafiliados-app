@@ -963,6 +963,23 @@
     <input type="password" id="passInput" placeholder="Sua senha" autocomplete="current-password">
     <button class="btn" id="loginBtn" onclick="doLogin()">Entrar</button>
     <div class="status" id="loginStatus"></div>
+    <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--text-faint);">
+      Tem um convite? <span onclick="showRegister()" style="color:var(--red);cursor:pointer;font-weight:700;">Criar conta</span>
+    </p>
+  </div>
+
+  <!-- CADASTRO COM CONVITE -->
+  <div class="card" id="registerSection" style="display:none;">
+    <h2>Criar conta</h2>
+    <input type="text" id="regCodeInput" placeholder="Código de convite" autocomplete="off">
+    <input type="text" id="regNameInput" placeholder="Seu nome" autocomplete="name">
+    <input type="email" id="regEmailInput" placeholder="Seu e-mail" autocomplete="email">
+    <input type="password" id="regPassInput" placeholder="Crie uma senha" autocomplete="new-password">
+    <button class="btn" id="registerBtn" onclick="doRegister()">Cadastrar</button>
+    <div class="status" id="registerStatus"></div>
+    <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--text-faint);">
+      Já tem conta? <span onclick="showLogin()" style="color:var(--red);cursor:pointer;font-weight:700;">Entrar</span>
+    </p>
   </div>
 
   <!-- INÍCIO -->
@@ -1030,6 +1047,19 @@
           <span class="subaccount-add-label">Nova sub-conta</span>
         </div>
       </div>
+      <!-- SEÇÃO: Convites + Aprovações -->
+      <div class="card">
+        <div class="subaccount-section-title">Convites</div>
+        <button class="btn" id="genInviteBtn" onclick="generateInviteCode()" style="margin-bottom:10px;">&#128279; Gerar link de convite</button>
+        <div id="inviteCodeBox" style="display:none;margin-bottom:10px;">
+          <div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">Link de convite (válido por 7 dias):</div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:#fff;margin-bottom:8px;" id="inviteCodeText"></div>
+          <button class="btn btn-secondary" id="copyInviteBtn" onclick="copyInviteCode()" style="width:100%;padding:8px;">Copiar link</button>
+        </div>
+        <div class="subaccount-section-title" style="margin-top:16px;">Aguardando aprovação</div>
+        <div id="pendingApprovalsBox"><div class="loading" style="padding:12px 0;">Carregando...</div></div>
+      </div>
+
       <!-- SEÇÃO: Perfil + Push -->
       <div class="card">
         <div class="affiliate-info" id="affiliateInfo">Carregando...</div>
@@ -1445,7 +1475,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -1473,6 +1503,18 @@
 
       const params = new URLSearchParams(window.location.search);
       const view = params.get('view');
+      const inviteCode = params.get('invite');
+
+      // Se tem código de convite na URL, abre tela de cadastro
+      if (inviteCode) {
+        hideAllCards();
+        document.getElementById('registerSection').style.display = 'block';
+        setTimeout(() => {
+          const el = document.getElementById('regCodeInput');
+          if (el) el.value = inviteCode;
+        }, 100);
+        return;
+      }
 
       if (view === 'prompt') {
         renderPromptView(params);
@@ -1956,6 +1998,7 @@
       }
       checkPushStatus();
       renderSubAccountList();
+      loadPendingApprovals();
     }
 
     async function loadHeroCarousel() {
@@ -2081,6 +2124,138 @@
     }
 
     let _currentSubAccountId = null;
+
+    function showLogin() {
+      hideAllCards();
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('headerActions').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+    }
+
+    function showRegister() {
+      hideAllCards();
+      document.getElementById('registerSection').style.display = 'block';
+      document.getElementById('headerActions').style.display = 'none';
+      document.getElementById('bottomNav').style.display = 'none';
+    }
+
+    async function doRegister() {
+      const btn = document.getElementById('registerBtn');
+      const st = document.getElementById('registerStatus');
+      const code = document.getElementById('regCodeInput').value.trim();
+      const name = document.getElementById('regNameInput').value.trim();
+      const email = document.getElementById('regEmailInput').value.trim();
+      const password = document.getElementById('regPassInput').value;
+      if (!code || !name || !email || !password) {
+        showStatus(st, 'Preencha todos os campos.', 'err'); return;
+      }
+      btn.disabled = true; btn.textContent = 'Cadastrando...';
+      try {
+        const res = await fetch(API + '/api/invites/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, name, email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao cadastrar');
+        showStatus(st, '&#10003; Cadastro realizado! Aguarde aprovação do administrador.', 'ok');
+        btn.textContent = 'Cadastrado!';
+        setTimeout(() => showLogin(), 3000);
+      } catch(e) {
+        showStatus(st, '&#10060; ' + e.message, 'err');
+        btn.disabled = false; btn.textContent = 'Cadastrar';
+      }
+    }
+
+    async function generateInviteCode() {
+      if (!SESSION) return;
+      const btn = document.getElementById('genInviteBtn');
+      const box = document.getElementById('inviteCodeBox');
+      btn.disabled = true; btn.textContent = 'Gerando...';
+      try {
+        const res = await fetch(API + '/api/invites/generate', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        const link = window.location.origin + window.location.pathname + '?invite=' + data.code;
+        box.style.display = 'block';
+        document.getElementById('inviteCodeText').textContent = link;
+        btn.textContent = 'Novo convite';
+        btn.disabled = false;
+      } catch(e) {
+        btn.textContent = 'Gerar convite';
+        btn.disabled = false;
+        alert('Erro: ' + e.message);
+      }
+    }
+
+    function copyInviteCode() {
+      const text = document.getElementById('inviteCodeText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById('copyInviteBtn').textContent = 'Copiado!';
+        setTimeout(() => document.getElementById('copyInviteBtn').textContent = 'Copiar', 2000);
+      });
+    }
+
+    async function loadPendingApprovals() {
+      if (!SESSION) return;
+      const box = document.getElementById('pendingApprovalsBox');
+      box.innerHTML = '<div class="loading">Carregando...</div>';
+      try {
+        const res = await fetch(API + '/api/invites/pending', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        if (!data.pending.length) {
+          box.innerHTML = '<div style="font-size:13px;color:var(--text-faint);padding:8px 0;">Nenhum cadastro pendente.</div>';
+          return;
+        }
+        box.innerHTML = data.pending.map(p => `
+          <div class="subaccount-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;width:100%;">
+              <div class="sub-account-dropdown-avatar">${p.name[0].toUpperCase()}</div>
+              <div style="flex:1;">
+                <div style="font-weight:700;font-size:13px;">${escapeHtml(p.name)}</div>
+                <div style="font-size:11px;color:var(--text-faint);">${escapeHtml(p.email)}</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;width:100%;">
+              <button class="btn" style="flex:1;padding:8px;font-size:12px;" onclick="approveUser(${p.id})">&#10003; Aprovar</button>
+              <button class="btn btn-secondary" style="flex:1;padding:8px;font-size:12px;" onclick="rejectUser(${p.id})">&#10005; Rejeitar</button>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) {
+        box.innerHTML = '<div style="font-size:13px;color:var(--red);">Erro: ' + e.message + '</div>';
+      }
+    }
+
+    async function approveUser(id) {
+      if (!SESSION) return;
+      try {
+        const res = await fetch(API + '/api/invites/approve/' + id, {
+          method: 'PATCH',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        if (!res.ok) throw new Error('Erro ao aprovar');
+        loadPendingApprovals();
+      } catch(e) { alert('Erro: ' + e.message); }
+    }
+
+    async function rejectUser(id) {
+      if (!SESSION) return;
+      try {
+        const res = await fetch(API + '/api/invites/reject/' + id, {
+          method: 'PATCH',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        if (!res.ok) throw new Error('Erro ao rejeitar');
+        loadPendingApprovals();
+      } catch(e) { alert('Erro: ' + e.message); }
+    }
 
     function showAiSettingsScreen() {
       hideAllCards();
