@@ -2461,12 +2461,18 @@
         return;
       }
 
+      await _ensureSubAccounts();
+      if (!_activeSubAccount) {
+        content.innerHTML = '<div class="status err" style="display:block;">Nenhuma sub-conta encontrada. Crie uma sub-conta antes de configurar o calendário.</div>';
+        return;
+      }
+
       try {
         const [catRes, schedRes] = await Promise.all([
           fetch(API + '/api/settings/categories', {
             headers: { 'Authorization': 'Bearer ' + SESSION.token }
           }),
-          fetch(API + '/api/settings/schedule', {
+          fetch(API + '/api/settings/schedule?subAccountId=' + _activeSubAccount.id, {
             headers: { 'Authorization': 'Bearer ' + SESSION.token }
           })
         ]);
@@ -2704,6 +2710,11 @@
         return;
       }
 
+      if (!_activeSubAccount) {
+        showStatus(st, 'Nenhuma sub-conta ativa.', 'err');
+        return;
+      }
+
       btn.disabled = true;
       const originalText = btn.textContent;
       btn.textContent = 'Salvando...';
@@ -2716,6 +2727,7 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
+            subAccountId: _activeSubAccount.id,
             category,
             price_min,
             price_max,
