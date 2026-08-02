@@ -429,7 +429,7 @@
 <body>
 
   <div class="header-bar">
-    <img src="./logo.png" alt="Afilia" class="brand-logo">
+    <img src="./logo.png" alt="Afilia" class="brand-logo" onclick="goHome()" style="cursor:pointer;">
     <div class="header-actions" id="headerActions" style="display:none;">
       <div class="header-icon-btn" onclick="showComingSoon('Ajuda')">?</div>
       <div class="header-icon-btn" onclick="showComingSoon('Notificações')">🔔<span class="dot-badge"></span></div>
@@ -471,6 +471,10 @@
         <div class="icon-item" onclick="showSettingsScreen()">
           <div class="icon-circle">⚙️</div>
           <p>Configu-<br>rações</p>
+        </div>
+        <div class="icon-item" onclick="showPincarAnuncioScreen()">
+          <div class="icon-circle">📌</div>
+          <p>Pinçar<br>Anúncio</p>
         </div>
       </div>
 
@@ -578,6 +582,16 @@
     <div id="apiAfiliadoContent" class="loading">Carregando...</div>
   </div>
 
+  <!-- TELA: PINÇAR ANÚNCIO -->
+  <div class="card" id="pincarAnuncioSection" style="display:none;">
+    <h2>📌 Pinçar Anúncio</h2>
+    <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
+    <p style="font-size:13px; color:#999; margin-bottom:16px;">Envie o print de um anúncio que você achou na Shopee — a IA identifica o produto, busca os dados reais e já gera o conteúdo pronto pra postar.</p>
+    <input type="file" id="adScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
+    <button class="btn" onclick="doPincarAnuncio()" id="pincarBtn">📌 Pinçar este Anúncio</button>
+    <div class="status" id="pincarStatus"></div>
+  </div>
+
   <!-- TELA: EDITAR COM IA -->
   <div class="card" id="aiEditSection" style="display:none;">
     <h2>🪄 Editar com IA</h2>
@@ -632,8 +646,17 @@
       try { return JSON.parse(saved); } catch(e) { return null; }
     }
 
+    function goHome() {
+      if (SESSION) {
+        showDash();
+      } else {
+        hideAllCards();
+        document.getElementById('loginSection').style.display = 'block';
+      }
+    }
+
     function hideAllCards() {
-      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -1266,43 +1289,34 @@
     async function renderApiAfiliadoScreen() {
       const content = document.getElementById('apiAfiliadoContent');
       content.innerHTML = '<div class="loading">Carregando...</div>';
-
       if (!SESSION) {
         content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
         return;
       }
-
       try {
         const res = await fetch(API + '/api/subaccounts', {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao carregar sub-contas');
-
         const subs = data.subAccounts || [];
         if (subs.length === 0) {
           content.innerHTML = '<div class="status info" style="display:block;">Nenhuma sub-conta encontrada.</div>';
           return;
         }
-
         const sub = subs[0];
         _currentSubAccountId = sub.id;
-
         content.innerHTML = `
           <div class="field-label">Sub-conta</div>
           <div class="prompt-box" style="max-height:60px;">${escapeHtml(sub.name)}</div>
-
           <div class="field-label">Enviar print da tela "Meu API" da Shopee</div>
           <input type="file" id="apiScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
           <button class="btn btn-secondary" onclick="doOcrExtract()" id="ocrBtn">🪄 Ler print com IA</button>
           <div class="status" id="ocrStatus"></div>
-
           <div class="field-label" style="margin-top:20px;">App ID</div>
           <input type="text" id="appIdInput" placeholder="AppID da Shopee" value="${escapeHtml(sub.shopee_app_id || '')}">
-
           <div class="field-label">App Secret</div>
           <input type="password" id="appSecretInput" placeholder="Deixe em branco para manter o atual">
-
           <button class="btn" onclick="saveCredentials()" id="saveCredsBtn" style="margin-top:12px;">💾 Salvar Credenciais</button>
           <div class="status" id="saveCredsStatus"></div>
         `;
@@ -1315,20 +1329,16 @@
       const fileInput = document.getElementById('apiScreenshotInput');
       const btn = document.getElementById('ocrBtn');
       const st = document.getElementById('ocrStatus');
-
       if (!fileInput.files || fileInput.files.length === 0) {
         showStatus(st, 'Selecione uma imagem primeiro.', 'err');
         return;
       }
-
       btn.disabled = true;
       btn.textContent = 'Lendo imagem...';
       showStatus(st, 'A IA está lendo o print, aguarde...', 'info');
-
       try {
         const formData = new FormData();
         formData.append('image', fileInput.files[0]);
-
         const res = await fetch(API + '/api/subaccounts/' + _currentSubAccountId + '/ocr-credentials', {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + SESSION.token },
@@ -1336,11 +1346,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao ler imagem');
-
         const extracted = data.extracted || {};
         if (extracted.appId) document.getElementById('appIdInput').value = extracted.appId;
         if (extracted.appSecret) document.getElementById('appSecretInput').value = extracted.appSecret;
-
         showStatus(st, '✅ Dados extraídos! Confira antes de salvar.', 'ok');
       } catch(e) {
         showStatus(st, '❌ ' + e.message, 'err');
@@ -1355,10 +1363,8 @@
       const st = document.getElementById('saveCredsStatus');
       const appId = document.getElementById('appIdInput').value.trim();
       const appSecret = document.getElementById('appSecretInput').value.trim();
-
       btn.disabled = true;
       btn.textContent = 'Salvando...';
-
       try {
         const res = await fetch(API + '/api/subaccounts/' + _currentSubAccountId + '/credentials', {
           method: 'PATCH',
@@ -1373,13 +1379,55 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-
         showStatus(st, '✅ Credenciais salvas!', 'ok');
       } catch(e) {
         showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = '💾 Salvar Credenciais';
+      }
+    }
+
+    function showPincarAnuncioScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Pinçar Anúncio';
+      document.getElementById('pincarAnuncioSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
+      const st = document.getElementById('pincarStatus');
+      if (st) { st.style.display = 'none'; st.textContent = ''; }
+    }
+
+    async function doPincarAnuncio() {
+      const fileInput = document.getElementById('adScreenshotInput');
+      const btn = document.getElementById('pincarBtn');
+      const st = document.getElementById('pincarStatus');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione o print do anúncio primeiro.', 'err');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Processando...';
+      showStatus(st, 'Lendo o anúncio, buscando o produto e gerando conteúdo... isso pode levar até 1 minuto.', 'info');
+      try {
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        const res = await fetch(API + '/api/products/from-screenshot', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao processar anúncio');
+        showStatus(st, '✅ Produto "' + data.productNameDetected + '" pinçado! Confira o push que acabou de chegar.', 'ok');
+        fileInput.value = '';
+      } catch(e) {
+        showStatus(st, '❌ ' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📌 Pinçar este Anúncio';
       }
     }
 
