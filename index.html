@@ -7,23 +7,26 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Afilia">
   <title>Afilia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0a0a0a;
-      --surface: #161616;
-      --surface-2: #1f1f1f;
+      --surface: #1e1e1e;
+      --surface-2: #2a2a2a;
       --border: #2a2a2a;
-      --red: #e62117;
-      --red-dark: #a3170f;
-      --text: #f5f5f5;
-      --text-dim: #9a9a9a;
+      --red: #ff1d1d;
+      --red-dark: #b31414;
+      --text: #ffffff;
+      --text-dim: #bfbfbf;
       --text-faint: #666;
-      --radius: 14px;
+      --radius: 20px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { background: var(--bg); }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: var(--text);
       min-height: 100vh;
       padding-bottom: 84px;
@@ -332,13 +335,26 @@
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: var(--radius);
       padding: 22px;
       width: 100%;
       max-width: 420px;
       margin: 0 auto 16px;
     }
-    .card h2 { font-size: 0.95rem; color: #aaa; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .card h2 {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.05rem; font-weight: 700; color: #fff;
+      margin-bottom: 16px;
+    }
+    .card h2 .h2-ico {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: rgba(255,29,29,0.12);
+      border: 1px solid rgba(255,29,29,0.3);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--red);
+      flex-shrink: 0;
+    }
     input {
       width: 100%;
       background: var(--surface-2);
@@ -564,7 +580,7 @@
 
   <!-- TELA: PROMPT PRONTO (Push 1) -->
   <div class="card" id="promptSection" style="display:none;">
-    <h2>🎬 Prompt do Vídeo</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 19.5 7l.9 3.9L4 14.5z"/><rect x="3" y="10.5" width="18" height="9.5" rx="1.5"/><path d="m6.5 10 2-4M11 9l2-4M15.5 8l2-4"/></svg></span>Prompt do Vídeo</h2>
     <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
     <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
@@ -574,13 +590,13 @@
 
   <!-- TELA: PACOTE / VÍDEO PRONTO (Push 2) -->
   <div class="card" id="packageSection" style="display:none;">
-    <h2>📦 Pacote do Vídeo</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>Pacote do Vídeo</h2>
     <div id="packageContent" class="loading">Carregando pacote...</div>
   </div>
 
   <!-- TELA: UPLOAD DE VÍDEO -->
   <div class="card" id="uploadSection" style="display:none;">
-    <h2>⬆️ Enviar Vídeo</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span>Enviar Vídeo</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <button class="btn btn-secondary" onclick="showPromptsScreen()" style="margin-bottom:16px;">📋 Ver todos os Prompts Prontos</button>
     <div id="uploadContent" class="loading">Carregando...</div>
@@ -588,21 +604,21 @@
 
   <!-- TELA: PROMPTS PRONTOS (histórico permanente) -->
   <div class="card" id="promptsListSection" style="display:none;">
-    <h2>📋 Prompts Prontos</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 11h6M9 15h6"/></svg></span>Prompts Prontos</h2>
     <button class="btn btn-outline" onclick="showUploadScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="promptsListContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: DETALHE DE UM PROMPT PRONTO -->
   <div class="card" id="promptDetailSection" style="display:none;">
-    <h2>🎬 Prompt Pronto</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 19.5 7l.9 3.9L4 14.5z"/><rect x="3" y="10.5" width="18" height="9.5" rx="1.5"/><path d="m6.5 10 2-4M11 9l2-4M15.5 8l2-4"/></svg></span>Prompt Pronto</h2>
     <button class="btn btn-outline" onclick="showPromptsScreen()" style="margin-bottom:16px;">← Voltar à lista</button>
     <div id="promptDetailContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: MENU DE CONFIGURAÇÕES -->
   <div class="card" id="settingsMenuSection" style="display:none;">
-    <h2>⚙️ Configurações</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.55 1.55M7.15 16.85 5.6 18.4M18.4 18.4l-1.55-1.55M7.15 7.15 5.6 5.6"/></svg></span>Configurações</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <div class="settings-menu-grid">
       <div class="settings-menu-item" onclick="showCalendarScreen()">
@@ -634,21 +650,21 @@
 
   <!-- TELA: CONFIGURAÇÕES > CALENDÁRIO EDITORIAL -->
   <div class="card" id="settingsSection" style="display:none;">
-    <h2>📅 Calendário Editorial</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span>Calendário Editorial</h2>
     <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="settingsContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: CONFIGURAÇÕES > API AFILIADO -->
   <div class="card" id="apiAfiliadoSection" style="display:none;">
-    <h2>🔑 API Afiliado</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7 20 3M16.5 6.5 19 9M14 9l2 2"/></svg></span>API Afiliado</h2>
     <button class="btn btn-outline" onclick="showSettingsScreen()" style="margin-bottom:16px;">← Voltar</button>
     <div id="apiAfiliadoContent" class="loading">Carregando...</div>
   </div>
 
   <!-- TELA: PINÇAR ANÚNCIO -->
   <div class="card" id="pincarAnuncioSection" style="display:none;">
-    <h2>📌 Pinçar Anúncio</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg></span>Pinçar Anúncio</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <p style="font-size:13px; color:#999; margin-bottom:16px;">Envie o print de um anúncio que você achou na Shopee — a IA identifica o produto, busca os dados reais e já gera o conteúdo pronto pra postar.</p>
     <input type="file" id="adScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
@@ -658,7 +674,7 @@
 
   <!-- TELA: EDITAR COM IA -->
   <div class="card" id="aiEditSection" style="display:none;">
-    <h2>🪄 Editar com IA</h2>
+    <h2><span class="h2-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 14 10"/><path d="m13 9 2-2 2 2-2 2z"/><path d="M18 4v2.5M16.75 5.25h2.5"/><path d="M5.5 13v2M4.5 14h2"/></svg></span>Editar com IA</h2>
     <button class="btn btn-outline" onclick="showDash()" style="margin-bottom:16px;">← Voltar</button>
     <div id="aiEditContent" class="loading">Carregando...</div>
   </div>
@@ -945,17 +961,27 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao buscar pendentes');
 
         if (!data.videos || data.videos.length === 0) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum vídeo pendente no momento. 🎉</div>';
+          content.innerHTML = '<p class="empty-note">Nenhum vídeo pendente no momento.</p>';
           return;
         }
 
         window.__PENDING_VIDEOS = data.videos;
 
-        content.innerHTML = data.videos.map(v => `
-          <div class="prompt-box" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
-            <strong>${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</strong>
-          </div>
-        `).join('');
+        content.innerHTML = '<div class="video-list">' + data.videos.map(v => {
+          const cover = v.image_url || v.thumbnail_url;
+          const bgStyle = cover ? `style="background-image:url('${cover}')"` : '';
+          return `
+            <div class="video-card" style="cursor:pointer;" onclick="renderSingleUpload(${v.id})">
+              <div class="video-card-bg" ${bgStyle}></div>
+              <div class="video-card-overlay">
+                <div class="video-card-title">${escapeHtml(v.title || v.product_name || ('Vídeo #' + v.id))}</div>
+                <div class="video-card-meta">
+                  <span class="video-card-status">Pendente</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('') + '</div>';
       } catch(e) {
         content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
@@ -1375,7 +1401,7 @@
           <div class="prompt-box" style="max-height:60px;">${escapeHtml(sub.name)}</div>
           <div class="field-label">Enviar print da tela "Meu API" da Shopee</div>
           <input type="file" id="apiScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
-          <button class="btn btn-secondary" onclick="doOcrExtract()" id="ocrBtn">🪄 Ler print com IA</button>
+          <button class="btn btn-secondary" onclick="doOcrExtract()" id="ocrBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M4 20 14 10"/><path d="m13 9 2-2 2 2-2 2z"/><path d="M18 4v2.5M16.75 5.25h2.5"/><path d="M5.5 13v2M4.5 14h2"/></svg>Ler print com IA</button>
           <div class="status" id="ocrStatus"></div>
           <div class="field-label" style="margin-top:20px;">App ID</div>
           <input type="text" id="appIdInput" placeholder="AppID da Shopee" value="${escapeHtml(sub.shopee_app_id || '')}">
@@ -1418,7 +1444,7 @@
         showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
-        btn.textContent = '🪄 Ler print com IA';
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M4 20 14 10"/><path d="m13 9 2-2 2 2-2 2z"/><path d="M18 4v2.5M16.75 5.25h2.5"/><path d="M5.5 13v2M4.5 14h2"/></svg>Ler print com IA';
       }
     }
 
