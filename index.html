@@ -413,7 +413,7 @@
     }
     .product-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
     .product-meta { font-size: 0.85rem; color: #888; margin-bottom: 16px; }
-    .field-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 16px; }
+    .field-label { font-size: 0.68rem; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; margin-top: 14px; }
     .field-label:first-child { margin-top: 0; }
     .thumb { width: 100%; border-radius: 12px; margin-bottom: 16px; display: block; }
     .loading { text-align: center; color: #888; padding: 40px 0; }
@@ -546,36 +546,8 @@
     }
 
     /* ── TYPOGRAPHY OVERHAUL ── */
-    .card h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .day-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    /* Numbers in day-card inputs */
-    .day-card input[type="number"],
-    .day-card input[type="text"] {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #fff;
-      padding: 10px 14px;
-    }
-    /* Field labels uppercase small */
-    .field-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-    /* Select dropdown text weight */
+    .card h2 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
     select { font-weight: 600; }
-    /* Affiliate info name */
     .affiliate-info strong { font-size: 1rem; font-weight: 700; letter-spacing: -0.2px; }
   </style>
 </head>
@@ -1696,9 +1668,12 @@
 
       const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
 
+      const numInputStyle = 'font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;color:#fff;padding:8px 12px;margin-bottom:0;border:none;background:transparent;';
+      const labelStyle = 'font-size:0.65rem;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;margin-top:0;display:block;';
+
       return `
         <div class="day-card" id="day-card-${day.day_of_week}">
-          <div class="day-title">${escapeHtml(day.day_label)}</div>
+          <div class="day-title" style="font-size:1.25rem;font-weight:800;letter-spacing:-0.4px;">${escapeHtml(day.day_label)}</div>
 
           <label class="day-active-label">
             <input type="checkbox" id="day-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
@@ -1710,29 +1685,29 @@
             ${options}
           </select>
 
-          <div class="day-card-row">
-            <div>
-              <div class="field-label" style="margin-top:0;">Preço mín. (R$)</div>
-              <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}">
+          <div class="day-card-row" style="gap:0;border-top:1px solid var(--border);margin-top:10px;">
+            <div style="padding:12px 12px 10px;border-right:1px solid var(--border);">
+              <span style="${labelStyle}">Preço mín. (R$)</span>
+              <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}" style="${numInputStyle}">
             </div>
-            <div>
-              <div class="field-label" style="margin-top:0;">Preço máx. (R$)</div>
-              <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}">
-            </div>
-          </div>
-
-          <div class="day-card-row">
-            <div>
-              <div class="field-label" style="margin-top:0;">Comissão mín. (%)</div>
-              <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}">
-            </div>
-            <div>
-              <div class="field-label" style="margin-top:0;">Vídeos/dia</div>
-              <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}">
+            <div style="padding:12px 12px 10px;">
+              <span style="${labelStyle}">Preço máx. (R$)</span>
+              <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}" style="${numInputStyle}">
             </div>
           </div>
 
-          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar ${escapeHtml(day.day_label)}</button>
+          <div class="day-card-row" style="gap:0;border-top:1px solid var(--border);">
+            <div style="padding:12px 12px 10px;border-right:1px solid var(--border);">
+              <span style="${labelStyle}">Comissão mín. (%)</span>
+              <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}" style="${numInputStyle}">
+            </div>
+            <div style="padding:12px 12px 10px;">
+              <span style="${labelStyle}">Vídeos/dia</span>
+              <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}" style="${numInputStyle}">
+            </div>
+          </div>
+
+          <button class="btn btn-secondary" style="margin-top:14px;font-weight:700;" onclick="saveScheduleDay(${day.day_of_week})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar ${escapeHtml(day.day_label)}</button>
           <div class="status" id="day-status-${day.day_of_week}"></div>
         </div>
       `;
