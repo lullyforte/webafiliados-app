@@ -224,10 +224,15 @@
       width: 40px; height: 40px;
       border-radius: 12px;
       background: rgba(230,33,23,0.12);
-      border: 1px solid rgba(230,33,23,0.3);
+      border: 1px solid rgba(230,33,23,0.35);
       display: flex; align-items: center; justify-content: center;
       font-size: 18px;
       margin-bottom: 10px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .icon-item:hover .icon-circle {
+      background: rgba(230,33,23,0.2);
+      border-color: rgba(230,33,23,0.55);
     }
     .icon-item p { font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 3px; }
     .icon-item .icon-desc { display: block; font-size: 10.5px; color: var(--text-dim); line-height: 1.3; }
@@ -379,12 +384,18 @@
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 14px rgba(255,29,29,0.25);
     }
-    .btn:active { opacity: 0.8; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
-    .btn-secondary { background: var(--surface-2); border: 1px solid #3a3a3a; color: #fff; margin-top: 10px; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,29,29,0.35); }
+    .btn:active { opacity: 0.85; transform: scale(0.98) translateY(0); box-shadow: 0 2px 8px rgba(255,29,29,0.3); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-outline { background: transparent; border: 1px solid var(--red); color: var(--red); box-shadow: none; }
+    .btn-outline:hover { background: rgba(255,29,29,0.07); box-shadow: 0 0 0 1px rgba(255,29,29,0.2); }
+    .btn-outline:active { background: rgba(255,29,29,0.12); transform: scale(0.98); }
+    .btn-secondary { background: var(--surface-2); border: 1px solid #3a3a3a; color: #fff; margin-top: 10px; box-shadow: none; }
+    .btn-secondary:hover { border-color: #555; box-shadow: none; transform: translateY(-1px); }
+    .btn-secondary:active { transform: scale(0.98); }
     .status { padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; margin-top: 12px; display: none; }
     .status.ok { background: #1a3a1a; color: #4caf50; display: block; }
     .status.err { background: #3a1a1a; color: #f44336; display: block; }
@@ -535,28 +546,28 @@
 
       <div class="icon-row">
         <div class="icon-item" onclick="showUploadScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 16-5.5-5.5a1 1 0 0 0-1.4 0L6 19"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><rect x="2" y="3" width="20" height="14" rx="2.5"/><path d="M8 21h8M12 17v4"/><path d="m7 10 3 3 2-2 4 4"/><circle cx="8" cy="8" r="1.5"/></svg></div>
           <p>Vídeos Pendentes</p>
           <span class="icon-desc">Continue de onde parou</span>
         </div>
         <div class="icon-item" onclick="openYoutubeCreate()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M3 10.5 19.5 7l.9 3.9L4 14.5z"/><rect x="3" y="10.5" width="18" height="9.5" rx="1.5"/><path d="m6.5 10 2-4M11 9l2-4M15.5 8l2-4"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 9 6 3-6 3V9Z" fill="currentColor" stroke="none"/></svg></div>
           <p>Gerar vídeo</p>
           <span class="icon-desc">Transforme ideias em vídeos</span>
         </div>
         <div class="icon-item" onclick="showAiEditScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M4 20 14 10"/><path d="m13 9 2-2 2 2-2 2z"/><path d="M18 4v2.5M16.75 5.25h2.5"/><path d="M5.5 13v2M4.5 14h2"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/><path d="m15 5 3 3"/></svg></div>
           <p>Editar com IA</p>
           <span class="icon-desc">Edição inteligente e rápida</span>
         </div>
         <div class="icon-item" onclick="showSettingsScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.55 1.55M7.15 16.85 5.6 18.4M18.4 18.4l-1.55-1.55M7.15 7.15 5.6 5.6"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
           <p>Configurações</p>
           <span class="icon-desc">Ajustes e preferências</span>
         </div>
         <div class="icon-item" onclick="showPincarAnuncioScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
-          <p>Pinçar Anúncio</p>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v3.76Z"/></svg></div>
+          <p>Pincel Anúncios</p>
           <span class="icon-desc">Destaque seus produtos</span>
         </div>
       </div>
