@@ -462,6 +462,173 @@
       text-align: center;
       margin-bottom: 14px;
     }
+    /* ===== CALENDÁRIO EDITORIAL — novo layout ===== */
+    .cal-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cal-hero-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .cal-hero-desc { font-size: 0.85rem; color: var(--text-dim); max-width: 220px; line-height: 1.4; }
+    .cal-hero-ico {
+      position: absolute; top: 16px; right: 14px;
+      width: 56px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--red);
+      opacity: 0.95;
+      filter: drop-shadow(0 0 12px rgba(255,29,29,0.35));
+    }
+    .cal-hero-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 14px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; border-radius: 10px;
+      padding: 10px 16px;
+      color: #fff; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255,29,29,0.25);
+    }
+
+    .cal-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .cal-tabs::-webkit-scrollbar { display: none; }
+    .cal-tab {
+      flex-shrink: 0;
+      padding: 9px 14px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .cal-tab.active {
+      background: rgba(255,29,29,0.12);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .cal-day-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .cal-day-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .cal-day-card-head h3 { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.4px; }
+    .cal-status-badge {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .cal-status-badge.active { background: rgba(255,29,29,0.15); color: var(--red); }
+    .cal-status-badge.inactive { background: var(--surface-2); color: var(--text-faint); }
+
+    .cal-category-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.95rem; font-weight: 600; color: #fff;
+      margin-bottom: 14px;
+    }
+    .cal-category-row svg { color: var(--red); flex-shrink: 0; }
+
+    .cal-chips { display: flex; gap: 10px; margin-bottom: 16px; }
+    .cal-chip {
+      flex: 1;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .cal-chip-ico { color: var(--red); margin-bottom: 6px; display: flex; justify-content: center; }
+    .cal-chip-label { font-size: 0.62rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .cal-chip-value { font-size: 0.95rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .cal-chip-unit { font-size: 0.62rem; color: var(--text-faint); font-weight: 600; }
+
+    .cal-edit-link {
+      display: flex; align-items: center; justify-content: space-between;
+      background: none; border: none;
+      color: var(--red);
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      padding: 4px 2px;
+    }
+
+    .cal-summary-title {
+      font-size: 0.68rem; font-weight: 700; color: var(--red); text-transform: uppercase;
+      letter-spacing: 1px; margin: 8px 0 12px 4px;
+    }
+    .cal-summary-scroll {
+      display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+      -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .cal-summary-scroll::-webkit-scrollbar { display: none; }
+    .cal-summary-card {
+      flex-shrink: 0; width: 128px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+    .cal-summary-card.active { border-color: var(--red); background: rgba(255,29,29,0.06); }
+    .cal-summary-card .day-abbr { font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .cal-summary-card .cat-name { font-size: 0.68rem; color: var(--text-dim); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cal-summary-card .stat-line { font-size: 0.68rem; color: var(--text-faint); }
+    .cal-summary-card .stat-line b { color: #fff; font-weight: 700; }
+
+    /* Bottom sheet */
+    .day-sheet-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .day-sheet-overlay.open { display: flex; }
+    .day-sheet {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 12px 20px 28px;
+      max-height: 88vh;
+      overflow-y: auto;
+      animation: sheetUp 0.22s ease;
+    }
+    @keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .day-sheet-handle {
+      width: 40px; height: 4px; border-radius: 3px;
+      background: #3a3a3a;
+      margin: 4px auto 18px;
+    }
+    .day-sheet h2 { font-size: 1.35rem; font-weight: 800; text-align: center; margin-bottom: 18px; }
+    .day-sheet .field-grid { display: flex; gap: 10px; }
+    .day-sheet .field-grid > div { flex: 1; }
+    .day-sheet .sheet-label {
+      font-size: 0.62rem; font-weight: 700; color: var(--text-faint);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;
+    }
+    .day-sheet .sheet-btn-row { display: flex; gap: 10px; margin-top: 20px; }
+    .day-sheet .sheet-btn-row .btn-outline, .day-sheet .sheet-btn-row .btn { flex: 1; margin-top: 0; width: auto; }
+
     .settings-menu-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -745,8 +912,16 @@
       <div class="inner-header-btn" onclick="showSettingsScreen()" title="Voltar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
       <span class="inner-header-title">Calendário Editorial</span>
     </div>
-    <div class="card" style="margin-top:12px;">
-    <div id="settingsContent" class="loading">Carregando...</div>
+    <div class="shell" style="margin-top:12px;">
+      <div id="settingsContent" class="loading">Carregando...</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET: EDIÇÃO RÁPIDA DO DIA -->
+  <div id="daySheetOverlay" class="day-sheet-overlay" onclick="closeDaySheet(event)">
+    <div class="day-sheet" id="daySheet" onclick="event.stopPropagation()">
+      <div class="day-sheet-handle"></div>
+      <div id="daySheetContent"></div>
     </div>
   </div>
 
@@ -1629,6 +1804,9 @@
       }
     }
 
+    const CAL_DAY_ABBR = { 0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb' };
+    let _calActiveDay = 0;
+
     async function renderSettingsScreen() {
       const content = document.getElementById('settingsContent');
       content.innerHTML = '<div class="loading">Carregando configurações...</div>';
@@ -1653,77 +1831,187 @@
         if (!schedRes.ok) throw new Error(schedData.error || 'Erro ao buscar calendário');
 
         window.__SETTINGS_CATEGORIES = catData.categories || [];
+        window.__SETTINGS_SCHEDULE = schedData.schedule || [];
 
-        content.innerHTML = schedData.schedule.map(day => renderDayCard(day)).join('');
+        const today = new Date().getDay();
+        _calActiveDay = window.__SETTINGS_SCHEDULE.some(d => d.day_of_week === today) ? today : (window.__SETTINGS_SCHEDULE[0] || {}).day_of_week || 0;
+
+        content.innerHTML = renderCalendarLayout();
       } catch(e) {
         content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
       }
     }
 
-    function renderDayCard(day) {
-      const categories = window.__SETTINGS_CATEGORIES || [];
-      const options = categories.map(c =>
-        `<option value="${c.key}" ${c.key === day.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
-      ).join('');
-
-      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
-
-      const numInputStyle = 'font-size:1.6rem;font-weight:700;letter-spacing:-0.5px;color:#fff;padding:8px 12px;margin-bottom:0;border:none;background:transparent;';
-      const labelStyle = 'font-size:0.65rem;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;margin-top:0;display:block;';
-
+    function renderCalendarLayout() {
+      const schedule = window.__SETTINGS_SCHEDULE || [];
       return `
-        <div class="day-card" id="day-card-${day.day_of_week}">
-          <div class="day-title" style="font-size:1.25rem;font-weight:800;letter-spacing:-0.4px;">${escapeHtml(day.day_label)}</div>
+        <div class="cal-hero">
+          <div class="cal-hero-ico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/><circle cx="8" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="16" cy="14" r="1"/><circle cx="8" cy="17.5" r="1"/><circle cx="12" cy="17.5" r="1"/></svg></div>
+          <div class="cal-hero-title">Agenda Inteligente</div>
+          <div class="cal-hero-desc">Automatize quais produtos sua IA publica em cada dia.</div>
+        </div>
 
-          <label class="day-active-label">
-            <input type="checkbox" id="day-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
-            Dia ativo
-          </label>
+        <div class="cal-tabs" id="calTabs">
+          ${schedule.map(d => `<div class="cal-tab ${d.day_of_week === _calActiveDay ? 'active' : ''}" onclick="switchCalDay(${d.day_of_week})">${CAL_DAY_ABBR[d.day_of_week]}</div>`).join('')}
+        </div>
 
-          <select id="day-category-${day.day_of_week}">
-            <option value="">— Selecione a categoria —</option>
-            ${options}
-          </select>
+        <div id="calDayCardWrap">${renderCalDayCard(_calActiveDay)}</div>
 
-          <div class="day-card-row" style="gap:0;border-top:1px solid var(--border);margin-top:10px;">
-            <div style="padding:12px 12px 10px;border-right:1px solid var(--border);">
-              <span style="${labelStyle}">Preço mín. (R$)</span>
-              <input type="number" step="0.01" min="0" id="day-pricemin-${day.day_of_week}" value="${day.price_min}" style="${numInputStyle}">
-            </div>
-            <div style="padding:12px 12px 10px;">
-              <span style="${labelStyle}">Preço máx. (R$)</span>
-              <input type="number" step="0.01" min="0" id="day-pricemax-${day.day_of_week}" value="${day.price_max}" style="${numInputStyle}">
-            </div>
-          </div>
-
-          <div class="day-card-row" style="gap:0;border-top:1px solid var(--border);">
-            <div style="padding:12px 12px 10px;border-right:1px solid var(--border);">
-              <span style="${labelStyle}">Comissão mín. (%)</span>
-              <input type="number" step="1" min="0" max="100" id="day-commission-${day.day_of_week}" value="${commissionPercent}" style="${numInputStyle}">
-            </div>
-            <div style="padding:12px 12px 10px;">
-              <span style="${labelStyle}">Vídeos/dia</span>
-              <input type="number" step="1" min="1" max="10" id="day-videos-${day.day_of_week}" value="${day.videos_per_day}" style="${numInputStyle}">
-            </div>
-          </div>
-
-          <button class="btn btn-secondary" style="margin-top:14px;font-weight:700;" onclick="saveScheduleDay(${day.day_of_week})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar ${escapeHtml(day.day_label)}</button>
-          <div class="status" id="day-status-${day.day_of_week}"></div>
+        <div class="cal-summary-title">Todos os dias · Resumo</div>
+        <div class="cal-summary-scroll" id="calSummaryScroll">
+          ${schedule.map(d => renderCalSummaryCard(d)).join('')}
         </div>
       `;
     }
 
-    async function saveScheduleDay(dayOfWeek) {
-      const card = document.getElementById('day-card-' + dayOfWeek);
-      const btn = card.querySelector('.btn-secondary');
-      const st = document.getElementById('day-status-' + dayOfWeek);
+    function getCategoryLabel(key) {
+      const categories = window.__SETTINGS_CATEGORIES || [];
+      const found = categories.find(c => c.key === key);
+      return found ? found.label : (key || 'Sem categoria');
+    }
 
-      const category = document.getElementById('day-category-' + dayOfWeek).value;
-      const price_min = parseFloat(document.getElementById('day-pricemin-' + dayOfWeek).value) || 0;
-      const price_max = parseFloat(document.getElementById('day-pricemax-' + dayOfWeek).value) || 99999;
-      const commissionPercent = parseFloat(document.getElementById('day-commission-' + dayOfWeek).value) || 0;
-      const videos_per_day = parseInt(document.getElementById('day-videos-' + dayOfWeek).value) || 1;
-      const active = document.getElementById('day-active-' + dayOfWeek).checked;
+    function renderCalDayCard(dayOfWeek) {
+      const schedule = window.__SETTINGS_SCHEDULE || [];
+      const day = schedule.find(d => d.day_of_week === dayOfWeek);
+      if (!day) return '<div class="empty-note">Dia não encontrado.</div>';
+
+      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+
+      return `
+        <div class="cal-day-card" id="calDayCard-${day.day_of_week}">
+          <div class="cal-day-card-head">
+            <h3>${escapeHtml(day.day_label)}</h3>
+            <span class="cal-status-badge ${day.active ? 'active' : 'inactive'}">${day.active ? 'Ativo' : 'Inativo'}</span>
+          </div>
+
+          <div class="cal-category-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 3 6.5 6.5-9 9-6.5-6.5L11 3z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
+            ${escapeHtml(getCategoryLabel(day.category))}
+          </div>
+
+          <div class="cal-chips">
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 3 6.5 6.5-9 9-6.5-6.5L11 3z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
+              <div class="cal-chip-label">Preço</div>
+              <div class="cal-chip-value">${fmtNum(day.price_min)} ~ ${fmtNum(day.price_max)}</div>
+              <div class="cal-chip-unit">R$</div>
+            </div>
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15c1 1 5 1 6 0M8 10h.01M16 10h.01"/></svg></div>
+              <div class="cal-chip-label">Comissão</div>
+              <div class="cal-chip-value">${commissionPercent}%</div>
+              <div class="cal-chip-unit">mín.</div>
+            </div>
+            <div class="cal-chip">
+              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="12" height="13" rx="2"/><path d="m19.5 9 3-1.7v9.4l-3-1.7"/></svg></div>
+              <div class="cal-chip-label">Vídeos/dia</div>
+              <div class="cal-chip-value">${day.videos_per_day}</div>
+              <div class="cal-chip-unit">vídeos</div>
+            </div>
+          </div>
+
+          <button class="cal-edit-link" onclick="openDaySheet(${day.day_of_week})">
+            Editar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderCalSummaryCard(day) {
+      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+      return `
+        <div class="cal-summary-card ${day.day_of_week === _calActiveDay ? 'active' : ''}" onclick="switchCalDay(${day.day_of_week})">
+          <div class="day-abbr">${CAL_DAY_ABBR[day.day_of_week]}</div>
+          <div class="cat-name">${escapeHtml(getCategoryLabel(day.category))}</div>
+          <div class="stat-line"><b>${fmtNum(day.price_min)}~${fmtNum(day.price_max)}</b> ${commissionPercent}%</div>
+          <div class="stat-line"><b>${day.videos_per_day}</b> vídeos</div>
+        </div>
+      `;
+    }
+
+    function fmtNum(n) {
+      const v = parseFloat(n);
+      if (isNaN(v)) return '0';
+      return v % 1 === 0 ? String(v) : v.toFixed(2).replace(/\.?0+$/, '');
+    }
+
+    function switchCalDay(dayOfWeek) {
+      _calActiveDay = dayOfWeek;
+      document.querySelectorAll('#calTabs .cal-tab').forEach((el, i) => {
+        const schedule = window.__SETTINGS_SCHEDULE || [];
+        el.classList.toggle('active', schedule[i] && schedule[i].day_of_week === dayOfWeek);
+      });
+      document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
+      document.getElementById('calSummaryScroll').innerHTML = (window.__SETTINGS_SCHEDULE || []).map(d => renderCalSummaryCard(d)).join('');
+    }
+
+    function openDaySheet(dayOfWeek) {
+      const schedule = window.__SETTINGS_SCHEDULE || [];
+      const day = schedule.find(d => d.day_of_week === dayOfWeek);
+      if (!day) return;
+
+      const categories = window.__SETTINGS_CATEGORIES || [];
+      const options = categories.map(c =>
+        `<option value="${c.key}" ${c.key === day.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
+      ).join('');
+      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+
+      document.getElementById('daySheetContent').innerHTML = `
+        <h2>${escapeHtml(day.day_label)}</h2>
+        <label class="day-active-label">
+          <input type="checkbox" id="sheet-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
+          Dia ativo
+        </label>
+        <span class="sheet-label">Categoria</span>
+        <select id="sheet-category-${day.day_of_week}">
+          <option value="">— Selecione a categoria —</option>
+          ${options}
+        </select>
+        <div class="field-grid">
+          <div>
+            <span class="sheet-label">Preço mínimo (R$)</span>
+            <input type="number" step="0.01" min="0" id="sheet-pricemin-${day.day_of_week}" value="${day.price_min}">
+          </div>
+          <div>
+            <span class="sheet-label">Preço máximo (R$)</span>
+            <input type="number" step="0.01" min="0" id="sheet-pricemax-${day.day_of_week}" value="${day.price_max}">
+          </div>
+        </div>
+        <div class="field-grid">
+          <div>
+            <span class="sheet-label">Comissão mínima (%)</span>
+            <input type="number" step="1" min="0" max="100" id="sheet-commission-${day.day_of_week}" value="${commissionPercent}">
+          </div>
+          <div>
+            <span class="sheet-label">Vídeos por dia</span>
+            <input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}">
+          </div>
+        </div>
+        <div class="status" id="sheet-status-${day.day_of_week}"></div>
+        <div class="sheet-btn-row">
+          <button class="btn btn-outline" onclick="closeDaySheet()">Cancelar</button>
+          <button class="btn" onclick="saveScheduleDay(${day.day_of_week})">Salvar alterações</button>
+        </div>
+      `;
+      document.getElementById('daySheetOverlay').classList.add('open');
+    }
+
+    function closeDaySheet(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('daySheetOverlay').classList.remove('open');
+    }
+
+    async function saveScheduleDay(dayOfWeek) {
+      const st = document.getElementById('sheet-status-' + dayOfWeek);
+      const btn = document.querySelector('#daySheetContent .sheet-btn-row .btn:last-child');
+
+      const category = document.getElementById('sheet-category-' + dayOfWeek).value;
+      const price_min = parseFloat(document.getElementById('sheet-pricemin-' + dayOfWeek).value) || 0;
+      const price_max = parseFloat(document.getElementById('sheet-pricemax-' + dayOfWeek).value) || 99999;
+      const commissionPercent = parseFloat(document.getElementById('sheet-commission-' + dayOfWeek).value) || 0;
+      const videos_per_day = parseInt(document.getElementById('sheet-videos-' + dayOfWeek).value) || 1;
+      const active = document.getElementById('sheet-active-' + dayOfWeek).checked;
 
       if (!category) {
         showStatus(st, 'Selecione uma categoria antes de salvar.', 'err');
@@ -1752,7 +2040,19 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+
+        const schedule = window.__SETTINGS_SCHEDULE || [];
+        const idx = schedule.findIndex(d => d.day_of_week === dayOfWeek);
+        if (idx > -1) {
+          schedule[idx] = Object.assign({}, schedule[idx], {
+            category, price_min, price_max, commission_min: commissionPercent / 100, videos_per_day, active
+          });
+        }
+
         showStatus(st, '✅ Salvo com sucesso!', 'ok');
+        document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
+        document.getElementById('calSummaryScroll').innerHTML = schedule.map(d => renderCalSummaryCard(d)).join('');
+        setTimeout(() => closeDaySheet(), 700);
       } catch(e) {
         showStatus(st, '❌ ' + e.message, 'err');
       } finally {
