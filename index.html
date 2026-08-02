@@ -2109,7 +2109,7 @@
     }
 
     function renderAiSettingsLayout(s, subId) {
-      return \`
+      return `
         <div class="cal-hero">
           <div class="cal-hero-ico">
             <svg width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2138,43 +2138,43 @@
 
           <div class="field-label">Tom de voz</div>
           <select id="ais-tom" onchange="aiSettingsPreviewChips()">
-            <option value="descontraido" \${(!s.tom || s.tom==='descontraido') ? 'selected' : ''}>&#128515; Descontraído</option>
-            <option value="vendedor" \${s.tom==='vendedor' ? 'selected' : ''}>&#128176; Vendedor</option>
-            <option value="formal" \${s.tom==='formal' ? 'selected' : ''}>&#128084; Formal</option>
+            <option value="descontraido" ${(!s.tom || s.tom==='descontraido') ? 'selected' : ''}>&#128515; Descontraído</option>
+            <option value="vendedor" ${s.tom==='vendedor' ? 'selected' : ''}>&#128176; Vendedor</option>
+            <option value="formal" ${s.tom==='formal' ? 'selected' : ''}>&#128084; Formal</option>
           </select>
 
           <div class="field-label">Foco do conteúdo</div>
           <select id="ais-foco" onchange="aiSettingsPreviewChips()">
-            <option value="beneficio" \${(!s.foco || s.foco==='beneficio') ? 'selected' : ''}>&#10024; Destacar benefício</option>
-            <option value="preco" \${s.foco==='preco' ? 'selected' : ''}>&#128178; Destacar preço</option>
-            <option value="urgencia" \${s.foco==='urgencia' ? 'selected' : ''}>&#9889; Criar urgência</option>
+            <option value="beneficio" ${(!s.foco || s.foco==='beneficio') ? 'selected' : ''}>&#10024; Destacar benefício</option>
+            <option value="preco" ${s.foco==='preco' ? 'selected' : ''}>&#128178; Destacar preço</option>
+            <option value="urgencia" ${s.foco==='urgencia' ? 'selected' : ''}>&#9889; Criar urgência</option>
           </select>
 
           <div class="field-label">Tamanho do texto</div>
           <select id="ais-tamanho" onchange="aiSettingsPreviewChips()">
-            <option value="curto" \${s.tamanho==='curto' ? 'selected' : ''}>Curto</option>
-            <option value="medio" \${(!s.tamanho || s.tamanho==='medio') ? 'selected' : ''}>Médio</option>
-            <option value="longo" \${s.tamanho==='longo' ? 'selected' : ''}>Longo</option>
+            <option value="curto" ${s.tamanho==='curto' ? 'selected' : ''}>Curto</option>
+            <option value="medio" ${(!s.tamanho || s.tamanho==='medio') ? 'selected' : ''}>Médio</option>
+            <option value="longo" ${s.tamanho==='longo' ? 'selected' : ''}>Longo</option>
           </select>
 
           <div class="field-label">Público-alvo (texto livre)</div>
-          <input type="text" id="ais-publico" placeholder="Ex: mães de primeira viagem, gamers..." value="\${escapeHtml(s.publico || '')}">
+          <input type="text" id="ais-publico" placeholder="Ex: mães de primeira viagem, gamers..." value="${escapeHtml(s.publico || '')}">
 
           <div class="cal-chips" id="ais-chips-texto">
             <div class="cal-chip">
               <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 9.5-9.5z"/></svg></div>
               <div class="cal-chip-label">Tom</div>
-              <div class="cal-chip-value" id="ais-chip-tom">\${s.tom || 'descontraido'}</div>
+              <div class="cal-chip-value" id="ais-chip-tom">${s.tom || 'descontraido'}</div>
             </div>
             <div class="cal-chip">
               <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
               <div class="cal-chip-label">Foco</div>
-              <div class="cal-chip-value" id="ais-chip-foco">\${s.foco || 'beneficio'}</div>
+              <div class="cal-chip-value" id="ais-chip-foco">${s.foco || 'beneficio'}</div>
             </div>
             <div class="cal-chip">
               <div class="cal-chip-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg></div>
               <div class="cal-chip-label">Tamanho</div>
-              <div class="cal-chip-value" id="ais-chip-tamanho">\${s.tamanho || 'medio'}</div>
+              <div class="cal-chip-value" id="ais-chip-tamanho">${s.tamanho || 'medio'}</div>
             </div>
           </div>
         </div>
@@ -2191,29 +2191,29 @@
 
           <div class="field-label">Estilo visual</div>
           <select id="ais-estilo">
-            <option value="dinamico" \${(!s.estilo_video || s.estilo_video==='dinamico') ? 'selected' : ''}>&#9889; Dinâmico</option>
-            <option value="minimalista" \${s.estilo_video==='minimalista' ? 'selected' : ''}>&#11036; Minimalista</option>
-            <option value="elegante" \${s.estilo_video==='elegante' ? 'selected' : ''}>&#10024; Elegante</option>
+            <option value="dinamico" ${(!s.estilo_video || s.estilo_video==='dinamico') ? 'selected' : ''}>&#9889; Dinâmico</option>
+            <option value="minimalista" ${s.estilo_video==='minimalista' ? 'selected' : ''}>&#11036; Minimalista</option>
+            <option value="elegante" ${s.estilo_video==='elegante' ? 'selected' : ''}>&#10024; Elegante</option>
           </select>
 
           <div class="field-label">Duração alvo do vídeo</div>
           <select id="ais-duracao">
-            <option value="15" \${s.duracao_video===15 || s.duracao_video==='15' ? 'selected' : ''}>15 segundos</option>
-            <option value="30" \${(!s.duracao_video || s.duracao_video===30 || s.duracao_video==='30') ? 'selected' : ''}>30 segundos</option>
-            <option value="60" \${s.duracao_video===60 || s.duracao_video==='60' ? 'selected' : ''}>60 segundos</option>
+            <option value="15" ${s.duracao_video===15 || s.duracao_video==='15' ? 'selected' : ''}>15 segundos</option>
+            <option value="30" ${(!s.duracao_video || s.duracao_video===30 || s.duracao_video==='30') ? 'selected' : ''}>30 segundos</option>
+            <option value="60" ${s.duracao_video===60 || s.duracao_video==='60' ? 'selected' : ''}>60 segundos</option>
           </select>
 
           <div class="field-label">Narração</div>
           <select id="ais-narracao">
-            <option value="sim" \${(!s.narracao || s.narracao==='sim') ? 'selected' : ''}>&#127908; Com narração</option>
-            <option value="nao" \${s.narracao==='nao' ? 'selected' : ''}>&#128263; Sem narração</option>
+            <option value="sim" ${(!s.narracao || s.narracao==='sim') ? 'selected' : ''}>&#127908; Com narração</option>
+            <option value="nao" ${s.narracao==='nao' ? 'selected' : ''}>&#128263; Sem narração</option>
           </select>
 
           <div class="field-label">Gancho inicial</div>
           <select id="ais-gancho">
-            <option value="pergunta" \${(!s.gancho || s.gancho==='pergunta') ? 'selected' : ''}>&#10067; Pergunta</option>
-            <option value="afirmacao" \${s.gancho==='afirmacao' ? 'selected' : ''}>&#9889; Afirmação</option>
-            <option value="numero" \${s.gancho==='numero' ? 'selected' : ''}>&#128178; Número / dado</option>
+            <option value="pergunta" ${(!s.gancho || s.gancho==='pergunta') ? 'selected' : ''}>&#10067; Pergunta</option>
+            <option value="afirmacao" ${s.gancho==='afirmacao' ? 'selected' : ''}>&#9889; Afirmação</option>
+            <option value="numero" ${s.gancho==='numero' ? 'selected' : ''}>&#128178; Número / dado</option>
           </select>
         </div>
 
@@ -2227,13 +2227,13 @@
             Chave OpenRouter desta conta
           </div>
           <div class="field-label">API Key OpenRouter (deixe vazio para usar a chave global)</div>
-          <input type="password" id="ais-openrouter-key" placeholder="sk-or-..." value="\${escapeHtml(s.openrouter_api_key || '')}">
+          <input type="password" id="ais-openrouter-key" placeholder="sk-or-..." value="${escapeHtml(s.openrouter_api_key || '')}">
           <div style="font-size:0.75rem; color:var(--text-faint); margin-bottom:14px; line-height:1.4;">Se não configurada, o sistema usa a chave global do servidor automaticamente.</div>
         </div>
 
         <div class="status" id="ais-status"></div>
-        <button class="btn" onclick="saveAiSettings(\${subId})" style="margin-bottom:32px;">Salvar Ajustes de IA</button>
-      \`;
+        <button class="btn" onclick="saveAiSettings(${subId})" style="margin-bottom:32px;">Salvar Ajustes de IA</button>
+      `;
     }
 
     function aiSettingsPreviewChips() {
