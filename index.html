@@ -620,11 +620,39 @@
       margin: 4px auto 18px;
     }
     .day-sheet h2 { font-size: 1.35rem; font-weight: 800; text-align: center; margin-bottom: 18px; }
-    .day-sheet .field-grid { display: flex; gap: 10px; }
+    .day-sheet .field-grid { display: flex; gap: 12px; margin-bottom: 12px; }
     .day-sheet .field-grid > div { flex: 1; }
     .day-sheet .sheet-label {
       font-size: 0.62rem; font-weight: 700; color: var(--text-faint);
-      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block;
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: block;
+    }
+    .day-sheet select {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px 40px 15px 16px;
+    }
+    .day-sheet .sheet-num-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .day-sheet .sheet-num-box input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      outline: none;
     }
     .day-sheet .sheet-btn-row { display: flex; gap: 10px; margin-top: 20px; }
     .day-sheet .sheet-btn-row .btn-outline, .day-sheet .sheet-btn-row .btn { flex: 1; margin-top: 0; width: auto; }
@@ -1897,7 +1925,7 @@
               <div class="cal-chip-unit">R$</div>
             </div>
             <div class="cal-chip">
-              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 15c1 1 5 1 6 0M8 10h.01M16 10h.01"/></svg></div>
+              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/></svg></div>
               <div class="cal-chip-label">Comissão</div>
               <div class="cal-chip-value">${commissionPercent}%</div>
               <div class="cal-chip-unit">mín.</div>
@@ -1971,21 +1999,21 @@
         <div class="field-grid">
           <div>
             <span class="sheet-label">Preço mínimo (R$)</span>
-            <input type="number" step="0.01" min="0" id="sheet-pricemin-${day.day_of_week}" value="${day.price_min}">
+            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemin-${day.day_of_week}" value="${day.price_min}"></div>
           </div>
           <div>
             <span class="sheet-label">Preço máximo (R$)</span>
-            <input type="number" step="0.01" min="0" id="sheet-pricemax-${day.day_of_week}" value="${day.price_max}">
+            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemax-${day.day_of_week}" value="${day.price_max}"></div>
           </div>
         </div>
         <div class="field-grid">
           <div>
             <span class="sheet-label">Comissão mínima (%)</span>
-            <input type="number" step="1" min="0" max="100" id="sheet-commission-${day.day_of_week}" value="${commissionPercent}">
+            <div class="sheet-num-box"><input type="number" step="1" min="0" max="100" id="sheet-commission-${day.day_of_week}" value="${commissionPercent}"></div>
           </div>
           <div>
             <span class="sheet-label">Vídeos por dia</span>
-            <input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}">
+            <div class="sheet-num-box"><input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}"></div>
           </div>
         </div>
         <div class="status" id="sheet-status-${day.day_of_week}"></div>
