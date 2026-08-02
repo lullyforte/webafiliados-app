@@ -359,10 +359,11 @@
       width: 100%;
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 14px 16px;
       color: #fff;
       font-size: 1rem;
+      font-family: inherit;
       margin-bottom: 12px;
       outline: none;
     }
@@ -371,11 +372,12 @@
       width: 100%;
       background: linear-gradient(135deg, var(--red), var(--red-dark));
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 16px;
       color: #fff;
       font-size: 1rem;
       font-weight: 700;
+      font-family: inherit;
       cursor: pointer;
       transition: opacity 0.2s;
     }
@@ -383,18 +385,18 @@
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-outline { background: transparent; border: 1px solid var(--red); color: var(--red); }
     .btn-secondary { background: var(--surface-2); border: 1px solid #3a3a3a; color: #fff; margin-top: 10px; }
-    .status { padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; margin-top: 12px; display: none; }
+    .status { padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; margin-top: 12px; display: none; }
     .status.ok { background: #1a3a1a; color: #4caf50; display: block; }
     .status.err { background: #3a1a1a; color: #f44336; display: block; }
     .status.info { background: #1a2a3a; color: #64b5f6; display: block; }
-    .push-status { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--surface-2); border-radius: 10px; margin-bottom: 12px; }
+    .push-status { display: flex; align-items: center; gap: 10px; padding: 14px; background: var(--surface-2); border-radius: 12px; margin-bottom: 12px; }
     .dot { width: 10px; height: 10px; border-radius: 50%; background: #555; flex-shrink: 0; }
     .dot.green { background: #4caf50; } .dot.yellow { background: #ff9800; } .dot.red { background: #f44336; }
     .push-text { font-size: 0.9rem; color: #ccc; }
-    .affiliate-info { background: var(--surface-2); border-radius: 10px; padding: 14px; margin-bottom: 12px; font-size: 0.9rem; color: #ccc; }
+    .affiliate-info { background: var(--surface-2); border-radius: 12px; padding: 14px; margin-bottom: 12px; font-size: 0.9rem; color: #ccc; }
     .affiliate-info strong { color: #fff; display: block; margin-bottom: 4px; }
     .prompt-box {
-      background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
       font-size: 0.95rem; line-height: 1.5; color: #eee; margin-bottom: 16px;
       max-height: 320px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
     }
@@ -402,25 +404,33 @@
     .product-meta { font-size: 0.85rem; color: #888; margin-bottom: 16px; }
     .field-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 16px; }
     .field-label:first-child { margin-top: 0; }
-    .thumb { width: 100%; border-radius: 10px; margin-bottom: 16px; display: block; }
+    .thumb { width: 100%; border-radius: 12px; margin-bottom: 16px; display: block; }
     .loading { text-align: center; color: #888; padding: 40px 0; }
     select {
       width: 100%;
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
+      border-radius: 12px;
+      padding: 14px 40px 14px 16px;
       color: #fff;
       font-size: 1rem;
+      font-family: inherit;
       margin-bottom: 12px;
       outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bfbfbf' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
     }
     select:focus { border-color: var(--red); }
+    input[type="checkbox"] { accent-color: var(--red); width: 18px; height: 18px; }
     .day-card {
       background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 18px;
       margin-bottom: 16px;
     }
     .day-card-row { display: flex; gap: 10px; }
@@ -429,16 +439,17 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       font-size: 0.9rem;
-      color: #ccc;
+      color: var(--text-dim);
     }
-    .day-active-label input[type="checkbox"] { width: auto; margin: 0; }
+    .day-active-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
     .day-title {
-      font-size: 0.95rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 10px;
+      text-align: center;
+      margin-bottom: 14px;
     }
     .settings-menu-grid {
       display: grid;
@@ -1253,7 +1264,7 @@
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res.json();
-        videos = (data.videos || []).slice(0, 3);
+        videos = (data.videos || []).slice(0, 5);
       } catch(e) { /* segue com fallback */ }
 
       heroSlides = videos.length > 0 ? videos : [null];
@@ -1407,7 +1418,7 @@
           <input type="text" id="appIdInput" placeholder="AppID da Shopee" value="${escapeHtml(sub.shopee_app_id || '')}">
           <div class="field-label">App Secret</div>
           <input type="password" id="appSecretInput" placeholder="Deixe em branco para manter o atual">
-          <button class="btn" onclick="saveCredentials()" id="saveCredsBtn" style="margin-top:12px;">💾 Salvar Credenciais</button>
+          <button class="btn" onclick="saveCredentials()" id="saveCredsBtn" style="margin-top:12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar Credenciais</button>
           <div class="status" id="saveCredsStatus"></div>
         `;
       } catch(e) {
@@ -1474,7 +1485,7 @@
         showStatus(st, '❌ ' + e.message, 'err');
       } finally {
         btn.disabled = false;
-        btn.textContent = '💾 Salvar Credenciais';
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar Credenciais';
       }
     }
 
@@ -1596,7 +1607,7 @@
             </div>
           </div>
 
-          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})">💾 Salvar ${escapeHtml(day.day_label)}</button>
+          <button class="btn btn-secondary" onclick="saveScheduleDay(${day.day_of_week})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar ${escapeHtml(day.day_label)}</button>
           <div class="status" id="day-status-${day.day_of_week}"></div>
         </div>
       `;
@@ -1745,7 +1756,7 @@
         <div class="field-label">Narração</div>
         <textarea id="ai-narration" style="width:100%;min-height:70px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;">${escapeHtml(item.narration || '')}</textarea>
 
-        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})">💾 Salvar alterações</button>
+        <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar alterações</button>
         <div class="status" id="ai-save-status"></div>
 
         <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">📋 Texto unificado (pronto pra colar no Shopee)</div>
