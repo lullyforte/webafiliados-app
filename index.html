@@ -632,12 +632,19 @@
       animation: sheetUp 0.22s ease;
     }
     @keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .day-sheet-handle {
-      width: 40px; height: 4px; border-radius: 3px;
+    .day-sheet .day-active-label {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 14px; font-weight: 600; color: var(--text-dim);
+    }
       background: #3a3a3a;
       margin: 4px auto 18px;
     }
-    .day-sheet h2 { font-size: 1.35rem; font-weight: 800; text-align: center; margin-bottom: 18px; }
+    .day-sheet h2 { font-size: 1.35rem; font-weight: 800; text-align: left; margin-bottom: 18px; letter-spacing: -0.4px; }
     .day-sheet .field-grid { display: flex; gap: 12px; margin-bottom: 12px; }
     .day-sheet .field-grid > div { flex: 1; }
     .day-sheet .sheet-label {
@@ -759,9 +766,32 @@
     }
 
     /* ── TYPOGRAPHY OVERHAUL ── */
-    .card h2 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
-    select { font-weight: 600; }
+    .card h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.2px; }
+    select { font-weight: 600; font-size: 0.95rem; }
     .affiliate-info strong { font-size: 1rem; font-weight: 700; letter-spacing: -0.2px; }
+
+    /* Calendar typography — matches design spec */
+    .cal-hero-title { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px; }
+    .cal-day-card-head h3 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.3px; }
+    .cal-chip-value { font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.25; letter-spacing: -0.2px; }
+    .cal-chip-label { font-size: 0.6rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 3px; }
+    .cal-chip-unit { font-size: 0.6rem; color: var(--text-faint); font-weight: 600; }
+    .cal-category-row { font-size: 0.9rem; font-weight: 700; }
+    .cal-status-badge { font-size: 0.65rem; font-weight: 700; }
+    .cal-summary-card .day-abbr { font-size: 0.85rem; font-weight: 800; }
+    .cal-summary-card .cat-name { font-size: 0.65rem; }
+    .cal-summary-card .stat-line { font-size: 0.65rem; }
+    /* Sheet typography */
+    .day-sheet h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.4px; text-align: left; }
+    .day-sheet .sheet-label { font-size: 0.62rem; font-weight: 700; }
+    .day-sheet .sheet-num-box input { font-size: 1.55rem; font-weight: 800; letter-spacing: -0.5px; }
+    .day-sheet .sheet-btn-row .btn { font-size: 0.95rem; font-weight: 700; }
+    /* Nav */
+    .nav-item { font-size: 10px; font-weight: 600; }
+    /* Buttons */
+    .btn { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.1px; }
+    /* Inner header */
+    .inner-header-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
 
     /* ── SUB-CONTA: chip no header ── */
     .sub-account-chip {
@@ -1065,7 +1095,7 @@
       <!-- SEÇÃO: Convites + Aprovações -->
       <div class="card">
         <div class="subaccount-section-title">Convites</div>
-        <button class="btn" id="genInviteBtn" onclick="generateInviteCode()" style="margin-bottom:10px;">&#128279; Gerar link de convite</button>
+        <button class="btn" id="genInviteBtn" onclick="generateInviteCode()" style="margin-bottom:10px;">Gerar link de convite</button>
         <div id="inviteCodeBox" style="display:none;margin-bottom:10px;">
           <div style="font-size:11px;color:var(--text-faint);margin-bottom:4px;">Link de convite (válido por 7 dias):</div>
           <div style="background:var(--surface-2);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:#fff;margin-bottom:8px;" id="inviteCodeText"></div>
@@ -1098,8 +1128,8 @@
     <div class="card" style="margin-top:12px;">
     <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
-    <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
-    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">▶️ Abrir YouTube Create</button>
+    <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
+    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">Abrir YouTube Create</button>
     <div class="status" id="promptStatus"></div>
     </div>
   </div>
@@ -1122,7 +1152,7 @@
       <span class="inner-header-title">Vídeos Pendentes</span>
     </div>
   <div class="card" style="margin-top:12px;">
-    <button class="btn btn-secondary" onclick="showPromptsScreen()" style="margin-bottom:16px;">📋 Ver todos os Prompts Prontos</button>
+    <button class="btn btn-secondary" onclick="showPromptsScreen()" style="margin-bottom:16px;">Ver todos os Prompts Prontos</button>
     <div id="uploadContent" class="loading">Carregando...</div>
   </div>
   </div><!-- /uploadSection -->
@@ -1260,7 +1290,7 @@
     <div class="card" style="margin-top:12px;">
     <p style="font-size:13px; color:#999; margin-bottom:16px;">Envie o print de um anúncio que você achou na Shopee — a IA identifica o produto, busca os dados reais e já gera o conteúdo pronto pra postar.</p>
     <input type="file" id="adScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
-    <button class="btn" onclick="doPincarAnuncio()" id="pincarBtn">📌 Pinçar este Anúncio</button>
+    <button class="btn" onclick="doPincarAnuncio()" id="pincarBtn">Pinçar este Anúncio</button>
     <div class="status" id="pincarStatus"></div>
     </div>
   </div>
@@ -1388,9 +1418,9 @@
             <div class="sub-account-dropdown-avatar ${isActive ? '' : 'inactive'}">${initial}</div>
             <div class="sub-account-dropdown-info">
               <div class="sub-account-dropdown-name">${escapeHtml(sub.name)}</div>
-              <div class="sub-account-dropdown-status">${sub.shopee_app_id ? 'API configurada ✓' : 'API pendente'}</div>
+              <div class="sub-account-dropdown-status">${sub.shopee_app_id ? 'API configurada ' : 'API pendente'}</div>
             </div>
-            ${isActive ? '<span class="sub-account-dropdown-check">✓</span>' : ''}
+            ${isActive ? '<span class="sub-account-dropdown-check"></span>' : ''}
           </div>
         `;
       }).join('');
@@ -1444,7 +1474,7 @@
           renderSubAccountList();
         }
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Criar sub-conta';
@@ -1469,7 +1499,7 @@
             <div class="subaccount-avatar ${isActive ? '' : 'inactive'}">${initial}</div>
             <div class="subaccount-info">
               <div class="subaccount-name">${escapeHtml(sub.name)}</div>
-              <div class="subaccount-meta ${hasApi ? 'ok' : 'warn'}">${hasApi ? 'API configurada ✓' : 'API Shopee pendente'}</div>
+              <div class="subaccount-meta ${hasApi ? 'ok' : 'warn'}">${hasApi ? 'API configurada ' : 'API Shopee pendente'}</div>
             </div>
             ${isActive ? '<span class="subaccount-badge">ATIVA</span>' : '<span class="subaccount-arrow">›</span>'}
           </div>
@@ -1601,12 +1631,12 @@
         .then(() => {
           if (window._currentProductImage) {
             window.open(window._currentProductImage, '_blank');
-            showStatus(st, '✅ Prompt copiado e imagem aberta! Cole o texto e anexe a imagem no YouTube Create.', 'ok');
+            showStatus(st, 'Prompt copiado e imagem aberta!', 'ok');
           } else {
-            showStatus(st, '✅ Prompt copiado! (este produto não tem foto disponível)', 'ok');
+            showStatus(st, 'Prompt copiado!', 'ok');
           }
         })
-        .catch(() => showStatus(st, '❌ Não foi possível copiar automaticamente. Selecione o texto manualmente.', 'err'));
+        .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
     }
 
     function openYoutubeCreate() {
@@ -1665,15 +1695,15 @@
           <div class="field-label">Link de Afiliado</div>
           <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
 
-          <button class="btn btn-secondary" onclick="copyPackageCaption()">📋 Copiar Legenda + Hashtags</button>
-          <button class="btn btn-secondary" onclick="openProductOnShopee()" style="margin-top:10px;">🛍️ Favoritar na Shopee</button>
+          <button class="btn btn-secondary" onclick="copyPackageCaption()">Copiar Legenda + Hashtags</button>
+          <button class="btn btn-secondary" onclick="openProductOnShopee()" style="margin-top:10px;">Favoritar na Shopee</button>
           <div class="status" id="copyPackageStatus"></div>
 
-          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn" style="margin-top:16px;">✅ Confirmar Publicação</button>
+          <button class="btn" onclick="confirmPackage('${packageId}')" id="confirmBtn" style="margin-top:16px;">Confirmar Publicação</button>
           <div class="status" id="confirmStatus"></div>
         `;
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -1689,27 +1719,27 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao confirmar');
-        showStatus(st, '✅ Publicação confirmada!', 'ok');
-        btn.textContent = 'Confirmado ✓';
+        showStatus(st, 'Publicação confirmada!', 'ok');
+        btn.textContent = 'Confirmado ';
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = '✅ Confirmar Publicação';
+        btn.textContent = 'Confirmar Publicação';
       }
     }
 
     function copyPackageCaption() {
       const st = document.getElementById('copyPackageStatus');
       navigator.clipboard.writeText(window._currentPackageCaption || '')
-        .then(() => showStatus(st, '✅ Legenda e hashtags copiadas!', 'ok'))
-        .catch(() => showStatus(st, '❌ Não foi possível copiar. Selecione o texto manualmente.', 'err'));
+        .then(() => showStatus(st, 'Legenda e hashtags copiadas!', 'ok'))
+        .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
     }
 
     function openProductOnShopee() {
       const link = window._currentPackageLink;
       if (!link) {
         const st = document.getElementById('copyPackageStatus');
-        showStatus(st, '❌ Link de afiliado não disponível.', 'err');
+        showStatus(st, 'Link de afiliado não disponível.', 'err');
         return;
       }
       window.open(link, '_blank');
@@ -1764,7 +1794,7 @@
           `;
         }).join('') + '</div>';
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -1785,14 +1815,14 @@
         ${video.video_prompt ? `
           <div class="field-label">Prompt do vídeo (YouTube Create)</div>
           <div class="prompt-box">${escapeHtml(video.video_prompt)}</div>
-          <button class="btn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
-          <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:8px;">▶️ Abrir YouTube Create</button>
+          <button class="btn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
+          <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:8px;">Abrir YouTube Create</button>
           <div class="status" id="promptStatus"></div>
         ` : ''}
 
         <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Já tem o vídeo pronto? Envie aqui:</div>
         <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
-        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">📤 Enviar Vídeo</button>
+        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">Enviar Vídeo</button>
         <div class="status" id="uploadStatus"></div>
       `;
     }
@@ -1824,12 +1854,12 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
 
-        showStatus(st, '✅ Vídeo enviado com sucesso!', 'ok');
-        btn.textContent = 'Enviado ✓';
+        showStatus(st, 'Vídeo enviado com sucesso!', 'ok');
+        btn.textContent = 'Enviado ';
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = '📤 Enviar Vídeo';
+        btn.textContent = 'Enviar Vídeo';
       }
     }
 
@@ -1874,11 +1904,11 @@
               ${item.image_url ? `<img src="${item.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;float:left;margin-right:10px;">` : ''}
               <strong>${escapeHtml(item.title || item.product_name || ('Prompt #' + item.id))}</strong>
             </div>
-            <button onclick="archivePrompt(${item.id})" title="Remover da lista" style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;">🗑️</button>
+            <button onclick="archivePrompt(${item.id})" title="Remover da lista" style="background:none;border:none;font-size:18px;cursor:pointer;padding:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
           </div>
         `).join('');
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -1897,7 +1927,7 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao remover');
         renderPromptsList();
       } catch(e) {
-        alert('❌ ' + e.message);
+        alert('' + e.message);
       }
     }
 
@@ -1928,10 +1958,10 @@
         <div class="field-label">Prompt do vídeo</div>
         <div class="prompt-box">${escapeHtml(item.video_prompt || '(sem prompt)')}</div>
 
-        <button class="btn" onclick="copyPromptAndImage()">📋🖼️ Copiar Prompt + Imagem</button>
-        <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">▶️ Abrir YouTube Create</button>
-        <button class="btn btn-secondary" onclick="downloadPromptFile('${escapeHtml((item.title || 'prompt').replace(/'/g, "\\'"))}')" style="margin-top:10px;">⬇️ Salvar Prompt (.txt)</button>
-        ${item.image_url ? `<button class="btn btn-secondary" onclick="window.open('${item.image_url}', '_blank')" style="margin-top:10px;">⬇️ Abrir Imagem (salvar)</button>` : ''}
+        <button class="btn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
+        <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">Abrir YouTube Create</button>
+        <button class="btn btn-secondary" onclick="downloadPromptFile('${escapeHtml((item.title || 'prompt').replace(/'/g, "\\'"))}')" style="margin-top:10px;">Salvar Prompt (.txt)</button>
+        ${item.image_url ? `<button class="btn btn-secondary" onclick="window.open('${item.image_url}', '_blank')" style="margin-top:10px;">Abrir Imagem (salvar)</button>` : ''}
         <div class="status" id="promptStatus"></div>
       `;
     }
@@ -2160,7 +2190,7 @@
         list.innerHTML = videos.slice(0, 6).map(v => {
           const cover = v.thumbnail_url || v.image_url;
           const bgStyle = cover ? `style="background-image:url('${cover}')"` : '';
-          const statusLabel = v.package_status === 'confirmed' ? '✅ Publicado' : '📦 Pronto para publicar';
+          const statusLabel = v.package_status === 'confirmed' ? 'Publicado' : 'Pronto para publicar';
           const priceLabel = v.price ? ('R$ ' + v.price) : '';
           return `
             <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
@@ -2182,7 +2212,7 @@
     }
 
     function showComingSoon(featureName) {
-      alert(featureName + ' — em breve! 🚀');
+      alert(featureName + ' — em breve! ');
     }
 
     function showSettingsScreen() {
@@ -2241,11 +2271,11 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao cadastrar');
-        showStatus(st, '&#10003; Cadastro realizado! Aguarde aprovação do administrador.', 'ok');
+        showStatus(st, 'Cadastro realizado! Aguarde aprovação do administrador.', 'ok');
         btn.textContent = 'Cadastrado!';
         setTimeout(() => showLogin(), 3000);
       } catch(e) {
-        showStatus(st, '&#10060; ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
         btn.disabled = false; btn.textContent = 'Cadastrar';
       }
     }
@@ -2306,8 +2336,8 @@
               </div>
             </div>
             <div style="display:flex;gap:8px;width:100%;">
-              <button class="btn" style="flex:1;padding:8px;font-size:12px;" onclick="approveUser(${p.id})">&#10003; Aprovar</button>
-              <button class="btn btn-secondary" style="flex:1;padding:8px;font-size:12px;" onclick="rejectUser(${p.id})">&#10005; Rejeitar</button>
+              <button class="btn" style="flex:1;padding:8px;font-size:12px;" onclick="approveUser(${p.id})">Aprovar</button>
+              <button class="btn btn-secondary" style="flex:1;padding:8px;font-size:12px;" onclick="rejectUser(${p.id})">Rejeitar</button>
             </div>
           </div>
         `).join('');
@@ -2402,16 +2432,16 @@
 
           <div class="field-label">Tom de voz</div>
           <select id="ais-tom" onchange="aiSettingsPreviewChips()">
-            <option value="descontraido" ${(!s.tom || s.tom==='descontraido') ? 'selected' : ''}>&#128515; Descontraído</option>
-            <option value="vendedor" ${s.tom==='vendedor' ? 'selected' : ''}>&#128176; Vendedor</option>
-            <option value="formal" ${s.tom==='formal' ? 'selected' : ''}>&#128084; Formal</option>
+            <option value="descontraido" ${(!s.tom || s.tom==='descontraido') ? 'selected' : ''}>Descontraído</option>
+            <option value="vendedor" ${s.tom==='vendedor' ? 'selected' : ''}>Vendedor</option>
+            <option value="formal" ${s.tom==='formal' ? 'selected' : ''}>Formal</option>
           </select>
 
           <div class="field-label">Foco do conteúdo</div>
           <select id="ais-foco" onchange="aiSettingsPreviewChips()">
-            <option value="beneficio" ${(!s.foco || s.foco==='beneficio') ? 'selected' : ''}>&#10024; Destacar benefício</option>
-            <option value="preco" ${s.foco==='preco' ? 'selected' : ''}>&#128178; Destacar preço</option>
-            <option value="urgencia" ${s.foco==='urgencia' ? 'selected' : ''}>&#9889; Criar urgência</option>
+            <option value="beneficio" ${(!s.foco || s.foco==='beneficio') ? 'selected' : ''}>Destacar benefício</option>
+            <option value="preco" ${s.foco==='preco' ? 'selected' : ''}>Destacar preço</option>
+            <option value="urgencia" ${s.foco==='urgencia' ? 'selected' : ''}>Criar urgência</option>
           </select>
 
           <div class="field-label">Tamanho do texto</div>
@@ -2455,9 +2485,9 @@
 
           <div class="field-label">Estilo visual</div>
           <select id="ais-estilo">
-            <option value="dinamico" ${(!s.estilo_video || s.estilo_video==='dinamico') ? 'selected' : ''}>&#9889; Dinâmico</option>
-            <option value="minimalista" ${s.estilo_video==='minimalista' ? 'selected' : ''}>&#11036; Minimalista</option>
-            <option value="elegante" ${s.estilo_video==='elegante' ? 'selected' : ''}>&#10024; Elegante</option>
+            <option value="dinamico" ${(!s.estilo_video || s.estilo_video==='dinamico') ? 'selected' : ''}>Dinâmico</option>
+            <option value="minimalista" ${s.estilo_video==='minimalista' ? 'selected' : ''}>Minimalista</option>
+            <option value="elegante" ${s.estilo_video==='elegante' ? 'selected' : ''}>Elegante</option>
           </select>
 
           <div class="field-label">Duração alvo do vídeo</div>
@@ -2469,15 +2499,15 @@
 
           <div class="field-label">Narração</div>
           <select id="ais-narracao">
-            <option value="sim" ${(!s.narracao || s.narracao==='sim') ? 'selected' : ''}>&#127908; Com narração</option>
-            <option value="nao" ${s.narracao==='nao' ? 'selected' : ''}>&#128263; Sem narração</option>
+            <option value="sim" ${(!s.narracao || s.narracao==='sim') ? 'selected' : ''}>Com narração</option>
+            <option value="nao" ${s.narracao==='nao' ? 'selected' : ''}>Sem narração</option>
           </select>
 
           <div class="field-label">Gancho inicial</div>
           <select id="ais-gancho">
-            <option value="pergunta" ${(!s.gancho || s.gancho==='pergunta') ? 'selected' : ''}>&#10067; Pergunta</option>
-            <option value="afirmacao" ${s.gancho==='afirmacao' ? 'selected' : ''}>&#9889; Afirmação</option>
-            <option value="numero" ${s.gancho==='numero' ? 'selected' : ''}>&#128178; Número / dado</option>
+            <option value="pergunta" ${(!s.gancho || s.gancho==='pergunta') ? 'selected' : ''}>Pergunta</option>
+            <option value="afirmacao" ${s.gancho==='afirmacao' ? 'selected' : ''}>Afirmação</option>
+            <option value="numero" ${s.gancho==='numero' ? 'selected' : ''}>Número / dado</option>
           </select>
         </div>
 
@@ -2534,9 +2564,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, '&#10003; Ajustes salvos com sucesso!', 'ok');
+        showStatus(st, 'Ajustes salvos com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, '&#10060; ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Salvar Ajustes de IA';
@@ -2631,9 +2661,9 @@
         const extracted = data.extracted || {};
         if (extracted.appId) document.getElementById('appIdInput').value = extracted.appId;
         if (extracted.appSecret) document.getElementById('appSecretInput').value = extracted.appSecret;
-        showStatus(st, '✅ Dados extraídos! Confira antes de salvar.', 'ok');
+        showStatus(st, 'Dados extraídos! Confira antes de salvar.', 'ok');
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M4 20 14 10"/><path d="m13 9 2-2 2 2-2 2z"/><path d="M18 4v2.5M16.75 5.25h2.5"/><path d="M5.5 13v2M4.5 14h2"/></svg>Ler print com IA';
@@ -2661,9 +2691,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, '✅ Credenciais salvas!', 'ok');
+        showStatus(st, 'Credenciais salvas!', 'ok');
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar Credenciais';
@@ -2703,13 +2733,13 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao processar anúncio');
-        showStatus(st, '✅ Produto "' + data.productNameDetected + '" pinçado! Confira o push que acabou de chegar.', 'ok');
+        showStatus(st, 'Produto "' + data.productNameDetected + '" pinçado! Confira o push que acabou de chegar.', 'ok');
         fileInput.value = '';
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
-        btn.textContent = '📌 Pinçar este Anúncio';
+        btn.textContent = 'Pinçar este Anúncio';
       }
     }
 
@@ -2753,7 +2783,7 @@
 
         content.innerHTML = renderCalendarLayout();
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
     }
 
@@ -2919,8 +2949,8 @@
           <input type="checkbox" id="sheet-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
           Dia ativo
         </label>
-        <span class="sheet-label">Categoria</span>
-        <select id="sheet-category-${day.day_of_week}">
+        <span class="sheet-label" style="display:block;margin-bottom:8px;">Categoria</span>
+        <select id="sheet-category-${day.day_of_week}" style="margin-bottom:16px;">
           <option value="">— Selecione a categoria —</option>
           ${options}
         </select>
@@ -2928,6 +2958,28 @@
           <div>
             <span class="sheet-label">Preço mínimo (R$)</span>
             <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemin-${day.day_of_week}" value="${day.price_min}"></div>
+          </div>
+          <div>
+            <span class="sheet-label">Preço máximo (R$)</span>
+            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemax-${day.day_of_week}" value="${day.price_max}"></div>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div>
+            <span class="sheet-label">Comissão mínima (%)</span>
+            <div class="sheet-num-box"><input type="number" step="1" min="0" max="100" id="sheet-commission-${day.day_of_week}" value="${commissionPercent}"></div>
+          </div>
+          <div>
+            <span class="sheet-label">Vídeos por dia</span>
+            <div class="sheet-num-box"><input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}"></div>
+          </div>
+        </div>
+        <div class="status" id="sheet-status-${day.day_of_week}"></div>
+        <div class="sheet-btn-row">
+          <button class="btn btn-secondary" style="flex:1;margin-top:0;width:auto;" onclick="closeDaySheet()">Cancelar</button>
+          <button class="btn" style="flex:1;width:auto;" onclick="saveScheduleDay(${day.day_of_week})">Salvar alterações</button>
+        </div>
+      `;
           </div>
           <div>
             <span class="sheet-label">Preço máximo (R$)</span>
@@ -3011,12 +3063,12 @@
           });
         }
 
-        showStatus(st, '✅ Salvo com sucesso!', 'ok');
+        showStatus(st, 'Salvo com sucesso!', 'ok');
         document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
         document.getElementById('calSummaryScroll').innerHTML = schedule.map(d => renderCalSummaryCard(d)).join('');
         setTimeout(() => closeDaySheet(), 700);
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -3084,13 +3136,13 @@
           `).join('')}
         `;
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>';
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
     }
 
     async function selectProductForAi(productId, productName) {
       const content = document.getElementById('aiEditContent');
-      content.innerHTML = `<div class="loading">🤖 Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
+      content.innerHTML = `<div class="loading">Gerando conteúdo com IA para "${escapeHtml(productName)}"... (pode levar alguns segundos)</div>`;
 
       try {
         const subAccountId = await ensureSubAccountId();
@@ -3107,7 +3159,7 @@
 
         renderAiContentEditor(data.content);
       } catch(e) {
-        content.innerHTML = '<div class="status err" style="display:block;">❌ ' + escapeHtml(e.message) + '</div>' +
+        content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>' +
           '<button class="btn btn-outline" onclick="renderAiProductList()" style="margin-top:12px;">← Escolher outro produto</button>';
       }
     }
@@ -3135,14 +3187,14 @@
         <button class="btn btn-secondary" style="margin-top:14px;" onclick="saveAiContent(${item.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar alterações</button>
         <div class="status" id="ai-save-status"></div>
 
-        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">📋 Texto unificado (pronto pra colar no Shopee)</div>
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Texto unificado</div>
         <textarea id="ai-unified" readonly style="width:100%;min-height:120px;background:#141414;border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;"></textarea>
-        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">📋 Copiar tudo</button>
+        <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyUnifiedText()">Copiar tudo</button>
         <div class="status" id="ai-copy-status"></div>
 
-        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">📦 Vídeo e Capa</div>
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Vídeo e Capa</div>
         <div style="font-size:0.8rem;color:#999;margin-bottom:10px;">Já fez o vídeo no YouTube Create? Empacota aqui, envia o vídeo e escolhe a capa antes de publicar.</div>
-        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">📦 Empacotar (vídeo + capa)</button>
+        <button class="btn btn-outline" onclick="createPackageForContent(${item.id})">Empacotar (vídeo + capa)</button>
         <div class="status" id="ai-package-status"></div>
         <div id="ai-packaging-area"></div>
       `;
@@ -3173,9 +3225,9 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
-        showStatus(st, '✅ Salvo com sucesso!', 'ok');
+        showStatus(st, 'Salvo com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -3216,14 +3268,14 @@
       el.setSelectionRange(0, 999999);
       try {
         navigator.clipboard.writeText(el.value).then(() => {
-          showStatus(st, '✅ Copiado! Cole no app da Shopee.', 'ok');
+          showStatus(st, 'Copiado!', 'ok');
         }).catch(() => {
           document.execCommand('copy');
-          showStatus(st, '✅ Copiado!', 'ok');
+          showStatus(st, 'Copiado!', 'ok');
         });
       } catch(e) {
         document.execCommand('copy');
-        showStatus(st, '✅ Copiado!', 'ok');
+        showStatus(st, 'Copiado!', 'ok');
       }
     }
 
@@ -3242,10 +3294,10 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao criar pacote');
-        showStatus(st, '✅ Pacote criado! Envie o vídeo abaixo.', 'ok');
+        showStatus(st, 'Pacote criado! Envie o vídeo abaixo.', 'ok');
         renderPackagingArea(data.videoId);
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       }
     }
 
@@ -3254,7 +3306,7 @@
       area.innerHTML = `
         <div class="field-label">Envie o vídeo (MP4)</div>
         <input type="file" id="ai-video-file" accept="video/mp4" style="color:#fff;margin-bottom:10px;">
-        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">📤 Enviar vídeo</button>
+        <button class="btn btn-outline" onclick="uploadAiVideo(${videoId})">Enviar vídeo</button>
         <div id="ai-video-preview-area"></div>
       `;
     }
@@ -3279,10 +3331,10 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
-        showStatus(st, '✅ Vídeo enviado! Escolha o frame de capa abaixo.', 'ok');
+        showStatus(st, 'Vídeo enviado! Escolha o frame de capa abaixo.', 'ok');
         renderVideoPreviewForCapture(videoId, data.fileUrl);
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       }
     }
 
@@ -3291,7 +3343,7 @@
       area.innerHTML = `
         <video id="ai-video-preview" src="${fileUrl}" controls playsinline style="width:100%;border-radius:10px;margin-top:12px;background:#000;"></video>
         <div style="font-size:0.75rem;color:#999;margin-top:6px;">Pause no momento que quiser usar como capa e toque no botão abaixo.</div>
-        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})">📸 Capturar capa neste momento</button>
+        <button class="btn btn-outline" style="margin-top:8px;" onclick="captureThumbnailFrame(${videoId})"> Capturar capa neste momento</button>
         <canvas id="ai-thumb-canvas" style="display:none;"></canvas>
         <div>
           <div class="field-label" style="margin-top:10px;">Capa escolhida:</div>
@@ -3334,9 +3386,9 @@
         const preview = document.getElementById('ai-thumb-preview');
         preview.src = URL.createObjectURL(blob);
         preview.style.display = 'block';
-        showStatus(st, '✅ Capa salva com sucesso!', 'ok');
+        showStatus(st, 'Capa salva com sucesso!', 'ok');
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       }
     }
 
@@ -3356,7 +3408,7 @@
         const sub = await reg.pushManager.getSubscription();
         if (sub) {
           dot.className = 'dot green';
-          text.textContent = 'Notificações ativas ✓';
+          text.textContent = 'Notificações ativas ';
           btn.textContent = 'Reativar';
           return;
         }
@@ -3408,10 +3460,10 @@
           throw new Error(errData.error || 'Erro ao salvar');
         }
 
-        showStatus(st, '✅ Notificações ativadas!', 'ok');
+        showStatus(st, 'Notificações ativadas!', 'ok');
         checkPushStatus();
       } catch(e) {
-        showStatus(st, '❌ ' + e.message, 'err');
+        showStatus(st, '' + e.message, 'err');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Ativar Notificações';
