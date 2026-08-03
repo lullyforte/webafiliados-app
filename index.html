@@ -3183,9 +3183,12 @@
 
     function renderAiContentEditor(item) {
       const content = document.getElementById('aiEditContent');
+      const fallbackNotice = item.ownKeyFailed
+        ? '<div class="status err" style="display:block;margin-bottom:14px;">Sua chave OpenRouter própria falhou nesta geração. Usamos a IA global do sistema para não travar. Confira sua chave em Ajustes de IA.</div>'
+        : '';
       content.innerHTML = `
         <button class="btn btn-outline" onclick="renderAiProductList()" style="margin-bottom:16px;">← Escolher outro produto</button>
-
+        ${fallbackNotice}
         <div class="field-label" style="margin-top:0;">Título</div>
         <input type="text" id="ai-title" value="${escapeHtml(item.title || '')}" maxlength="80" oninput="generateUnifiedText()">
 
