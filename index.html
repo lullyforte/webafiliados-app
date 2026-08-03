@@ -647,6 +647,12 @@
     .day-sheet h2 { font-size: 1.45rem; font-weight: 800; text-align: left; margin-bottom: 18px; letter-spacing: -0.4px; }
     .day-sheet .field-grid { display: flex; gap: 12px; margin-bottom: 12px; }
     .day-sheet .field-grid > div { flex: 1; }
+    .field-grid { display: flex; gap: 12px; margin-bottom: 12px; }
+    .field-grid > div { flex: 1; }
+    .sheet-label {
+      font-size: 0.7rem; font-weight: 700; color: var(--text-faint);
+      text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: block;
+    }
     .day-sheet .sheet-label {
       font-size: 0.7rem; font-weight: 700; color: var(--text-faint);
       text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; display: block;
@@ -680,6 +686,25 @@
       outline: none;
     }
     .day-sheet .sheet-btn-row { display: flex; gap: 10px; margin-top: 20px; }
+    .num-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .num-box input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      outline: none;
+    }
     .day-sheet .sheet-btn-row .btn-outline, .day-sheet .sheet-btn-row .btn { flex: 1; margin-top: 0; width: auto; }
 
     .settings-menu-grid {
@@ -1061,6 +1086,11 @@
           <p>Pincel Anúncios</p>
           <span class="icon-desc">Destaque seus produtos</span>
         </div>
+        <div class="icon-item" onclick="showSearchNowScreen()">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <p>Buscar Agora</p>
+          <span class="icon-desc">Categoria, preço e comissão</span>
+        </div>
       </div>
 
       <div class="section-row">
@@ -1278,6 +1308,44 @@
     </div>
     <div class="shell" style="margin-top:12px;">
       <div id="aiSettingsContent" class="loading">Carregando...</div>
+    </div>
+  </div>
+
+  <!-- TELA: BUSCAR PRODUTO AGORA -->
+  <div id="searchNowSection" style="display:none;">
+    <div class="inner-header">
+      <div class="inner-header-btn" onclick="showDash()" title="Início"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
+      <span class="inner-header-title">Buscar Produto Agora</span>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <p style="font-size: 14.5px; color:#999; margin-bottom:16px;">Escolha categoria, faixa de preço e comissão mínima. O sistema busca na Shopee agora mesmo, gera o conteúdo com IA e dispara o push — sem esperar o calendário ou o horário automático.</p>
+
+      <div class="field-label" style="margin-top:0;">Categoria</div>
+      <select id="sn-category">
+        <option value="eletronicos">Eletrônicos</option>
+        <option value="pneus">Pneus e Rodas</option>
+        <option value="ferramentas">Ferramentas</option>
+        <option value="drones">Drones</option>
+        <option value="informatica">Informática</option>
+        <option value="celulares">Celulares</option>
+      </select>
+
+      <div class="field-grid">
+        <div>
+          <span class="sheet-label">Preço mínimo (R$)</span>
+          <div class="num-box"><input type="number" step="0.01" min="0" id="sn-pricemin" value="0"></div>
+        </div>
+        <div>
+          <span class="sheet-label">Preço máximo (R$)</span>
+          <div class="num-box"><input type="number" step="0.01" min="0" id="sn-pricemax" placeholder="Sem teto"></div>
+        </div>
+      </div>
+
+      <div class="field-label">Comissão mínima (%)</div>
+      <div class="num-box"><input type="number" step="1" min="0" max="100" id="sn-commission" value="0"></div>
+
+      <button class="btn" onclick="doSearchNow()" id="searchNowBtn" style="margin-top:16px;">Buscar e Gerar Agora</button>
+      <div class="status" id="searchNowStatus"></div>
     </div>
   </div>
 
@@ -1534,7 +1602,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -2736,6 +2804,58 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>Salvar Credenciais';
+      }
+    }
+
+function showSearchNowScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'none';
+      document.getElementById('searchNowSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
+      const st = document.getElementById('searchNowStatus');
+      if (st) { st.style.display = 'none'; st.textContent = ''; }
+    }
+
+    async function doSearchNow() {
+      const btn = document.getElementById('searchNowBtn');
+      const st = document.getElementById('searchNowStatus');
+      const category = document.getElementById('sn-category').value;
+      const priceMin = document.getElementById('sn-pricemin').value;
+      const priceMax = document.getElementById('sn-pricemax').value;
+      const commissionMin = document.getElementById('sn-commission').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Buscando...';
+      showStatus(st, 'Buscando produtos na Shopee e gerando conteúdo... isso pode levar até 1 minuto.', 'info');
+
+      try {
+        const subAccountId = await ensureSubAccountId();
+        const res = await fetch(API + '/api/products/search-now', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SESSION.token
+          },
+          body: JSON.stringify({
+            subAccountId,
+            category,
+            priceMin: priceMin ? parseFloat(priceMin) : 0,
+            priceMax: priceMax ? parseFloat(priceMax) : null,
+            commissionMin: commissionMin ? parseFloat(commissionMin) : 0,
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao buscar produto');
+
+        const fallbackMsg = data.ownKeyFailed ? ' Sua chave OpenRouter própria falhou nesta geração, usamos a IA global.' : '';
+        showStatus(st, 'Produto "' + data.product.name + '" encontrado e gerado! Confira o push que acabou de chegar.' + fallbackMsg, 'ok');
+      } catch(e) {
+        showStatus(st, '' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Buscar e Gerar Agora';
       }
     }
 
