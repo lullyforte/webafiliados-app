@@ -1419,26 +1419,28 @@
         <div style="text-align:right;font-size:12px;color:var(--text-faint);margin-top:-6px;" id="vc-prompt-count">0/500</div>
 
         <!-- Adicionar imagens -->
+        <!-- inputs fora do grid para não herdar margin-bottom do CSS global -->
+        <input type="file" id="vc-img-input-0" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(0,this)">
+        <input type="file" id="vc-img-input-1" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(1,this)">
+        <input type="file" id="vc-img-input-2" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(2,this)">
+
         <div class="field-label">Adicionar imagens <span style="color:var(--text-faint);font-weight:400;text-transform:none;letter-spacing:0;">(até 3)</span></div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;">
-          <label class="vc-img-slot" id="vc-img-slot-0" onclick="document.getElementById('vc-img-input-0').click()">
-            <input type="file" id="vc-img-input-0" accept="image/*" style="display:none;" onchange="vcPreviewImg(0,this)">
-            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label">Imagem 1</span>
+          <div class="vc-img-slot" id="vc-img-slot-0" onclick="document.getElementById('vc-img-input-0').click()">
+            <div class="vc-img-plus" id="vc-img-plus-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label" id="vc-img-lbl-0">Imagem 1</span>
             <img id="vc-img-preview-0" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
-          </label>
-          <label class="vc-img-slot" id="vc-img-slot-1" onclick="document.getElementById('vc-img-input-1').click()">
-            <input type="file" id="vc-img-input-1" accept="image/*" style="display:none;" onchange="vcPreviewImg(1,this)">
-            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label">Imagem 2</span>
+          </div>
+          <div class="vc-img-slot" id="vc-img-slot-1" onclick="document.getElementById('vc-img-input-1').click()">
+            <div class="vc-img-plus" id="vc-img-plus-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label" id="vc-img-lbl-1">Imagem 2</span>
             <img id="vc-img-preview-1" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
-          </label>
-          <label class="vc-img-slot" id="vc-img-slot-2" onclick="document.getElementById('vc-img-input-2').click()">
-            <input type="file" id="vc-img-input-2" accept="image/*" style="display:none;" onchange="vcPreviewImg(2,this)">
-            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label">Imagem 3</span>
+          </div>
+          <div class="vc-img-slot" id="vc-img-slot-2" onclick="document.getElementById('vc-img-input-2').click()">
+            <div class="vc-img-plus" id="vc-img-plus-2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label" id="vc-img-lbl-2">Imagem 3</span>
             <img id="vc-img-preview-2" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
-          </label>
+          </div>
         </div>
       </div>
 
@@ -1815,10 +1817,11 @@
     }
 
     function setActiveNav(id) {
-      ['navInicio','navExplorar','navProjetos','navVoce'].forEach(n => {
-        document.getElementById(n).classList.remove('active');
+      ['navInicio','navExplorar','navVideoIA','navProjetos','navVoce'].forEach(n => {
+        const el = document.getElementById(n);
+        if (el) el.classList.remove('active');
       });
-      if (id) document.getElementById(id).classList.add('active');
+      if (id) { const el = document.getElementById(id); if (el) el.classList.add('active'); }
     }
 
     window.addEventListener('load', async () => {
@@ -3919,13 +3922,19 @@ function showSearchNowScreen() {
     // ═══════════════════════════════════════════════
 
     function showVideoCreatorScreen() {
-      hideAllCards();
-      document.getElementById('videoCreatorSection').style.display = 'block';
-      document.getElementById('bottomNav').style.display = 'flex';
-      document.getElementById('headerActions').style.display = 'flex';
-      setActiveNav('navVideoIA');
-      // Reset para o editor
-      vcShowStep('editor');
+      try {
+        hideAllCards();
+        const sec = document.getElementById('videoCreatorSection');
+        if (sec) sec.style.display = 'block';
+        const bn = document.getElementById('bottomNav');
+        if (bn) bn.style.display = 'flex';
+        const ha = document.getElementById('headerActions');
+        if (ha) ha.style.display = 'flex';
+        setActiveNav('navVideoIA');
+        vcShowStep('editor');
+      } catch(e) {
+        console.error('[VideoCreator] Erro ao abrir:', e);
+      }
     }
 
     function vcShowStep(step) {
@@ -3943,9 +3952,13 @@ function showSearchNowScreen() {
       if (!input.files || !input.files[0]) return;
       const preview = document.getElementById('vc-img-preview-' + idx);
       const slot    = document.getElementById('vc-img-slot-' + idx);
+      const plus    = document.getElementById('vc-img-plus-' + idx);
+      const lbl     = document.getElementById('vc-img-lbl-' + idx);
       const url     = URL.createObjectURL(input.files[0]);
       preview.src   = url;
       preview.style.display = 'block';
+      if (plus) plus.style.display = 'none';
+      if (lbl)  lbl.style.display  = 'none';
       slot.style.borderStyle = 'solid';
       slot.style.borderColor = 'var(--red)';
     }
@@ -3996,101 +4009,198 @@ function showSearchNowScreen() {
       vcShowStep('gerando');
       vcStartProgress();
 
-      // Buscar chave Gemini do backend (reutilizando o padrão já existente)
       try {
-        const GEMINI_KEY = await vcGetGeminiKey();
-        const roteiro    = await vcChamarGemini(GEMINI_KEY, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+        const roteiro = await vcGerarComHierarquia(prompt, formato, duracao, estilo, narrador, legendas, imagens);
         vcShowResultado(roteiro, prompt, formato, duracao, estilo, narrador);
       } catch(e) {
+        clearInterval(_vcProgressTimer);
         vcShowStep('editor');
-        alert('Erro ao gerar: ' + e.message);
+        // Mostrar erro visível dentro do card
+        const errBox = document.createElement('div');
+        errBox.className = 'status err';
+        errBox.style.cssText = 'display:block;margin-top:12px;';
+        errBox.textContent = '❌ ' + e.message;
+        const card = document.querySelector('#vc-step-editor .card');
+        if (card) {
+          const old = card.querySelector('.vc-err-msg');
+          if (old) old.remove();
+          errBox.classList.add('vc-err-msg');
+          card.appendChild(errBox);
+        }
       }
     }
 
-    async function vcGetGeminiKey() {
-      // Tenta pegar via backend (sub-conta ativa)
-      if (SESSION) {
-        try {
-          const subId = _activeSubAccount ? _activeSubAccount.id : null;
-          if (subId) {
-            const res  = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
-              headers: { 'Authorization': 'Bearer ' + SESSION.token }
-            });
-            if (res.ok) {
-              const data = await res.json();
-              if (data.gemini_key) return data.gemini_key;
-              if (data.api_key)    return data.api_key;
-            }
-          }
-        } catch(e) {}
-      }
-      // Fallback: chave pública do sistema
-      return 'AIzaSyBdemoKeyAfilia2025'; // substitua pela chave real do sistema
-    }
+    // ── HIERARQUIA EXCLUSIVA DO CRIADOR DE VÍDEO ──────────────────────────
+    // 1º Gemini Pro  → chave GLOBAL do servidor
+    // 2º Nemotron    → chave OpenRouter da SUB-CONTA
+    // 3º Nemotron    → chave OpenRouter GLOBAL do servidor
+    // NÃO interfere com a hierarquia do gerador automático existente.
+    // ──────────────────────────────────────────────────────────────────────
 
-    async function vcChamarGemini(key, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
-      const systemPrompt = `Você é um roteirista especialista em vídeos para redes sociais de afiliados e criadores de conteúdo.
+    const VC_SYSTEM_PROMPT = (formato, duracao, estilo, narrador, legendas) =>
+      `Você é um roteirista especialista em vídeos para redes sociais de afiliados e criadores de conteúdo brasileiro.
 Crie um roteiro completo para um vídeo ${formato} de ${duracao}, estilo ${estilo}, narrador ${narrador}${legendas ? ', com legendas automáticas' : ''}.
 
-Responda EXATAMENTE neste formato JSON (sem markdown, sem backticks):
+Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem comentários):
 {
-  "titulo": "Título chamativo do vídeo",
-  "gancho": "Frase de abertura impactante (0-3s)",
-  "roteiro": "Roteiro completo cena a cena com timestamps",
-  "narracao": "Texto completo da narração para ser lido",
-  "legenda": "Legenda para redes sociais com emojis",
-  "hashtags": "#tag1 #tag2 #tag3 #tag4 #tag5",
+  "titulo": "Título chamativo do vídeo (máx 60 caracteres)",
+  "gancho": "Frase de abertura impactante para os primeiros 3 segundos",
+  "roteiro": "Roteiro completo cena a cena com timestamps. Ex: [00:00] Cena 1...",
+  "narracao": "Texto completo da narração para ser gravado em voz off",
+  "legenda": "Legenda completa para redes sociais com emojis e chamada para ação",
+  "hashtags": "#tag1 #tag2 #tag3 #tag4 #tag5 #tag6 #tag7",
   "cta": "Call to action final do vídeo",
-  "dicas": "3 dicas de produção para este vídeo"
+  "dicas": "3 dicas práticas de produção para este vídeo específico"
 }`;
 
-      // Montar partes da mensagem
-      const parts = [{ text: 'Crie um roteiro para: ' + prompt }];
+    function vcParseJson(raw) {
+      try {
+        const clean = raw.replace(/```json|```/g, '').trim();
+        const match = clean.match(/\{[\s\S]*\}/);
+        return match ? JSON.parse(match[0]) : null;
+      } catch(e) { return null; }
+    }
 
-      // Adicionar imagens se houver
-      for (const img of imagens) {
-        parts.push({
-          inline_data: { mime_type: img.mime, data: img.b64 }
+    // Carrega ai-settings da sub-conta ativa (openrouter_api_key)
+    async function vcLoadSubSettings() {
+      if (!SESSION) return {};
+      const subId = _activeSubAccount ? _activeSubAccount.id : null;
+      if (!subId) return {};
+      try {
+        const res = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
-        parts.push({ text: 'Considere esta imagem do produto na criação do roteiro.' });
+        if (!res.ok) return {};
+        const data = await res.json();
+        return data.settings || data || {};
+      } catch(e) { return {}; }
+    }
+
+    // Carrega chaves globais do servidor (gemini_key e openrouter_key globais)
+    async function vcLoadGlobalKeys() {
+      try {
+        const res = await fetch(API + '/api/system/ai-keys', {
+          headers: { 'Authorization': 'Bearer ' + (SESSION ? SESSION.token : '') }
+        });
+        if (!res.ok) return {};
+        const data = await res.json();
+        return data || {};
+      } catch(e) { return {}; }
+    }
+
+    // 1º tentativa: Gemini Pro com chave global
+    async function vcChamarGemini(geminiKey, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
+      const parts = [];
+      // Imagens primeiro (inline_data)
+      for (const img of imagens) {
+        parts.push({ inline_data: { mime_type: img.mime, data: img.b64 } });
       }
+      parts.push({
+        text: (imagens.length ? 'Usando as imagens acima como referência do produto, ' : '') +
+              'Crie um roteiro para: ' + prompt
+      });
 
       const body = {
-        contents: [
-          { role: 'user', parts: [{ text: systemPrompt }] },
-          { role: 'model', parts: [{ text: 'Entendido. Vou criar o roteiro completo.' }] },
-          { role: 'user', parts }
-        ],
+        system_instruction: { parts: [{ text: VC_SYSTEM_PROMPT(formato, duracao, estilo, narrador, legendas) }] },
+        contents: [{ role: 'user', parts }],
         generationConfig: { temperature: 0.85, maxOutputTokens: 2048 }
       };
 
       const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + key,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        }
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + geminiKey,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
       );
-
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error((err.error && err.error.message) || 'Erro na API Gemini');
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err.error && err.error.message) || 'Gemini erro ' + res.status);
       }
-
       const data = await res.json();
       const raw  = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
-
-      // Parse JSON
-      let parsed;
-      try {
-        const clean = raw.replace(/```json|```/g, '').trim();
-        parsed = JSON.parse(clean);
-      } catch(e) {
-        // Se não parsear, retorna o texto bruto como roteiro
-        parsed = { titulo: 'Roteiro Gerado', roteiro: raw, narracao: raw, legenda: '', hashtags: '', cta: '', dicas: '' };
-      }
+      const parsed = vcParseJson(raw);
+      if (!parsed) throw new Error('Gemini retornou resposta inválida.');
       return parsed;
+    }
+
+    // 2º/3º tentativa: Nemotron via OpenRouter
+    async function vcChamarNemotron(orKey, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
+      const userContent = [];
+      for (const img of imagens) {
+        userContent.push({ type: 'image_url', image_url: { url: 'data:' + img.mime + ';base64,' + img.b64 } });
+      }
+      userContent.push({
+        type: 'text',
+        text: (imagens.length ? 'Usando as imagens acima como referência do produto, crie um roteiro para: ' : 'Crie um roteiro para: ') + prompt
+      });
+
+      const body = {
+        model: 'nvidia/llama-3.1-nemotron-ultra-253b-v1:free',
+        messages: [
+          { role: 'system', content: VC_SYSTEM_PROMPT(formato, duracao, estilo, narrador, legendas) },
+          { role: 'user',   content: userContent }
+        ],
+        temperature: 0.82,
+        max_tokens: 2048
+      };
+
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + orKey,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://afilia.app',
+          'X-Title': 'Afilia IA'
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err.error && err.error.message) || 'OpenRouter erro ' + res.status);
+      }
+      const data = await res.json();
+      const raw  = (data.choices?.[0]?.message?.content || '').trim();
+      const parsed = vcParseJson(raw);
+      if (!parsed) throw new Error('OpenRouter retornou resposta inválida.');
+      return parsed;
+    }
+
+    // Orquestrador: tenta cada camada na ordem correta
+    async function vcGerarComHierarquia(prompt, formato, duracao, estilo, narrador, legendas, imagens) {
+      if (!SESSION) throw new Error('Faça login para usar a IA.');
+
+      const [subSettings, globalKeys] = await Promise.all([vcLoadSubSettings(), vcLoadGlobalKeys()]);
+
+      const geminiGlobal = globalKeys.gemini_key   || globalKeys.geminiKey   || '';
+      const orSubConta   = subSettings.openrouter_api_key || '';
+      const orGlobal     = globalKeys.openrouter_key || globalKeys.openrouterKey || '';
+
+      // 1º — Gemini Pro global
+      if (geminiGlobal) {
+        try {
+          return await vcChamarGemini(geminiGlobal, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+        } catch(e) {
+          console.warn('[VC] Gemini global falhou:', e.message);
+        }
+      }
+
+      // 2º — Nemotron via OpenRouter da sub-conta
+      if (orSubConta) {
+        try {
+          return await vcChamarNemotron(orSubConta, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+        } catch(e) {
+          console.warn('[VC] Nemotron sub-conta falhou:', e.message);
+        }
+      }
+
+      // 3º — Nemotron via OpenRouter global
+      if (orGlobal) {
+        try {
+          return await vcChamarNemotron(orGlobal, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+        } catch(e) {
+          console.warn('[VC] Nemotron global falhou:', e.message);
+        }
+      }
+
+      throw new Error('Nenhuma chave de IA disponível. Verifique Configurações → Ajustes de IA.');
     }
 
     // Animação de progresso
@@ -4241,10 +4351,17 @@ Responda EXATAMENTE neste formato JSON (sem markdown, sem backticks):
         const inp  = document.getElementById('vc-img-input-' + i);
         const prev = document.getElementById('vc-img-preview-' + i);
         const slot = document.getElementById('vc-img-slot-' + i);
+        const plus = document.getElementById('vc-img-plus-' + i);
+        const lbl  = document.getElementById('vc-img-lbl-' + i);
         if (inp)  inp.value = '';
         if (prev) { prev.style.display = 'none'; prev.src = ''; }
         if (slot) { slot.style.borderStyle = 'dashed'; slot.style.borderColor = '#3a3a3a'; }
+        if (plus) plus.style.display = 'flex';
+        if (lbl)  lbl.style.display  = '';
       }
+      // Limpar msg de erro se houver
+      const errMsg = document.querySelector('#vc-step-editor .vc-err-msg');
+      if (errMsg) errMsg.remove();
       document.getElementById('vc-legendas').classList.remove('on');
       // Reset chips para padrão
       vcShowStep('editor');
