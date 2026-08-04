@@ -2617,6 +2617,51 @@
             <option value="afirmacao" ${s.gancho==='afirmacao' ? 'selected' : ''}>Afirmação</option>
             <option value="numero" ${s.gancho==='numero' ? 'selected' : ''}>Número / dado</option>
           </select>
+
+          <div class="field-label">Presença humana no vídeo</div>
+          <select id="ais-presenca" onchange="aiSettingsTogglePessoa()">
+            <option value="sem_humano" ${(!s.presenca_humana || s.presenca_humana==='sem_humano') ? 'selected' : ''}>Sem pessoas (só produto)</option>
+            <option value="mao_segurando" ${s.presenca_humana==='mao_segurando' ? 'selected' : ''}>Mão segurando o produto</option>
+            <option value="pessoa_usando" ${s.presenca_humana==='pessoa_usando' ? 'selected' : ''}>Pessoa usando o produto</option>
+          </select>
+
+          <div id="ais-pessoa-detalhes" style="display:${(s.presenca_humana && s.presenca_humana!=='sem_humano') ? 'block' : 'none'};">
+            <div class="field-label">Gênero da pessoa</div>
+            <select id="ais-genero">
+              <option value="indiferente" ${(!s.genero_pessoa || s.genero_pessoa==='indiferente') ? 'selected' : ''}>Indiferente</option>
+              <option value="homem" ${s.genero_pessoa==='homem' ? 'selected' : ''}>Homem</option>
+              <option value="mulher" ${s.genero_pessoa==='mulher' ? 'selected' : ''}>Mulher</option>
+            </select>
+
+            <div class="field-label">Faixa etária</div>
+            <select id="ais-idade">
+              <option value="indiferente" ${(!s.idade_pessoa || s.idade_pessoa==='indiferente') ? 'selected' : ''}>Indiferente</option>
+              <option value="jovem" ${s.idade_pessoa==='jovem' ? 'selected' : ''}>Jovem (18-25)</option>
+              <option value="adulto" ${s.idade_pessoa==='adulto' ? 'selected' : ''}>Adulto (25-45)</option>
+              <option value="maduro" ${s.idade_pessoa==='maduro' ? 'selected' : ''}>Maduro (45+)</option>
+            </select>
+          </div>
+
+          <div class="field-label">Fotos do produto no prompt</div>
+          <select id="ais-fotos">
+            <option value="1" ${(!s.fotos_prompt || s.fotos_prompt===1 || s.fotos_prompt==='1') ? 'selected' : ''}>1 foto</option>
+            <option value="2" ${(s.fotos_prompt===2 || s.fotos_prompt==='2') ? 'selected' : ''}>2 fotos</option>
+            <option value="3" ${(s.fotos_prompt===3 || s.fotos_prompt==='3') ? 'selected' : ''}>3 fotos</option>
+          </select>
+        </div>
+
+        <div class="cal-day-card">
+          <div class="cal-day-card-head">
+            <h3>Personalização</h3>
+            <span class="cal-status-badge inactive">Opcional</span>
+          </div>
+          <div class="cal-category-row">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Instruções extras para a IA
+          </div>
+          <div class="field-label" style="margin-top:0;">Instruções livres (aplicadas em todo conteúdo gerado)</div>
+          <textarea id="ais-instrucoes" rows="4" placeholder="Ex: sempre mencione frete grátis, público são mecânicos profissionais, use gírias jovens..." style="width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px 16px; color:#fff; font-family:inherit; font-size:0.95rem; resize:vertical; margin-bottom:8px;">${escapeHtml(s.instrucoes_extras || '')}</textarea>
+          <div style="font-size:0.75rem; color:var(--text-faint); line-height:1.4;">Essas instruções são adicionadas ao final de todos os textos e do prompt de vídeo gerados pela IA.</div>
         </div>
 
         <div class="cal-day-card">
@@ -2686,6 +2731,13 @@
       if (tamanho) document.getElementById('ais-chip-tamanho').textContent = tamanho.value;
     }
 
+    function aiSettingsTogglePessoa() {
+      const presenca = document.getElementById('ais-presenca');
+      const detalhes = document.getElementById('ais-pessoa-detalhes');
+      if (!presenca || !detalhes) return;
+      detalhes.style.display = presenca.value === 'sem_humano' ? 'none' : 'block';
+    }
+
     async function saveAiSettings(subId) {
       const st = document.getElementById('ais-status');
       const btn = document.querySelector('#aiSettingsContent .btn');
@@ -2701,6 +2753,11 @@
         duracao_video: parseInt(document.getElementById('ais-duracao').value),
         narracao: document.getElementById('ais-narracao').value,
         gancho: document.getElementById('ais-gancho').value,
+        presenca_humana: document.getElementById('ais-presenca').value,
+        genero_pessoa: document.getElementById('ais-genero').value,
+        idade_pessoa: document.getElementById('ais-idade').value,
+        fotos_prompt: parseInt(document.getElementById('ais-fotos').value),
+        instrucoes_extras: document.getElementById('ais-instrucoes').value.trim(),
         openrouter_api_key: document.getElementById('ais-openrouter-key').value.trim()
       };
       try {
