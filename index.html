@@ -2682,6 +2682,10 @@
         return;
       }
       const subId = SESSION._activeSubId || (SESSION.affiliate && SESSION.affiliate.id) || SESSION.id;
+      if (!subId) {
+        content.innerHTML = '<div class="status err" style="display:block;">&#10060; Nenhuma conta selecionada. Volte ao início e selecione uma conta.</div>';
+        return;
+      }
       try {
         const res = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
