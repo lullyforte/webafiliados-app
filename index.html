@@ -4076,20 +4076,21 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       } catch(e) { return {}; }
     }
 
-    // Carrega chaves globais do servidor (gemini_key e openrouter_key globais)
+    // Carrega chave Gemini Pro global do servidor (endpoint exclusivo do Criador de Vídeo)
     async function vcLoadGlobalKeys() {
       try {
-        const res = await fetch(API + '/api/system/ai-keys', {
+        const res = await fetch(API + '/api/subaccounts/system/gemini-key', {
           headers: { 'Authorization': 'Bearer ' + (SESSION ? SESSION.token : '') }
         });
         if (!res.ok) return {};
         const data = await res.json();
-        return data || {};
+        // Retorna no formato esperado pelo orquestrador
+        return { gemini_key: data.gemini_key || '', gemini_model: data.model || 'gemini-2.5-pro' };
       } catch(e) { return {}; }
     }
 
     // 1º tentativa: Gemini Pro com chave global
-    async function vcChamarGemini(geminiKey, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
+    async function vcChamarGemini(geminiKey, geminiModel, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
       const parts = [];
       // Imagens primeiro (inline_data)
       for (const img of imagens) {
@@ -4107,7 +4108,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       };
 
       const res = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + geminiKey,
+        'https://generativelanguage.googleapis.com/v1beta/models/' + geminiModel + ':generateContent?key=' + geminiKey,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
       );
       if (!res.ok) {
@@ -4169,14 +4170,14 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
       const [subSettings, globalKeys] = await Promise.all([vcLoadSubSettings(), vcLoadGlobalKeys()]);
 
-      const geminiGlobal = globalKeys.gemini_key   || globalKeys.geminiKey   || '';
+      const geminiGlobal = globalKeys.gemini_key || '';
+      const geminiModel  = globalKeys.gemini_model || 'gemini-2.5-pro';
       const orSubConta   = subSettings.openrouter_api_key || '';
-      const orGlobal     = globalKeys.openrouter_key || globalKeys.openrouterKey || '';
 
-      // 1º — Gemini Pro global
+      // 1º — Gemini Pro global (GEMINI_PRO_API_KEY do Railway)
       if (geminiGlobal) {
         try {
-          return await vcChamarGemini(geminiGlobal, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+          return await vcChamarGemini(geminiGlobal, geminiModel, prompt, formato, duracao, estilo, narrador, legendas, imagens);
         } catch(e) {
           console.warn('[VC] Gemini global falhou:', e.message);
         }
@@ -4191,16 +4192,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         }
       }
 
-      // 3º — Nemotron via OpenRouter global
-      if (orGlobal) {
-        try {
-          return await vcChamarNemotron(orGlobal, prompt, formato, duracao, estilo, narrador, legendas, imagens);
-        } catch(e) {
-          console.warn('[VC] Nemotron global falhou:', e.message);
-        }
-      }
-
-      throw new Error('Nenhuma chave de IA disponível. Verifique Configurações → Ajustes de IA.');
+      throw new Error('Gemini Pro indisponível e sub-conta sem chave OpenRouter. Configure em Ajustes de IA.');
     }
 
     // Animação de progresso
