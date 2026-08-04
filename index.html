@@ -1092,8 +1092,8 @@
           <span class="subaccount-add-label">Nova sub-conta</span>
         </div>
       </div>
-      <!-- SEÇÃO: Convites + Aprovações -->
-      <div class="card">
+      <!-- SEÇÃO: Convites + Aprovações (só admin) -->
+      <div class="card" id="adminInvitesCard" style="display:none;">
         <div class="subaccount-section-title">Convites</div>
         <button class="btn" id="genInviteBtn" onclick="generateInviteCode()" style="margin-bottom:10px;">Gerar link de convite</button>
         <div id="inviteCodeBox" style="display:none;margin-bottom:10px;">
@@ -1332,6 +1332,7 @@
   <script>
     const API = 'https://webafiliados-backend-production.up.railway.app';
     let SESSION = null;
+    let IS_ADMIN = false;
     let heroTimer = null;
     let heroIndex = 0;
     let heroSlides = [];
@@ -1598,6 +1599,7 @@
       if (SESSION) {
         document.body.classList.remove('pre-login');
         await _ensureSubAccounts();
+        refreshAdminStatus();
         _goToDashOrOnboarding();
       } else {
         document.body.classList.add('pre-login');
@@ -2011,6 +2013,7 @@
         document.body.classList.remove('pre-login');
         _subAccounts = [];
         await _ensureSubAccounts();
+        refreshAdminStatus();
         _goToDashOrOnboarding();
       } catch(e) {
         showStatus(st, e.message, 'err');
@@ -2031,6 +2034,22 @@
       _updateSubAccountChip();
       document.getElementById('pageSubtitle').style.display = 'none';
       document.getElementById('loginSection').style.display = 'block';
+    }
+
+    async function refreshAdminStatus() {
+      const card = document.getElementById('adminInvitesCard');
+      try {
+        const res = await fetch(API + '/api/affiliates/me', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        if (!res.ok) throw new Error('Nao foi possivel confirmar admin');
+        const data = await res.json();
+        IS_ADMIN = !!(data.affiliate && data.affiliate.is_admin);
+      } catch (e) {
+        // Em caso de qualquer erro, assume que NAO é admin (padrao seguro)
+        IS_ADMIN = false;
+      }
+      if (card) card.style.display = IS_ADMIN ? 'block' : 'none';
     }
 
     async function _goToDashOrOnboarding() {
