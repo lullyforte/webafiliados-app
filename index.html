@@ -3932,6 +3932,9 @@ function showSearchNowScreen() {
         if (ha) ha.style.display = 'flex';
         setActiveNav('navVideoIA');
         vcShowStep('editor');
+        // Limpar qualquer erro anterior
+        const oldErr = document.querySelector('#vc-step-editor .vc-err-msg');
+        if (oldErr) oldErr.remove();
       } catch(e) {
         console.error('[VideoCreator] Erro ao abrir:', e);
       }
@@ -4015,6 +4018,9 @@ function showSearchNowScreen() {
       } catch(e) {
         clearInterval(_vcProgressTimer);
         vcShowStep('editor');
+        // Limpar erro anterior antes de mostrar novo
+        const oldErr2 = document.querySelector('#vc-step-editor .vc-err-msg');
+        if (oldErr2) oldErr2.remove();
         // Mostrar erro visível dentro do card
         const errBox = document.createElement('div');
         errBox.className = 'status err';
@@ -4164,35 +4170,27 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       return parsed;
     }
 
-    // Orquestrador: tenta cada camada na ordem correta
+    // Orquestrador: chama o backend que gerencia a hierarquia Gemini → OpenRouter
     async function vcGerarComHierarquia(prompt, formato, duracao, estilo, narrador, legendas, imagens) {
       if (!SESSION) throw new Error('Faça login para usar a IA.');
 
-      const [subSettings, globalKeys] = await Promise.all([vcLoadSubSettings(), vcLoadGlobalKeys()]);
+      const subAccountId = _activeSubAccount ? _activeSubAccount.id : null;
 
-      const geminiGlobal = globalKeys.gemini_key || '';
-      const geminiModel  = globalKeys.gemini_model || 'gemini-2.5-pro';
-      const orSubConta   = subSettings.openrouter_api_key || '';
+      const body = { prompt, formato, duracao, estilo, narrador, legendas, subAccountId, imagens };
 
-      // 1º — Gemini Pro global (GEMINI_PRO_API_KEY do Railway)
-      if (geminiGlobal) {
-        try {
-          return await vcChamarGemini(geminiGlobal, geminiModel, prompt, formato, duracao, estilo, narrador, legendas, imagens);
-        } catch(e) {
-          console.warn('[VC] Gemini global falhou:', e.message);
-        }
-      }
+      const res = await fetch(API + '/api/ai/video-script', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + SESSION.token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
 
-      // 2º — Nemotron via OpenRouter da sub-conta
-      if (orSubConta) {
-        try {
-          return await vcChamarNemotron(orSubConta, prompt, formato, duracao, estilo, narrador, legendas, imagens);
-        } catch(e) {
-          console.warn('[VC] Nemotron sub-conta falhou:', e.message);
-        }
-      }
-
-      throw new Error('Gemini Pro indisponível e sub-conta sem chave OpenRouter. Configure em Ajustes de IA.');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar roteiro.');
+      if (!data.roteiro) throw new Error('Resposta inválida do servidor.');
+      return data.roteiro;
     }
 
     // Animação de progresso
