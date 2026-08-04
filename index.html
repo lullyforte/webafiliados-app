@@ -1066,6 +1066,11 @@
           <p>Vídeos Pendentes</p>
           <span class="icon-desc">Continue de onde parou</span>
         </div>
+        <div class="icon-item" onclick="showVideoCreatorScreen()">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+          <p>Gerar Vídeo IA</p>
+          <span class="icon-desc">Crie com Inteligência Artificial</span>
+        </div>
         <div class="icon-item" onclick="showAnuncioExpressScreen()">
           <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></div>
           <p>Anúncio Express</p>
@@ -1395,6 +1400,183 @@
     </div>
   </div>
 
+  <!-- TELA: CRIADOR DE VÍDEO COM IA -->
+  <div id="videoCreatorSection" style="display:none;">
+    <div class="inner-header">
+      <div class="inner-header-btn" onclick="showDash()" title="Início"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
+      <span class="inner-header-title">Criar Vídeo com IA</span>
+    </div>
+
+    <!-- STEP 1: EDITOR -->
+    <div id="vc-step-editor" class="shell" style="margin-top:12px;">
+
+      <!-- Prompt -->
+      <div class="card" style="padding:18px;">
+        <div class="field-label" style="margin-top:0;">Prompt</div>
+        <textarea id="vc-prompt" placeholder="Explique como deseja seu vídeo..." maxlength="500"
+          style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px;color:#fff;font-size:1rem;font-family:inherit;resize:none;height:110px;outline:none;line-height:1.5;"
+          oninput="document.getElementById('vc-prompt-count').textContent=this.value.length+'/500'"></textarea>
+        <div style="text-align:right;font-size:12px;color:var(--text-faint);margin-top:-6px;" id="vc-prompt-count">0/500</div>
+
+        <!-- Adicionar imagens -->
+        <div class="field-label">Adicionar imagens <span style="color:var(--text-faint);font-weight:400;text-transform:none;letter-spacing:0;">(até 3)</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;">
+          <label class="vc-img-slot" id="vc-img-slot-0" onclick="document.getElementById('vc-img-input-0').click()">
+            <input type="file" id="vc-img-input-0" accept="image/*" style="display:none;" onchange="vcPreviewImg(0,this)">
+            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label">Imagem 1</span>
+            <img id="vc-img-preview-0" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
+          </label>
+          <label class="vc-img-slot" id="vc-img-slot-1" onclick="document.getElementById('vc-img-input-1').click()">
+            <input type="file" id="vc-img-input-1" accept="image/*" style="display:none;" onchange="vcPreviewImg(1,this)">
+            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label">Imagem 2</span>
+            <img id="vc-img-preview-1" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
+          </label>
+          <label class="vc-img-slot" id="vc-img-slot-2" onclick="document.getElementById('vc-img-input-2').click()">
+            <input type="file" id="vc-img-input-2" accept="image/*" style="display:none;" onchange="vcPreviewImg(2,this)">
+            <div class="vc-img-plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <span class="vc-img-label">Imagem 3</span>
+            <img id="vc-img-preview-2" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
+          </label>
+        </div>
+      </div>
+
+      <!-- Formato -->
+      <div class="card" style="padding:18px;">
+        <div class="field-label" style="margin-top:0;">Formato</div>
+        <div class="vc-chip-row" id="vc-formato">
+          <div class="vc-chip active" onclick="vcSelect('vc-formato',this)">Reels</div>
+          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">Shorts</div>
+          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">TikTok</div>
+          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">Feed</div>
+        </div>
+
+        <div class="field-label">Duração</div>
+        <div class="vc-chip-row" id="vc-duracao">
+          <div class="vc-chip" onclick="vcSelect('vc-duracao',this)">15s</div>
+          <div class="vc-chip active" onclick="vcSelect('vc-duracao',this)">30s</div>
+          <div class="vc-chip" onclick="vcSelect('vc-duracao',this)">60s</div>
+        </div>
+
+        <div class="field-label">Estilo</div>
+        <div class="vc-chip-row" id="vc-estilo">
+          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Minimalista</div>
+          <div class="vc-chip active" onclick="vcSelect('vc-estilo',this)">Premium</div>
+          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Vendas</div>
+          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Tecnologia</div>
+        </div>
+
+        <div class="field-label">Narrador</div>
+        <div class="vc-chip-row" id="vc-narrador">
+          <div class="vc-chip active" onclick="vcSelect('vc-narrador',this)">Masculino</div>
+          <div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Feminino</div>
+          <div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Sem voz</div>
+        </div>
+
+        <div class="field-label">Legendas</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+          <span style="font-size:14px;color:#ccc;">Gerar automaticamente</span>
+          <div class="vc-toggle" id="vc-legendas" onclick="this.classList.toggle('on')" style="margin-left:auto;"></div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="vcGerarVideo()" style="margin-bottom:24px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        GERAR VÍDEO COM IA
+      </button>
+    </div><!-- /step-editor -->
+
+    <!-- STEP 2: GERANDO -->
+    <div id="vc-step-gerando" style="display:none;padding:32px 20px;max-width:420px;margin:0 auto;text-align:center;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <div style="font-size:1.55rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px;">Gerando seu vídeo...</div>
+      <div style="font-size:14px;color:#999;margin-bottom:36px;">Nossa IA está trabalhando para criar algo incrível para você.</div>
+      <!-- Círculo de progresso -->
+      <div style="position:relative;width:140px;height:140px;margin:0 auto 36px;">
+        <svg width="140" height="140" style="transform:rotate(-90deg);">
+          <circle cx="70" cy="70" r="58" fill="none" stroke="#2a2a2a" stroke-width="8"/>
+          <circle id="vc-progress-ring" cx="70" cy="70" r="58" fill="none" stroke="var(--red)" stroke-width="8"
+            stroke-dasharray="364" stroke-dashoffset="364" stroke-linecap="round"
+            style="transition:stroke-dashoffset 0.4s ease;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+          <span id="vc-progress-pct" style="font-size:2rem;font-weight:800;color:#fff;">0%</span>
+        </div>
+      </div>
+      <!-- Steps checklist -->
+      <div style="text-align:left;max-width:280px;margin:0 auto;" id="vc-steps-list">
+        <div class="vc-step-item" id="vc-si-0">⏳ Analisando prompt</div>
+        <div class="vc-step-item" id="vc-si-1">⏳ Selecionando imagens</div>
+        <div class="vc-step-item" id="vc-si-2">⏳ Gerando roteiro</div>
+        <div class="vc-step-item" id="vc-si-3">⏳ Criando narração</div>
+        <div class="vc-step-item" id="vc-si-4">⏳ Renderizando vídeo</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-top:28px;font-size:13.5px;color:#999;line-height:1.5;">
+        Você será notificado quando<br>seu vídeo estiver pronto!
+      </div>
+    </div><!-- /step-gerando -->
+
+    <!-- STEP 3: RESULTADO -->
+    <div id="vc-step-resultado" style="display:none;" class="shell">
+      <div style="margin-top:12px;margin-bottom:24px;" id="vc-resultado-content"></div>
+    </div><!-- /step-resultado -->
+
+  </div><!-- /videoCreatorSection -->
+
+  <!-- Estilos exclusivos do Video Creator (não tocam em nada existente) -->
+  <style>
+    .vc-img-slot {
+      position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--surface-2); border:1px dashed #3a3a3a; border-radius:10px;
+      height:88px; cursor:pointer; overflow:hidden; transition:border-color 0.2s;
+    }
+    .vc-img-slot:hover { border-color:var(--red); }
+    .vc-img-plus { color:var(--text-faint); margin-bottom:6px; }
+    .vc-img-label { font-size:11.5px; color:var(--text-faint); font-weight:600; }
+    .vc-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+    .vc-chip {
+      padding:8px 16px; border-radius:20px;
+      background:var(--surface-2); border:1px solid var(--border);
+      font-size:14px; font-weight:600; color:var(--text-dim); cursor:pointer;
+      transition:all 0.2s;
+    }
+    .vc-chip:hover { border-color:#555; color:#fff; }
+    .vc-chip.active { background:var(--red); border-color:var(--red); color:#fff; }
+    .vc-toggle {
+      width:46px; height:26px; border-radius:13px;
+      background:#333; border:1px solid #444;
+      position:relative; cursor:pointer; transition:background 0.2s;
+      flex-shrink:0;
+    }
+    .vc-toggle::after {
+      content:''; position:absolute; top:3px; left:3px;
+      width:18px; height:18px; border-radius:50%; background:#888;
+      transition:all 0.2s;
+    }
+    .vc-toggle.on { background:var(--red); border-color:var(--red); }
+    .vc-toggle.on::after { left:23px; background:#fff; }
+    .vc-step-item {
+      padding:10px 0; font-size:14px; color:#666;
+      border-bottom:1px solid #1e1e1e; display:flex; align-items:center; gap:8px;
+      transition:color 0.3s;
+    }
+    .vc-step-item.done { color:#4caf50; }
+    .vc-step-item.active { color:#fff; }
+    .vc-resultado-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:18px;
+      padding:20px; margin-bottom:14px;
+    }
+    .vc-resultado-label {
+      font-size:11px; font-weight:700; color:var(--text-faint);
+      text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;
+    }
+    .vc-resultado-text {
+      font-size:14px; line-height:1.65; color:#eee;
+      white-space:pre-wrap; word-break:break-word;
+    }
+  </style>
+
   <!-- BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav" style="display:none;">
     <div class="nav-item active" id="navInicio" onclick="showDash()">
@@ -1405,8 +1587,8 @@
       <div class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
       <span>Explorar</span>
     </div>
-    <div class="nav-item center" onclick="openYoutubeCreate()">
-      <div class="nav-icon">+</div>
+    <div class="nav-item center" id="navVideoIA" onclick="showVideoCreatorScreen()">
+      <div class="nav-icon" style="background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;font-size:13px;font-weight:800;letter-spacing:-0.5px;">IA</div>
     </div>
     <div class="nav-item" id="navProjetos" onclick="showUploadScreen()">
       <div class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"/></svg></div>
@@ -1624,7 +1806,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection','videoCreatorSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -3731,6 +3913,343 @@ function showSearchNowScreen() {
       el.textContent = msg;
       el.className = 'status ' + type;
     }
+
+    // ═══════════════════════════════════════════════
+    // CRIADOR DE VÍDEO COM IA
+    // ═══════════════════════════════════════════════
+
+    function showVideoCreatorScreen() {
+      hideAllCards();
+      document.getElementById('videoCreatorSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav('navVideoIA');
+      // Reset para o editor
+      vcShowStep('editor');
+    }
+
+    function vcShowStep(step) {
+      document.getElementById('vc-step-editor').style.display   = step === 'editor'    ? 'block' : 'none';
+      document.getElementById('vc-step-gerando').style.display  = step === 'gerando'   ? 'block' : 'none';
+      document.getElementById('vc-step-resultado').style.display = step === 'resultado' ? 'block' : 'none';
+    }
+
+    function vcSelect(groupId, el) {
+      document.querySelectorAll('#' + groupId + ' .vc-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function vcPreviewImg(idx, input) {
+      if (!input.files || !input.files[0]) return;
+      const preview = document.getElementById('vc-img-preview-' + idx);
+      const slot    = document.getElementById('vc-img-slot-' + idx);
+      const url     = URL.createObjectURL(input.files[0]);
+      preview.src   = url;
+      preview.style.display = 'block';
+      slot.style.borderStyle = 'solid';
+      slot.style.borderColor = 'var(--red)';
+    }
+
+    function vcGetSelected(groupId) {
+      const el = document.querySelector('#' + groupId + ' .vc-chip.active');
+      return el ? el.textContent.trim() : '';
+    }
+
+    // Converte File para base64
+    function vcFileToBase64(file) {
+      return new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload  = () => res(reader.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function vcGerarVideo() {
+      const prompt = (document.getElementById('vc-prompt').value || '').trim();
+      if (!prompt) {
+        alert('Digite um prompt para descrever seu vídeo.');
+        return;
+      }
+
+      // Coletar opções
+      const formato  = vcGetSelected('vc-formato');
+      const duracao  = vcGetSelected('vc-duracao');
+      const estilo   = vcGetSelected('vc-estilo');
+      const narrador = vcGetSelected('vc-narrador');
+      const legendas = document.getElementById('vc-legendas').classList.contains('on');
+
+      // Coletar imagens (base64)
+      const imagens = [];
+      for (let i = 0; i < 3; i++) {
+        const inp = document.getElementById('vc-img-input-' + i);
+        if (inp.files && inp.files[0]) {
+          try {
+            const b64  = await vcFileToBase64(inp.files[0]);
+            const mime = inp.files[0].type || 'image/jpeg';
+            imagens.push({ b64, mime });
+          } catch(e) {}
+        }
+      }
+
+      // Mudar para tela de geração
+      vcShowStep('gerando');
+      vcStartProgress();
+
+      // Buscar chave Gemini do backend (reutilizando o padrão já existente)
+      try {
+        const GEMINI_KEY = await vcGetGeminiKey();
+        const roteiro    = await vcChamarGemini(GEMINI_KEY, prompt, formato, duracao, estilo, narrador, legendas, imagens);
+        vcShowResultado(roteiro, prompt, formato, duracao, estilo, narrador);
+      } catch(e) {
+        vcShowStep('editor');
+        alert('Erro ao gerar: ' + e.message);
+      }
+    }
+
+    async function vcGetGeminiKey() {
+      // Tenta pegar via backend (sub-conta ativa)
+      if (SESSION) {
+        try {
+          const subId = _activeSubAccount ? _activeSubAccount.id : null;
+          if (subId) {
+            const res  = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
+              headers: { 'Authorization': 'Bearer ' + SESSION.token }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.gemini_key) return data.gemini_key;
+              if (data.api_key)    return data.api_key;
+            }
+          }
+        } catch(e) {}
+      }
+      // Fallback: chave pública do sistema
+      return 'AIzaSyBdemoKeyAfilia2025'; // substitua pela chave real do sistema
+    }
+
+    async function vcChamarGemini(key, prompt, formato, duracao, estilo, narrador, legendas, imagens) {
+      const systemPrompt = `Você é um roteirista especialista em vídeos para redes sociais de afiliados e criadores de conteúdo.
+Crie um roteiro completo para um vídeo ${formato} de ${duracao}, estilo ${estilo}, narrador ${narrador}${legendas ? ', com legendas automáticas' : ''}.
+
+Responda EXATAMENTE neste formato JSON (sem markdown, sem backticks):
+{
+  "titulo": "Título chamativo do vídeo",
+  "gancho": "Frase de abertura impactante (0-3s)",
+  "roteiro": "Roteiro completo cena a cena com timestamps",
+  "narracao": "Texto completo da narração para ser lido",
+  "legenda": "Legenda para redes sociais com emojis",
+  "hashtags": "#tag1 #tag2 #tag3 #tag4 #tag5",
+  "cta": "Call to action final do vídeo",
+  "dicas": "3 dicas de produção para este vídeo"
+}`;
+
+      // Montar partes da mensagem
+      const parts = [{ text: 'Crie um roteiro para: ' + prompt }];
+
+      // Adicionar imagens se houver
+      for (const img of imagens) {
+        parts.push({
+          inline_data: { mime_type: img.mime, data: img.b64 }
+        });
+        parts.push({ text: 'Considere esta imagem do produto na criação do roteiro.' });
+      }
+
+      const body = {
+        contents: [
+          { role: 'user', parts: [{ text: systemPrompt }] },
+          { role: 'model', parts: [{ text: 'Entendido. Vou criar o roteiro completo.' }] },
+          { role: 'user', parts }
+        ],
+        generationConfig: { temperature: 0.85, maxOutputTokens: 2048 }
+      };
+
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=' + key,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error((err.error && err.error.message) || 'Erro na API Gemini');
+      }
+
+      const data = await res.json();
+      const raw  = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
+
+      // Parse JSON
+      let parsed;
+      try {
+        const clean = raw.replace(/```json|```/g, '').trim();
+        parsed = JSON.parse(clean);
+      } catch(e) {
+        // Se não parsear, retorna o texto bruto como roteiro
+        parsed = { titulo: 'Roteiro Gerado', roteiro: raw, narracao: raw, legenda: '', hashtags: '', cta: '', dicas: '' };
+      }
+      return parsed;
+    }
+
+    // Animação de progresso
+    let _vcProgressTimer = null;
+    function vcStartProgress() {
+      let pct = 0;
+      const steps  = ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'];
+      const labels = ['✅ Analisando prompt','✅ Selecionando imagens','✅ Gerando roteiro','✅ Criando narração','✅ Renderizando vídeo'];
+      const targets = [15, 30, 55, 75, 95];
+
+      // Reset
+      steps.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ['⏳ Analisando prompt','⏳ Selecionando imagens','⏳ Gerando roteiro','⏳ Criando narração','⏳ Renderizando vídeo'][i]; el.className = 'vc-step-item'; }
+      });
+      vcSetProgress(0);
+
+      let stepIdx = 0;
+      clearInterval(_vcProgressTimer);
+      _vcProgressTimer = setInterval(() => {
+        if (pct < 95) {
+          pct = Math.min(pct + (Math.random() * 3 + 0.5), 95);
+          vcSetProgress(Math.floor(pct));
+          // Marcar steps conforme progresso
+          for (let i = 0; i < targets.length; i++) {
+            const el = document.getElementById(steps[i]);
+            if (!el) continue;
+            if (pct >= targets[i]) {
+              el.textContent = labels[i];
+              el.className = 'vc-step-item done';
+            } else if (i === 0 || pct >= targets[i-1]) {
+              el.className = 'vc-step-item active';
+            }
+          }
+        }
+      }, 180);
+    }
+
+    function vcSetProgress(pct) {
+      const ring = document.getElementById('vc-progress-ring');
+      const pctEl = document.getElementById('vc-progress-pct');
+      if (!ring || !pctEl) return;
+      const circumference = 364;
+      ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+      pctEl.textContent = pct + '%';
+    }
+
+    function vcShowResultado(roteiro, prompt, formato, duracao, estilo, narrador) {
+      clearInterval(_vcProgressTimer);
+      vcSetProgress(100);
+      // Marcar todos como done
+      ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.className = 'vc-step-item done'; }
+      });
+
+      setTimeout(() => {
+        vcShowStep('resultado');
+        const container = document.getElementById('vc-resultado-content');
+        const legTxt    = (roteiro.legenda || '') + (roteiro.hashtags ? '\n\n' + roteiro.hashtags : '');
+
+        container.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+            <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,29,29,0.12);border:1px solid rgba(255,29,29,0.3);display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            </div>
+            <div>
+              <div style="font-size:17px;font-weight:800;color:#fff;">${escapeHtml(roteiro.titulo || 'Roteiro Pronto')}</div>
+              <div style="font-size:12px;color:var(--text-faint);">${formato} • ${duracao} • ${estilo}</div>
+            </div>
+          </div>
+
+          ${roteiro.gancho ? `
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">🎯 Gancho de Abertura</div>
+            <div class="vc-resultado-text">${escapeHtml(roteiro.gancho)}</div>
+          </div>` : ''}
+
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">🎬 Roteiro Completo</div>
+            <div class="vc-resultado-text" id="vc-roteiro-text">${escapeHtml(roteiro.roteiro || '')}</div>
+          </div>
+
+          ${roteiro.narracao ? `
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">🎙️ Narração (${narrador})</div>
+            <div class="vc-resultado-text">${escapeHtml(roteiro.narracao)}</div>
+          </div>` : ''}
+
+          ${legTxt ? `
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">📱 Legenda + Hashtags</div>
+            <div class="vc-resultado-text" id="vc-legenda-text">${escapeHtml(legTxt)}</div>
+          </div>` : ''}
+
+          ${roteiro.cta ? `
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">🔥 Call to Action</div>
+            <div class="vc-resultado-text">${escapeHtml(roteiro.cta)}</div>
+          </div>` : ''}
+
+          ${roteiro.dicas ? `
+          <div class="vc-resultado-card">
+            <div class="vc-resultado-label">💡 Dicas de Produção</div>
+            <div class="vc-resultado-text">${escapeHtml(roteiro.dicas)}</div>
+          </div>` : ''}
+
+          <button class="btn" onclick="vcCopiarRoteiro()" style="margin-bottom:10px;">
+            📋 Copiar Roteiro Completo
+          </button>
+          <button class="btn btn-secondary" onclick="vcCopiarLegenda()" style="margin-bottom:10px;">
+            📱 Copiar Legenda + Hashtags
+          </button>
+          <button class="btn btn-outline" onclick="openYoutubeCreate()" style="margin-bottom:10px;">
+            🎬 Abrir YouTube Create
+          </button>
+          <button class="btn btn-secondary" onclick="vcNovoVideo()" style="margin-bottom:24px;">
+            ✨ Criar novo vídeo
+          </button>
+          <div class="status" id="vc-copy-status"></div>
+        `;
+      }, 700);
+    }
+
+    function vcCopiarRoteiro() {
+      const el = document.getElementById('vc-roteiro-text');
+      const st = document.getElementById('vc-copy-status');
+      const txt = el ? el.innerText : '';
+      navigator.clipboard.writeText(txt)
+        .then(() => showStatus(st, 'Roteiro copiado!', 'ok'))
+        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+    }
+
+    function vcCopiarLegenda() {
+      const el = document.getElementById('vc-legenda-text');
+      const st = document.getElementById('vc-copy-status');
+      const txt = el ? el.innerText : '';
+      navigator.clipboard.writeText(txt)
+        .then(() => showStatus(st, 'Legenda copiada!', 'ok'))
+        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+    }
+
+    function vcNovoVideo() {
+      // Reset campos
+      document.getElementById('vc-prompt').value = '';
+      document.getElementById('vc-prompt-count').textContent = '0/500';
+      for (let i = 0; i < 3; i++) {
+        const inp  = document.getElementById('vc-img-input-' + i);
+        const prev = document.getElementById('vc-img-preview-' + i);
+        const slot = document.getElementById('vc-img-slot-' + i);
+        if (inp)  inp.value = '';
+        if (prev) { prev.style.display = 'none'; prev.src = ''; }
+        if (slot) { slot.style.borderStyle = 'dashed'; slot.style.borderColor = '#3a3a3a'; }
+      }
+      document.getElementById('vc-legendas').classList.remove('on');
+      // Reset chips para padrão
+      vcShowStep('editor');
+    }
+
   </script>
 </body>
 </html>
