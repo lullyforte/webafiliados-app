@@ -1541,6 +1541,7 @@
       border:1px solid rgba(255,255,255,0.07);
       border-radius:20px; margin:0 16px 14px;
       padding:20px; position:relative; overflow:hidden;
+      box-sizing:border-box;
     }
     .vc-glass::before {
       content:''; position:absolute; top:0; left:0; right:0; height:1px;
@@ -1609,10 +1610,11 @@
 
     /* ── BTN GERAR ── */
     .vc-btn-gerar {
-      margin:4px 16px 8px; padding:17px; border-radius:16px; border:none; cursor:pointer;
+      padding:17px; border-radius:16px; border:none; cursor:pointer;
       background:linear-gradient(135deg,#ff1f1f 0%,#cc0000 100%);
       color:#fff; font-size:15px; font-weight:800; letter-spacing:0.5px;
-      display:flex; align-items:center; justify-content:center; gap:10px; width:calc(100% - 32px);
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%;
       box-shadow:0 8px 28px rgba(255,31,31,0.4), 0 2px 8px rgba(0,0,0,0.3);
       transition:all 0.2s; position:relative; overflow:hidden;
     }
@@ -1625,10 +1627,11 @@
     .vc-btn-gerar:active { transform:scale(0.98); }
 
     .vc-btn-secondary {
-      margin:0 16px 24px; padding:15px; border-radius:16px; cursor:pointer;
+      padding:15px; border-radius:16px; cursor:pointer;
       background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
       color:rgba(255,255,255,0.6); font-size:14px; font-weight:600;
-      display:flex; align-items:center; justify-content:center; gap:8px; width:calc(100% - 32px);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      width:100%;
       transition:all 0.2s;
     }
     .vc-btn-secondary:hover { border-color:rgba(255,255,255,0.2); color:#fff; }
