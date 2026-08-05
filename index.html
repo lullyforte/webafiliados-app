@@ -1400,182 +1400,335 @@
     </div>
   </div>
 
-  <!-- TELA: CRIADOR DE VÍDEO COM IA -->
+  <!-- ══ CRIADOR DE VÍDEO IA — DESIGN PREMIUM ════════════════════════════ -->
   <div id="videoCreatorSection" style="display:none;">
     <div class="inner-header">
-      <div class="inner-header-btn" onclick="showDash()" title="Início"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
+      <div class="inner-header-btn" onclick="showDash()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
       <span class="inner-header-title">Criar Vídeo com IA</span>
+      <div style="width:34px;"></div>
+    </div>
+    <div class="vc-steps-bar">
+      <div class="vc-step-dot active" id="vcs-0"><div class="vc-step-circle">1</div><span class="vc-step-label">Prompt</span></div>
+      <div class="vc-step-dot" id="vcs-1"><div class="vc-step-circle">2</div><span class="vc-step-label">Imagens</span></div>
+      <div class="vc-step-dot" id="vcs-2"><div class="vc-step-circle">3</div><span class="vc-step-label">Config</span></div>
+      <div class="vc-step-dot" id="vcs-3"><div class="vc-step-circle">4</div><span class="vc-step-label">Gerar</span></div>
+    </div>
+    <input type="file" id="vc-img-input-0" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(0,this)">
+    <input type="file" id="vc-img-input-1" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(1,this)">
+    <input type="file" id="vc-img-input-2" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(2,this)">
+
+    <!-- PASSO 1 -->
+    <div id="vc-passo-1" style="padding-top:16px;">
+      <div class="vc-glass">
+        <div class="vc-glass-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Prompt do Vídeo</div>
+        <textarea id="vc-prompt" class="vc-textarea" placeholder="Descreva o vídeo que deseja criar. Ex: Mãe recomenda galocha infantil impermeável para sua filha, foco nas cores vibrantes..." maxlength="1500" oninput="document.getElementById('vc-prompt-count').textContent=this.value.length+'/1500'"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.2);">Seja específico para melhores resultados</span>
+          <span id="vc-prompt-count" style="font-size:12px;color:rgba(255,31,31,0.5);font-weight:600;">0/1500</span>
+        </div>
+      </div>
+      <div style="margin:0 16px 24px;">
+        <button class="vc-btn-gerar" style="margin:0;" onclick="vcGoStep(2)">Próximo <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
     </div>
 
-    <!-- STEP 1: EDITOR -->
-    <div id="vc-step-editor" class="shell" style="margin-top:12px;">
+    <!-- PASSO 2 -->
+    <div id="vc-passo-2" style="display:none;padding-top:16px;">
+      <div class="vc-glass">
+        <div class="vc-glass-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>Imagens de Referência <span style="font-weight:400;opacity:0.4;text-transform:none;letter-spacing:0;font-size:10px;">(até 3)</span></div>
+        <div class="vc-img-grid">
+          <div class="vc-img-slot" id="vc-img-slot-0" onclick="document.getElementById('vc-img-input-0').click()"><div class="vc-img-plus" id="vc-img-plus-0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><span class="vc-img-label" id="vc-img-lbl-0">Imagem 1</span><img id="vc-img-preview-0" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+          <div class="vc-img-slot" id="vc-img-slot-1" onclick="document.getElementById('vc-img-input-1').click()"><div class="vc-img-plus" id="vc-img-plus-1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><span class="vc-img-label" id="vc-img-lbl-1">Imagem 2</span><img id="vc-img-preview-1" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+          <div class="vc-img-slot" id="vc-img-slot-2" onclick="document.getElementById('vc-img-input-2').click()"><div class="vc-img-plus" id="vc-img-plus-2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><span class="vc-img-label" id="vc-img-lbl-2">Imagem 3</span><img id="vc-img-preview-2" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;"></div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.18);line-height:1.5;">Adicione fotos do produto para resultados mais precisos. Opcional.</div>
+      </div>
+      <div style="display:flex;gap:10px;margin:0 16px 24px;">
+        <button class="vc-btn-secondary" style="margin:0;flex:0 0 52px;padding:15px 0;" onclick="vcGoStep(1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="vc-btn-gerar" style="margin:0;flex:1;" onclick="vcGoStep(3)">Próximo <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg></button>
+      </div>
+    </div>
 
-      <!-- Prompt -->
-      <div class="card" style="padding:18px;">
-        <div class="field-label" style="margin-top:0;">Prompt</div>
-        <textarea id="vc-prompt" placeholder="Explique como deseja seu vídeo..." maxlength="500"
-          style="width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px;color:#fff;font-size:1rem;font-family:inherit;resize:none;height:110px;outline:none;line-height:1.5;"
-          oninput="document.getElementById('vc-prompt-count').textContent=this.value.length+'/500'"></textarea>
-        <div style="text-align:right;font-size:12px;color:var(--text-faint);margin-top:-6px;" id="vc-prompt-count">0/500</div>
+    <!-- PASSO 3 -->
+    <div id="vc-passo-3" style="display:none;padding-top:16px;">
+      <div class="vc-glass"><div class="vc-glass-title">Formato</div><div class="vc-chip-row" id="vc-formato"><div class="vc-chip active" onclick="vcSelect('vc-formato',this)">Reels</div><div class="vc-chip" onclick="vcSelect('vc-formato',this)">Shorts</div><div class="vc-chip" onclick="vcSelect('vc-formato',this)">TikTok</div><div class="vc-chip" onclick="vcSelect('vc-formato',this)">Feed</div></div></div>
+      <div class="vc-glass"><div class="vc-glass-title">Duração</div><div class="vc-chip-row" id="vc-duracao"><div class="vc-chip" onclick="vcSelect('vc-duracao',this)">15s</div><div class="vc-chip active" onclick="vcSelect('vc-duracao',this)">30s</div><div class="vc-chip" onclick="vcSelect('vc-duracao',this)">60s</div></div></div>
+      <div class="vc-glass"><div class="vc-glass-title">Estilo Visual</div><div class="vc-chip-row" id="vc-estilo"><div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Minimalista</div><div class="vc-chip active" onclick="vcSelect('vc-estilo',this)">Premium</div><div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Vendas</div><div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Tecnologia</div></div></div>
+      <div class="vc-glass"><div class="vc-glass-title">Narrador</div><div class="vc-chip-row" id="vc-narrador"><div class="vc-chip active" onclick="vcSelect('vc-narrador',this)">Masculino</div><div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Feminino</div><div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Sem voz</div></div></div>
+      <div class="vc-glass"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.8);">Legendas automáticas</div><div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:3px;">Geradas pela IA com sincronização</div></div><div class="vc-toggle" id="vc-legendas" onclick="this.classList.toggle('on')"></div></div></div>
+      <div style="display:flex;gap:10px;margin:0 16px 24px;">
+        <button class="vc-btn-secondary" style="margin:0;flex:0 0 52px;padding:15px 0;" onclick="vcGoStep(2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <button class="vc-btn-gerar" style="margin:0;flex:1;" onclick="vcGerarVideo()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>GERAR VÍDEO COM IA</button>
+      </div>
+    </div>
 
-        <!-- Adicionar imagens -->
-        <!-- inputs fora do grid para não herdar margin-bottom do CSS global -->
-        <input type="file" id="vc-img-input-0" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(0,this)">
-        <input type="file" id="vc-img-input-1" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(1,this)">
-        <input type="file" id="vc-img-input-2" accept="image/*" style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;" onchange="vcPreviewImg(2,this)">
-
-        <div class="field-label">Adicionar imagens <span style="color:var(--text-faint);font-weight:400;text-transform:none;letter-spacing:0;">(até 3)</span></div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;">
-          <div class="vc-img-slot" id="vc-img-slot-0" onclick="document.getElementById('vc-img-input-0').click()">
-            <div class="vc-img-plus" id="vc-img-plus-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label" id="vc-img-lbl-0">Imagem 1</span>
-            <img id="vc-img-preview-0" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
+    <!-- PASSO 4: GERANDO -->
+    <div id="vc-step-gerando" style="display:none;">
+      <div class="vc-gerando-wrap">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,31,31,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Processando</div>
+        <div style="font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;text-align:center;line-height:1.2;">Gerando seu<br>vídeo com IA</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.3);margin-top:8px;text-align:center;">Nossa IA está criando algo incrível para você</div>
+        <div class="vc-progress-ring-wrap">
+          <div class="vc-progress-glow"></div>
+          <svg width="160" height="160" style="transform:rotate(-90deg);position:relative;z-index:1;">
+            <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="6"/>
+            <circle cx="80" cy="80" r="68" fill="none" stroke="rgba(255,31,31,0.1)" stroke-width="6" stroke-dasharray="427" stroke-dashoffset="0"/>
+            <circle id="vc-progress-ring" cx="80" cy="80" r="68" fill="none" stroke="url(#vc-grad)" stroke-width="6" stroke-dasharray="427" stroke-dashoffset="427" stroke-linecap="round" style="transition:stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1);"/>
+            <defs><linearGradient id="vc-grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#ff1f1f"/><stop offset="100%" style="stop-color:#ff6b6b"/></linearGradient></defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;">
+            <span id="vc-progress-pct" style="font-size:2.2rem;font-weight:800;color:#fff;letter-spacing:-1px;">0%</span>
+            <span style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:600;letter-spacing:1px;">GERANDO</span>
           </div>
-          <div class="vc-img-slot" id="vc-img-slot-1" onclick="document.getElementById('vc-img-input-1').click()">
-            <div class="vc-img-plus" id="vc-img-plus-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label" id="vc-img-lbl-1">Imagem 2</span>
-            <img id="vc-img-preview-1" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
-          </div>
-          <div class="vc-img-slot" id="vc-img-slot-2" onclick="document.getElementById('vc-img-input-2').click()">
-            <div class="vc-img-plus" id="vc-img-plus-2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <span class="vc-img-label" id="vc-img-lbl-2">Imagem 3</span>
-            <img id="vc-img-preview-2" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;">
-          </div>
+        </div>
+        <div class="vc-checklist">
+          <div class="vc-check-item" id="vc-si-0"><div class="vc-check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div><div class="vc-check-texts"><div class="vc-check-title">Analisando prompt</div><div class="vc-check-sub">Entendendo sua descrição...</div></div></div>
+          <div class="vc-check-item" id="vc-si-1"><div class="vc-check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div><div class="vc-check-texts"><div class="vc-check-title">Processando imagens</div><div class="vc-check-sub">Analisando referências visuais...</div></div></div>
+          <div class="vc-check-item" id="vc-si-2"><div class="vc-check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg></div><div class="vc-check-texts"><div class="vc-check-title">Criando roteiro</div><div class="vc-check-sub">Montando estrutura do vídeo...</div></div></div>
+          <div class="vc-check-item" id="vc-si-3"><div class="vc-check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div><div class="vc-check-texts"><div class="vc-check-title">Gerando narração</div><div class="vc-check-sub">Criando voz e legendas...</div></div></div>
+          <div class="vc-check-item" id="vc-si-4"><div class="vc-check-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><div class="vc-check-texts"><div class="vc-check-title">Finalizando vídeo</div><div class="vc-check-sub">Renderizando resultado...</div></div></div>
+        </div>
+        <div style="margin-top:24px;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,31,31,0.1);border:1px solid rgba(255,31,31,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff1f1f" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div><div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);">Você será notificado</div><div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:2px;">quando seu vídeo estiver pronto</div></div>
         </div>
       </div>
+    </div>
 
-      <!-- Formato -->
-      <div class="card" style="padding:18px;">
-        <div class="field-label" style="margin-top:0;">Formato</div>
-        <div class="vc-chip-row" id="vc-formato">
-          <div class="vc-chip active" onclick="vcSelect('vc-formato',this)">Reels</div>
-          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">Shorts</div>
-          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">TikTok</div>
-          <div class="vc-chip" onclick="vcSelect('vc-formato',this)">Feed</div>
-        </div>
-
-        <div class="field-label">Duração</div>
-        <div class="vc-chip-row" id="vc-duracao">
-          <div class="vc-chip" onclick="vcSelect('vc-duracao',this)">15s</div>
-          <div class="vc-chip active" onclick="vcSelect('vc-duracao',this)">30s</div>
-          <div class="vc-chip" onclick="vcSelect('vc-duracao',this)">60s</div>
-        </div>
-
-        <div class="field-label">Estilo</div>
-        <div class="vc-chip-row" id="vc-estilo">
-          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Minimalista</div>
-          <div class="vc-chip active" onclick="vcSelect('vc-estilo',this)">Premium</div>
-          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Vendas</div>
-          <div class="vc-chip" onclick="vcSelect('vc-estilo',this)">Tecnologia</div>
-        </div>
-
-        <div class="field-label">Narrador</div>
-        <div class="vc-chip-row" id="vc-narrador">
-          <div class="vc-chip active" onclick="vcSelect('vc-narrador',this)">Masculino</div>
-          <div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Feminino</div>
-          <div class="vc-chip" onclick="vcSelect('vc-narrador',this)">Sem voz</div>
-        </div>
-
-        <div class="field-label">Legendas</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-          <span style="font-size:14px;color:#ccc;">Gerar automaticamente</span>
-          <div class="vc-toggle" id="vc-legendas" onclick="this.classList.toggle('on')" style="margin-left:auto;"></div>
-        </div>
-      </div>
-
-      <button class="btn" onclick="vcGerarVideo()" style="margin-bottom:24px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        GERAR VÍDEO COM IA
-      </button>
-    </div><!-- /step-editor -->
-
-    <!-- STEP 2: GERANDO -->
-    <div id="vc-step-gerando" style="display:none;padding:32px 20px;max-width:420px;margin:0 auto;text-align:center;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-      <div style="font-size:1.55rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px;">Gerando seu vídeo...</div>
-      <div style="font-size:14px;color:#999;margin-bottom:36px;">Nossa IA está trabalhando para criar algo incrível para você.</div>
-      <!-- Círculo de progresso -->
-      <div style="position:relative;width:140px;height:140px;margin:0 auto 36px;">
-        <svg width="140" height="140" style="transform:rotate(-90deg);">
-          <circle cx="70" cy="70" r="58" fill="none" stroke="#2a2a2a" stroke-width="8"/>
-          <circle id="vc-progress-ring" cx="70" cy="70" r="58" fill="none" stroke="var(--red)" stroke-width="8"
-            stroke-dasharray="364" stroke-dashoffset="364" stroke-linecap="round"
-            style="transition:stroke-dashoffset 0.4s ease;"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-          <span id="vc-progress-pct" style="font-size:2rem;font-weight:800;color:#fff;">0%</span>
-        </div>
-      </div>
-      <!-- Steps checklist -->
-      <div style="text-align:left;max-width:280px;margin:0 auto;" id="vc-steps-list">
-        <div class="vc-step-item" id="vc-si-0">⏳ Analisando prompt</div>
-        <div class="vc-step-item" id="vc-si-1">⏳ Selecionando imagens</div>
-        <div class="vc-step-item" id="vc-si-2">⏳ Gerando roteiro</div>
-        <div class="vc-step-item" id="vc-si-3">⏳ Criando narração</div>
-        <div class="vc-step-item" id="vc-si-4">⏳ Renderizando vídeo</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-top:28px;font-size:13.5px;color:#999;line-height:1.5;">
-        Você será notificado quando<br>seu vídeo estiver pronto!
-      </div>
-    </div><!-- /step-gerando -->
-
-    <!-- STEP 3: RESULTADO -->
-    <div id="vc-step-resultado" style="display:none;" class="shell">
-      <div style="margin-top:12px;margin-bottom:24px;" id="vc-resultado-content"></div>
-    </div><!-- /step-resultado -->
+    <!-- RESULTADO -->
+    <div id="vc-step-resultado" style="display:none;padding-bottom:32px;">
+      <div id="vc-resultado-content"></div>
+    </div>
 
   </div><!-- /videoCreatorSection -->
 
-  <!-- Estilos exclusivos do Video Creator (não tocam em nada existente) -->
+  <!-- ══ ESTILOS PREMIUM VIDEO CREATOR ══════════════════════════════════════ -->
   <style>
+    /* ── STEPS BAR ── */
+    .vc-steps-bar { display:flex; align-items:center; padding:20px 20px 0; gap:0; }
+    .vc-step-dot {
+      display:flex; flex-direction:column; align-items:center; gap:5px;
+      position:relative; flex:1;
+    }
+    .vc-step-dot:not(:last-child)::after {
+      content:''; position:absolute; top:13px; left:calc(50% + 14px);
+      right:calc(-50% + 14px); height:1.5px;
+      background:linear-gradient(90deg,#333,#222);
+      transition:background 0.4s;
+    }
+    .vc-step-dot.done:not(:last-child)::after { background:linear-gradient(90deg,#ff1f1f,#333); }
+    .vc-step-circle {
+      width:26px; height:26px; border-radius:50%;
+      background:#1a1a1a; border:1.5px solid #333;
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:#555;
+      transition:all 0.3s; position:relative; z-index:1;
+    }
+    .vc-step-dot.active .vc-step-circle {
+      background:linear-gradient(135deg,#ff1f1f,#cc0000);
+      border-color:#ff1f1f; color:#fff;
+      box-shadow:0 0 16px rgba(255,31,31,0.5);
+    }
+    .vc-step-dot.done .vc-step-circle { background:#1a0000; border-color:#ff1f1f; color:#ff1f1f; }
+    .vc-step-label { font-size:9.5px; font-weight:600; color:#444; letter-spacing:0.3px; text-align:center; transition:color 0.3s; }
+    .vc-step-dot.active .vc-step-label { color:#ff1f1f; }
+    .vc-step-dot.done .vc-step-label { color:#666; }
+
+    /* ── GLASS CARD ── */
+    .vc-glass {
+      background:rgba(255,255,255,0.035);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.07);
+      border-radius:20px; margin:0 16px 14px;
+      padding:20px; position:relative; overflow:hidden;
+    }
+    .vc-glass::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,31,31,0.3),transparent);
+    }
+    .vc-glass-title {
+      font-size:11px; font-weight:700; color:rgba(255,255,255,0.35);
+      text-transform:uppercase; letter-spacing:1.2px; margin-bottom:14px;
+      display:flex; align-items:center; gap:7px;
+    }
+    .vc-glass-title svg { opacity:0.5; }
+
+    /* ── PROMPT TEXTAREA ── */
+    .vc-textarea {
+      width:100%; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px; padding:14px 16px; color:#fff; font-size:15px;
+      font-family:inherit; resize:none; height:120px; outline:none; line-height:1.6;
+      transition:border-color 0.2s;
+    }
+    .vc-textarea:focus { border-color:rgba(255,31,31,0.4); }
+    .vc-textarea::placeholder { color:rgba(255,255,255,0.2); }
+
+    /* ── IMAGE SLOTS ── */
+    .vc-img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
     .vc-img-slot {
-      position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      background:var(--surface-2); border:1px dashed #3a3a3a; border-radius:10px;
-      height:88px; cursor:pointer; overflow:hidden; transition:border-color 0.2s;
+      position:relative; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; background:rgba(0,0,0,0.4);
+      border:1.5px dashed rgba(255,255,255,0.1); border-radius:14px;
+      height:92px; cursor:pointer; overflow:hidden;
+      transition:all 0.25s;
     }
-    .vc-img-slot:hover { border-color:var(--red); }
-    .vc-img-plus { color:var(--text-faint); margin-bottom:6px; }
-    .vc-img-label { font-size:11.5px; color:var(--text-faint); font-weight:600; }
-    .vc-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+    .vc-img-slot:hover { border-color:rgba(255,31,31,0.5); background:rgba(255,31,31,0.05); }
+    .vc-img-slot.has-img { border-style:solid; border-color:rgba(255,31,31,0.4); }
+    .vc-img-plus { color:rgba(255,255,255,0.2); margin-bottom:5px; transition:color 0.2s; }
+    .vc-img-slot:hover .vc-img-plus { color:rgba(255,31,31,0.6); }
+    .vc-img-label { font-size:10.5px; color:rgba(255,255,255,0.2); font-weight:600; letter-spacing:0.3px; }
+
+    /* ── CHIPS ── */
+    .vc-chip-row { display:flex; flex-wrap:wrap; gap:8px; }
     .vc-chip {
-      padding:8px 16px; border-radius:20px;
-      background:var(--surface-2); border:1px solid var(--border);
-      font-size:14px; font-weight:600; color:var(--text-dim); cursor:pointer;
-      transition:all 0.2s;
+      padding:8px 16px; border-radius:100px;
+      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+      font-size:13px; font-weight:600; color:rgba(255,255,255,0.4); cursor:pointer;
+      transition:all 0.2s; white-space:nowrap;
     }
-    .vc-chip:hover { border-color:#555; color:#fff; }
-    .vc-chip.active { background:var(--red); border-color:var(--red); color:#fff; }
+    .vc-chip:hover { border-color:rgba(255,31,31,0.4); color:rgba(255,255,255,0.7); }
+    .vc-chip.active {
+      background:linear-gradient(135deg,#ff1f1f,#cc0000);
+      border-color:transparent; color:#fff;
+      box-shadow:0 4px 14px rgba(255,31,31,0.35);
+    }
+
+    /* ── TOGGLE ── */
     .vc-toggle {
-      width:46px; height:26px; border-radius:13px;
-      background:#333; border:1px solid #444;
-      position:relative; cursor:pointer; transition:background 0.2s;
-      flex-shrink:0;
+      width:48px; height:28px; border-radius:14px;
+      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
+      position:relative; cursor:pointer; transition:all 0.25s; flex-shrink:0;
     }
     .vc-toggle::after {
-      content:''; position:absolute; top:3px; left:3px;
-      width:18px; height:18px; border-radius:50%; background:#888;
+      content:''; position:absolute; top:4px; left:4px;
+      width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,0.3);
+      transition:all 0.25s;
+    }
+    .vc-toggle.on { background:linear-gradient(135deg,#ff1f1f,#cc0000); border-color:#ff1f1f; box-shadow:0 0 12px rgba(255,31,31,0.4); }
+    .vc-toggle.on::after { left:24px; background:#fff; }
+
+    /* ── BTN GERAR ── */
+    .vc-btn-gerar {
+      margin:4px 16px 8px; padding:17px; border-radius:16px; border:none; cursor:pointer;
+      background:linear-gradient(135deg,#ff1f1f 0%,#cc0000 100%);
+      color:#fff; font-size:15px; font-weight:800; letter-spacing:0.5px;
+      display:flex; align-items:center; justify-content:center; gap:10px; width:calc(100% - 32px);
+      box-shadow:0 8px 28px rgba(255,31,31,0.4), 0 2px 8px rgba(0,0,0,0.3);
+      transition:all 0.2s; position:relative; overflow:hidden;
+    }
+    .vc-btn-gerar::before {
+      content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+      transition:left 0.5s;
+    }
+    .vc-btn-gerar:hover::before { left:100%; }
+    .vc-btn-gerar:active { transform:scale(0.98); }
+
+    .vc-btn-secondary {
+      margin:0 16px 24px; padding:15px; border-radius:16px; cursor:pointer;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+      color:rgba(255,255,255,0.6); font-size:14px; font-weight:600;
+      display:flex; align-items:center; justify-content:center; gap:8px; width:calc(100% - 32px);
       transition:all 0.2s;
     }
-    .vc-toggle.on { background:var(--red); border-color:var(--red); }
-    .vc-toggle.on::after { left:23px; background:#fff; }
-    .vc-step-item {
-      padding:10px 0; font-size:14px; color:#666;
-      border-bottom:1px solid #1e1e1e; display:flex; align-items:center; gap:8px;
-      transition:color 0.3s;
+    .vc-btn-secondary:hover { border-color:rgba(255,255,255,0.2); color:#fff; }
+
+    /* ── TELA GERANDO ── */
+    .vc-gerando-wrap {
+      padding:32px 20px 24px; display:flex; flex-direction:column; align-items:center;
     }
-    .vc-step-item.done { color:#4caf50; }
-    .vc-step-item.active { color:#fff; }
-    .vc-resultado-card {
-      background:var(--surface); border:1px solid var(--border); border-radius:18px;
-      padding:20px; margin-bottom:14px;
+    .vc-progress-ring-wrap {
+      position:relative; width:160px; height:160px; margin:28px auto;
     }
-    .vc-resultado-label {
-      font-size:11px; font-weight:700; color:var(--text-faint);
-      text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;
+    .vc-progress-glow {
+      position:absolute; inset:-20px; border-radius:50%;
+      background:radial-gradient(circle,rgba(255,31,31,0.15) 0%,transparent 70%);
+      animation:vc-pulse 2s ease-in-out infinite;
     }
-    .vc-resultado-text {
-      font-size:14px; line-height:1.65; color:#eee;
-      white-space:pre-wrap; word-break:break-word;
+    @keyframes vc-pulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+    .vc-checklist { width:100%; max-width:340px; margin:8px auto 0; }
+    .vc-check-item {
+      display:flex; align-items:flex-start; gap:14px; padding:14px 0;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      position:relative;
+    }
+    .vc-check-item:not(:last-child)::before {
+      content:''; position:absolute; left:15px; top:42px; bottom:-1px;
+      width:1.5px; background:rgba(255,255,255,0.06);
+    }
+    .vc-check-icon {
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.1);
+      display:flex; align-items:center; justify-content:center; transition:all 0.4s;
+    }
+    .vc-check-item.done .vc-check-icon { background:rgba(255,31,31,0.1); border-color:rgba(255,31,31,0.4); }
+    .vc-check-item.active .vc-check-icon { background:rgba(255,31,31,0.15); border-color:#ff1f1f; box-shadow:0 0 12px rgba(255,31,31,0.3); animation:vc-pulse 1.5s infinite; }
+    .vc-check-texts { flex:1; }
+    .vc-check-title { font-size:14px; font-weight:600; color:rgba(255,255,255,0.3); transition:color 0.3s; }
+    .vc-check-sub { font-size:12px; color:rgba(255,255,255,0.18); margin-top:2px; transition:color 0.3s; }
+    .vc-check-item.done .vc-check-title { color:rgba(255,255,255,0.7); }
+    .vc-check-item.done .vc-check-sub { color:rgba(255,31,31,0.6); }
+    .vc-check-item.active .vc-check-title { color:#fff; }
+    .vc-check-item.active .vc-check-sub { color:rgba(255,255,255,0.4); }
+
+    /* ── RESULTADO ── */
+    .vc-result-card {
+      margin:0 16px 12px; padding:18px 20px; border-radius:18px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+      position:relative; overflow:hidden;
+    }
+    .vc-result-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,31,31,0.25),transparent);
+    }
+    .vc-result-label {
+      font-size:10px; font-weight:700; color:rgba(255,31,31,0.6);
+      text-transform:uppercase; letter-spacing:1.2px; margin-bottom:10px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .vc-result-text { font-size:14px; line-height:1.7; color:rgba(255,255,255,0.8); white-space:pre-wrap; word-break:break-word; }
+    .vc-result-hero {
+      margin:16px 16px 0; padding:22px 20px; border-radius:20px;
+      background:linear-gradient(135deg,rgba(255,31,31,0.08) 0%,rgba(0,0,0,0) 100%);
+      border:1px solid rgba(255,31,31,0.15);
+    }
+
+    /* ── VIDEO CARD ── */
+    .vc-video-card {
+      margin:0 16px 12px; border-radius:18px; overflow:hidden;
+      background:#0a0a0a; border:1px solid rgba(255,31,31,0.2);
+      position:relative;
+    }
+    .vc-video-preview {
+      width:100%; aspect-ratio:9/16; max-height:300px; object-fit:cover; display:block;
+    }
+    .vc-video-overlay {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.3);
+    }
+    .vc-play-btn {
+      width:60px; height:60px; border-radius:50%;
+      background:rgba(255,31,31,0.9); display:flex; align-items:center; justify-content:center;
+      box-shadow:0 0 30px rgba(255,31,31,0.5);
+    }
+
+    /* ── COPY BTN ── */
+    .vc-copy-btn {
+      display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px;
+      background:rgba(255,31,31,0.1); border:1px solid rgba(255,31,31,0.2);
+      color:rgba(255,31,31,0.8); font-size:12px; font-weight:600; cursor:pointer;
+      transition:all 0.2s; margin-top:10px;
+    }
+    .vc-copy-btn:hover { background:rgba(255,31,31,0.2); color:#ff1f1f; }
+
+    /* ── SECTION LABEL ── */
+    .vc-section-label {
+      font-size:11px; font-weight:700; color:rgba(255,255,255,0.2);
+      text-transform:uppercase; letter-spacing:1px;
+      padding:16px 20px 8px; display:flex; align-items:center; gap:8px;
+    }
+    .vc-section-label::after {
+      content:''; flex:1; height:1px; background:rgba(255,255,255,0.05);
     }
   </style>
 
@@ -3935,19 +4088,59 @@ function showSearchNowScreen() {
         const ha = document.getElementById('headerActions');
         if (ha) ha.style.display = 'flex';
         setActiveNav('navVideoIA');
-        vcShowStep('editor');
+        vcGoStep(1);
         // Limpar qualquer erro anterior
-        const oldErr = document.querySelector('#vc-step-editor .vc-err-msg');
+        const oldErr = document.querySelector('.vc-err-msg');
         if (oldErr) oldErr.remove();
       } catch(e) {
         console.error('[VideoCreator] Erro ao abrir:', e);
       }
     }
 
+    function vcGoStep(n) {
+      // Esconder todos os passos e telas
+      [1,2,3].forEach(i => {
+        const el = document.getElementById('vc-passo-' + i);
+        if (el) el.style.display = 'none';
+      });
+      ['vc-step-gerando','vc-step-resultado'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+
+      // Mostrar passo atual
+      if (n <= 3) {
+        const el = document.getElementById('vc-passo-' + n);
+        if (el) el.style.display = 'block';
+      }
+
+      // Atualizar steps bar
+      [0,1,2,3].forEach(i => {
+        const dot = document.getElementById('vcs-' + i);
+        if (!dot) return;
+        dot.classList.remove('active','done');
+        if (i + 1 < n) dot.classList.add('done');
+        else if (i + 1 === n) dot.classList.add('active');
+      });
+    }
+
     function vcShowStep(step) {
-      document.getElementById('vc-step-editor').style.display   = step === 'editor'    ? 'block' : 'none';
-      document.getElementById('vc-step-gerando').style.display  = step === 'gerando'   ? 'block' : 'none';
-      document.getElementById('vc-step-resultado').style.display = step === 'resultado' ? 'block' : 'none';
+      [1,2,3].forEach(i => {
+        const el = document.getElementById('vc-passo-' + i);
+        if (el) el.style.display = 'none';
+      });
+      const gerando   = document.getElementById('vc-step-gerando');
+      const resultado = document.getElementById('vc-step-resultado');
+      if (gerando)   gerando.style.display   = step === 'gerando'   ? 'block' : 'none';
+      if (resultado) resultado.style.display = step === 'resultado' ? 'block' : 'none';
+      if (step === 'editor') vcGoStep(1);
+      // Steps bar
+      if (step === 'gerando') {
+        [0,1,2,3].forEach(i => {
+          const dot = document.getElementById('vcs-' + i);
+          if (dot) { dot.classList.remove('active','done'); dot.classList.add(i < 3 ? 'done' : 'active'); }
+        });
+      }
     }
 
     function vcSelect(groupId, el) {
@@ -3962,12 +4155,10 @@ function showSearchNowScreen() {
       const plus    = document.getElementById('vc-img-plus-' + idx);
       const lbl     = document.getElementById('vc-img-lbl-' + idx);
       const url     = URL.createObjectURL(input.files[0]);
-      preview.src   = url;
-      preview.style.display = 'block';
+      if (preview) { preview.src = url; preview.style.display = 'block'; }
       if (plus) plus.style.display = 'none';
       if (lbl)  lbl.style.display  = 'none';
-      slot.style.borderStyle = 'solid';
-      slot.style.borderColor = 'var(--red)';
+      if (slot) slot.classList.add('has-img');
     }
 
     function vcGetSelected(groupId) {
@@ -4197,36 +4388,30 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       return data.roteiro;
     }
 
-    // Animação de progresso
-    let _vcProgressTimer = null;
     function vcStartProgress() {
       let pct = 0;
       const steps  = ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'];
-      const labels = ['✅ Analisando prompt','✅ Selecionando imagens','✅ Gerando roteiro','✅ Criando narração','✅ Renderizando vídeo'];
       const targets = [15, 30, 55, 75, 95];
 
       // Reset
-      steps.forEach((id, i) => {
+      steps.forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.textContent = ['⏳ Analisando prompt','⏳ Selecionando imagens','⏳ Gerando roteiro','⏳ Criando narração','⏳ Renderizando vídeo'][i]; el.className = 'vc-step-item'; }
+        if (el) el.className = 'vc-check-item';
       });
       vcSetProgress(0);
 
-      let stepIdx = 0;
       clearInterval(_vcProgressTimer);
       _vcProgressTimer = setInterval(() => {
         if (pct < 95) {
           pct = Math.min(pct + (Math.random() * 3 + 0.5), 95);
           vcSetProgress(Math.floor(pct));
-          // Marcar steps conforme progresso
           for (let i = 0; i < targets.length; i++) {
             const el = document.getElementById(steps[i]);
             if (!el) continue;
             if (pct >= targets[i]) {
-              el.textContent = labels[i];
-              el.className = 'vc-step-item done';
+              el.className = 'vc-check-item done';
             } else if (i === 0 || pct >= targets[i-1]) {
-              el.className = 'vc-step-item active';
+              el.className = 'vc-check-item active';
             }
           }
         }
@@ -4237,7 +4422,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       const ring = document.getElementById('vc-progress-ring');
       const pctEl = document.getElementById('vc-progress-pct');
       if (!ring || !pctEl) return;
-      const circumference = 364;
+      const circumference = 427;
       ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
       pctEl.textContent = pct + '%';
     }
@@ -4245,78 +4430,89 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
     function vcShowResultado(roteiro, prompt, formato, duracao, estilo, narrador) {
       clearInterval(_vcProgressTimer);
       vcSetProgress(100);
-      // Marcar todos como done
       ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.className = 'vc-step-item done'; }
+        if (el) { el.classList.remove('active'); el.classList.add('done'); }
       });
 
       setTimeout(() => {
         vcShowStep('resultado');
         const container = document.getElementById('vc-resultado-content');
-        const legTxt    = (roteiro.legenda || '') + (roteiro.hashtags ? '\n\n' + roteiro.hashtags : '');
+        const legTxt = (roteiro.legenda || '') + (roteiro.hashtags ? '\n\n' + roteiro.hashtags : '');
 
         container.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
-            <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,29,29,0.12);border:1px solid rgba(255,29,29,0.3);display:flex;align-items:center;justify-content:center;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <div class="vc-result-hero">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+              <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,31,31,0.12);border:1px solid rgba(255,31,31,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff1f1f" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              </div>
+              <div>
+                <div style="font-size:9px;font-weight:700;color:rgba(255,31,31,0.5);letter-spacing:2px;text-transform:uppercase;">Roteiro Pronto</div>
+                <div style="font-size:16px;font-weight:800;color:#fff;margin-top:2px;">${escapeHtml(roteiro.titulo || 'Roteiro Gerado')}</div>
+              </div>
             </div>
-            <div>
-              <div style="font-size:17px;font-weight:800;color:#fff;">${escapeHtml(roteiro.titulo || 'Roteiro Pronto')}</div>
-              <div style="font-size:12px;color:var(--text-faint);">${formato} • ${duracao} • ${estilo}</div>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+              <span style="padding:5px 12px;border-radius:100px;background:rgba(255,31,31,0.1);border:1px solid rgba(255,31,31,0.2);font-size:11px;font-weight:600;color:rgba(255,31,31,0.7);">${escapeHtml(formato)}</span>
+              <span style="padding:5px 12px;border-radius:100px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);">${escapeHtml(duracao)}</span>
+              <span style="padding:5px 12px;border-radius:100px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);">${escapeHtml(estilo)}</span>
             </div>
           </div>
 
           ${roteiro.gancho ? `
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">🎯 Gancho de Abertura</div>
-            <div class="vc-resultado-text">${escapeHtml(roteiro.gancho)}</div>
+          <div class="vc-result-card" style="margin-top:12px;">
+            <div class="vc-result-label">🎯 Gancho de Abertura</div>
+            <div class="vc-result-text">${escapeHtml(roteiro.gancho)}</div>
           </div>` : ''}
 
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">🎬 Roteiro Completo</div>
-            <div class="vc-resultado-text" id="vc-roteiro-text">${escapeHtml(roteiro.roteiro || '')}</div>
+          <div class="vc-result-card">
+            <div class="vc-result-label">🎬 Roteiro Completo</div>
+            <div class="vc-result-text" id="vc-roteiro-text">${escapeHtml(roteiro.roteiro || '')}</div>
+            <button class="vc-copy-btn" onclick="vcCopiarRoteiro()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copiar roteiro
+            </button>
           </div>
 
           ${roteiro.narracao ? `
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">🎙️ Narração (${narrador})</div>
-            <div class="vc-resultado-text">${escapeHtml(roteiro.narracao)}</div>
+          <div class="vc-result-card">
+            <div class="vc-result-label">🎙️ Narração — ${escapeHtml(narrador)}</div>
+            <div class="vc-result-text">${escapeHtml(roteiro.narracao)}</div>
           </div>` : ''}
 
           ${legTxt ? `
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">📱 Legenda + Hashtags</div>
-            <div class="vc-resultado-text" id="vc-legenda-text">${escapeHtml(legTxt)}</div>
+          <div class="vc-result-card">
+            <div class="vc-result-label">📱 Legenda + Hashtags</div>
+            <div class="vc-result-text" id="vc-legenda-text">${escapeHtml(legTxt)}</div>
+            <button class="vc-copy-btn" onclick="vcCopiarLegenda()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copiar legenda
+            </button>
           </div>` : ''}
 
           ${roteiro.cta ? `
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">🔥 Call to Action</div>
-            <div class="vc-resultado-text">${escapeHtml(roteiro.cta)}</div>
+          <div class="vc-result-card">
+            <div class="vc-result-label">🔥 Call to Action</div>
+            <div class="vc-result-text">${escapeHtml(roteiro.cta)}</div>
           </div>` : ''}
 
           ${roteiro.dicas ? `
-          <div class="vc-resultado-card">
-            <div class="vc-resultado-label">💡 Dicas de Produção</div>
-            <div class="vc-resultado-text">${escapeHtml(roteiro.dicas)}</div>
+          <div class="vc-result-card">
+            <div class="vc-result-label">💡 Dicas de Produção</div>
+            <div class="vc-result-text">${escapeHtml(roteiro.dicas)}</div>
           </div>` : ''}
 
-          <button class="btn" onclick="vcCopiarRoteiro()" style="margin-bottom:10px;">
-            📋 Copiar Roteiro Completo
-          </button>
-          <button class="btn btn-secondary" onclick="vcCopiarLegenda()" style="margin-bottom:10px;">
-            📱 Copiar Legenda + Hashtags
-          </button>
-          <button class="btn btn-outline" onclick="openYoutubeCreate()" style="margin-bottom:10px;">
-            🎬 Abrir YouTube Create
-          </button>
-          <button class="btn btn-secondary" onclick="vcNovoVideo()" style="margin-bottom:24px;">
-            ✨ Criar novo vídeo
-          </button>
-          <div class="status" id="vc-copy-status"></div>
+          <div style="padding:0 16px 8px;display:flex;flex-direction:column;gap:10px;">
+            <button class="vc-btn-gerar" style="margin:0;" onclick="openYoutubeCreate()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Abrir YouTube Create
+            </button>
+            <button class="vc-btn-secondary" style="margin:0;" onclick="vcNovoVideo()">
+              ✨ Criar novo vídeo
+            </button>
+          </div>
+          <div class="status" id="vc-copy-status" style="margin:0 16px 32px;"></div>
         `;
-      }, 700);
+      }, 600);
     }
 
     function vcCopiarRoteiro() {
@@ -4338,9 +4534,8 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
     }
 
     function vcNovoVideo() {
-      // Reset campos
       document.getElementById('vc-prompt').value = '';
-      document.getElementById('vc-prompt-count').textContent = '0/500';
+      document.getElementById('vc-prompt-count').textContent = '0/1500';
       for (let i = 0; i < 3; i++) {
         const inp  = document.getElementById('vc-img-input-' + i);
         const prev = document.getElementById('vc-img-preview-' + i);
@@ -4349,16 +4544,13 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         const lbl  = document.getElementById('vc-img-lbl-' + i);
         if (inp)  inp.value = '';
         if (prev) { prev.style.display = 'none'; prev.src = ''; }
-        if (slot) { slot.style.borderStyle = 'dashed'; slot.style.borderColor = '#3a3a3a'; }
+        if (slot) slot.classList.remove('has-img');
         if (plus) plus.style.display = 'flex';
         if (lbl)  lbl.style.display  = '';
       }
-      // Limpar msg de erro se houver
-      const errMsg = document.querySelector('#vc-step-editor .vc-err-msg');
-      if (errMsg) errMsg.remove();
-      document.getElementById('vc-legendas').classList.remove('on');
-      // Reset chips para padrão
-      vcShowStep('editor');
+      const leg = document.getElementById('vc-legendas');
+      if (leg) leg.classList.remove('on');
+      vcGoStep(1);
     }
 
   </script>
