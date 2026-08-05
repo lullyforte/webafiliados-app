@@ -3724,15 +3724,25 @@ function showSearchNowScreen() {
 
         content.innerHTML = `
           <div class="field-label" style="margin-top:0;">Escolha um produto para gerar/editar o conteúdo:</div>
-          ${products.map(p => `
-            <div class="prompt-box" style="cursor:pointer;display:flex;gap:10px;align-items:center;" onclick="selectProductForAi(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
-              ${p.image_url ? `<img src="${p.image_url}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">` : ''}
-              <div>
-                <div style="font-weight:600;">${escapeHtml(p.name)}</div>
-                <div style="font-size: 0.83rem;color:#999;">R$ ${p.price} • Score ${parseFloat(p.score || 0).toFixed(1)}</div>
+          ${products.map(p => {
+            const safeName = escapeHtml(p.name).replace(/'/g, "\\'");
+            const safeImg  = (p.image_url || '').replace(/'/g, "\\'");
+            const safePrice = escapeHtml(String(p.price || ''));
+            const safeScore = parseFloat(p.score || 0).toFixed(1);
+            return `
+            <div style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:12px 14px;display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+              ${p.image_url ? `<img src="${p.image_url}" style="width:52px;height:52px;object-fit:cover;border-radius:12px;flex-shrink:0;cursor:pointer;" onclick="selectProductForAi(${p.id}, '${safeName}')">` : ''}
+              <div style="flex:1;min-width:0;cursor:pointer;" onclick="selectProductForAi(${p.id}, '${safeName}')">
+                <div style="font-weight:600;font-size:0.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.name)}</div>
+                <div style="font-size:0.80rem;color:#8B8B8B;margin-top:3px;">R$ ${safePrice} &nbsp;·&nbsp; Score ${safeScore}</div>
               </div>
-            </div>
-          `).join('')}
+              <button
+                onclick="openVideoCreatorFromProduct({id:${p.id},name:'${safeName}',image_url:'${safeImg}',price:'${safePrice}',score:${safeScore}})"
+                style="flex-shrink:0;background:rgba(255,32,32,0.12);border:1px solid rgba(255,40,40,0.45);border-radius:12px;color:#FF2020;font-size:11px;font-weight:700;padding:8px 12px;cursor:pointer;letter-spacing:0.3px;white-space:nowrap;box-shadow:0 0 10px rgba(255,32,32,0.15);">
+                + Vídeo
+              </button>
+            </div>`;
+          }).join('')}
         `;
       } catch(e) {
         content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
@@ -4080,6 +4090,40 @@ function showSearchNowScreen() {
     // ═══════════════════════════════════════════════
     // CRIADOR DE VÍDEO COM IA
     // ═══════════════════════════════════════════════
+
+    function openVideoCreatorFromProduct(p) {
+      // Abre o Criador de Vídeo pré-preenchido com dados do produto
+      showVideoCreatorScreen();
+
+      // Preenche o prompt com nome + dados relevantes do produto
+      const promptEl = document.getElementById('vc-prompt');
+      const countEl  = document.getElementById('vc-prompt-count');
+      if (promptEl) {
+        const txt = p.name + (p.price ? ' — R$ ' + p.price : '') + (p.score ? ' — Score ' + p.score : '');
+        promptEl.value = txt;
+        if (countEl) countEl.textContent = txt.length + '/1500';
+      }
+
+      // Carrega imagem do produto no slot 0 do passo 2
+      if (p.image_url) {
+        setTimeout(async () => {
+          try {
+            const res  = await fetch(p.image_url);
+            const blob = await res.blob();
+            const file = new File([blob], 'produto.jpg', { type: blob.type || 'image/jpeg' });
+            const input = document.getElementById('vc-img-input-0');
+            if (input) {
+              const dt = new DataTransfer();
+              dt.items.add(file);
+              input.files = dt.files;
+              vcPreviewImg(0, input);
+            }
+          } catch(e) {
+            console.warn('[VideoCreator] Imagem do produto não carregada:', e.message);
+          }
+        }, 450);
+      }
+    }
 
     function showVideoCreatorScreen() {
       try {
