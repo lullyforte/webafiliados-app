@@ -4391,6 +4391,8 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       return data.roteiro;
     }
 
+    // Animação de progresso
+    let _vcProgressTimer = null;
     function vcStartProgress() {
       let pct = 0;
       const steps  = ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'];
