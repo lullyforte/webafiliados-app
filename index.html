@@ -4550,14 +4550,50 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
             <div class="vc-result-text">${escapeHtml(roteiro.dicas)}</div>
           </div>` : ''}
 
-          <div style="padding:0 16px 8px;display:flex;flex-direction:column;gap:10px;">
-            <button class="vc-btn-gerar" style="margin:0;" onclick="openYoutubeCreate()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-              Abrir YouTube Create
+          ${roteiro.dicas || roteiro.cta ? '' : ''}
+
+          <div class="vc-result-card" style="margin-top:12px;">
+            <div class="vc-result-label" style="margin-bottom:10px;">Prompt para gerar o vídeo</div>
+            <div id="vc-prompt-en-text" style="font-size:13px;color:#CFCFCF;line-height:1.6;word-break:break-word;">${escapeHtml(roteiro.video_prompt_en || prompt)}</div>
+            <button class="vc-copy-btn" onclick="vcCopiarPromptEn()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copiar prompt
             </button>
-            <button class="vc-btn-secondary" style="margin:0;" onclick="vcNovoVideo()">
-              ✨ Criar novo vídeo
-            </button>
+          </div>
+
+          <div style="padding:0 16px 8px;">
+            <div style="font-size:11px;font-weight:700;color:#8B8B8B;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">Gerar vídeo com</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+
+              <button onclick="openYoutubeCreate()" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#FF0000"/><polygon points="10,8 17,12 10,16" fill="#fff"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#fff;">YouTube Create</span>
+                <span style="font-size:10px;color:#8B8B8B;">Edição automática</span>
+              </button>
+
+              <button onclick="vcAbrirVeo()" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#1A73E8"/><path d="M7 8l10 4-10 4V8z" fill="#fff"/><circle cx="17" cy="8" r="2.5" fill="#34A853"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#fff;">Veo 3.1</span>
+                <span style="font-size:10px;color:#8B8B8B;">Google IA</span>
+              </button>
+
+              <button onclick="window.open('https://vids.google.com','_blank')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#34A853"/><text x="4" y="17" font-size="13" font-weight="bold" fill="#fff">Vids</text></svg>
+                <span style="font-size:12px;font-weight:700;color:#fff;">Google Vids</span>
+                <span style="font-size:10px;color:#8B8B8B;">Apresentações IA</span>
+              </button>
+
+              <button onclick="window.open('https://gemini.google.com','_blank')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#8B5CF6"/><path d="M12 5l2 6h6l-5 3.5 2 6L12 17l-5 3.5 2-6L4 11h6z" fill="#fff"/></svg>
+                <span style="font-size:12px;font-weight:700;color:#fff;">Gemini</span>
+                <span style="font-size:10px;color:#8B8B8B;">Multimodal IA</span>
+              </button>
+
+            </div>
+
+            <div id="vc-veo-status" class="status" style="display:none;margin-bottom:10px;"></div>
+
+            <button class="vc-btn-secondary" style="margin:0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
           </div>
           <div class="status" id="vc-copy-status" style="margin:0 16px 32px;"></div>
         `;
@@ -4580,6 +4616,21 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       navigator.clipboard.writeText(txt)
         .then(() => showStatus(st, 'Legenda copiada!', 'ok'))
         .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+    }
+
+    function vcCopiarPromptEn() {
+      const el = document.getElementById('vc-prompt-en-text');
+      const st = document.getElementById('vc-copy-status');
+      const txt = el ? el.innerText : '';
+      navigator.clipboard.writeText(txt)
+        .then(() => showStatus(st, 'Prompt copiado!', 'ok'))
+        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+    }
+
+    function vcAbrirVeo() {
+      const st = document.getElementById('vc-veo-status');
+      showStatus(st, 'Veo 3.1 em integração — em breve disponível. Por enquanto copie o prompt e use no Google AI Studio.', 'info');
+      setTimeout(() => window.open('https://aistudio.google.com', '_blank'), 1200);
     }
 
     function vcNovoVideo() {
