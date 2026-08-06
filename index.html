@@ -114,11 +114,10 @@
 
     .hero {
       position: relative;
-      border-radius: 18px;
+      border-radius: 28px;
       overflow: hidden;
-      height: 220px;
-      margin: 12px 0 20px;
-      background: #111;
+      min-height: 260px;
+      background: linear-gradient(135deg,#0a0a0a 0%,#1a0000 50%,#0a0a0a 100%);
     }
     .hero-slide {
       position: absolute; inset: 0;
@@ -132,142 +131,113 @@
       content: '';
       position: absolute; inset: 0;
       background:
-        linear-gradient(100deg, rgba(10,10,10,0.92) 20%, rgba(10,10,10,0.55) 55%, rgba(230,33,23,0.25) 100%),
-        linear-gradient(0deg, rgba(10,10,10,0.75), transparent 55%);
+        linear-gradient(100deg, rgba(5,5,5,0.95) 20%, rgba(5,5,5,0.6) 55%, rgba(255,32,32,0.15) 100%),
+        linear-gradient(0deg, rgba(5,5,5,0.85), transparent 60%);
     }
+    .hero-glow {
+      position: absolute; top: -30px; right: -30px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(255,32,32,0.15) 0%, transparent 70%);
+      border-radius: 50%; pointer-events: none; z-index: 1;
+      animation: heroGlow 4s ease-in-out infinite;
+    }
+    @keyframes heroGlow { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.12)} }
     .hero-content {
       position: relative; z-index: 2;
-      height: 100%;
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 20px 22px;
+      min-height: 260px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 24px 22px 22px;
     }
+    /* ── HERO BADGE V2 ── */
     .hero-badge {
-      display: inline-block;
-      background: var(--red);
-      color: #fff;
-      font-size: 11.5px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      padding: 3px 9px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      width: fit-content;
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,32,32,0.15);
+      border: 1px solid rgba(255,32,32,0.4);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 11px; font-weight: 700; color: #FF6060;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      margin-bottom: 10px; width: fit-content;
     }
     .hero-title {
-      font-size: 23.5px;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 6px;
-      max-width: 240px;
+      font-size: 26px; font-weight: 800;
+      line-height: 1.15; margin-bottom: 6px;
+      letter-spacing: -0.5px; max-width: 240px;
     }
     .hero-sub {
-      font-size: 14px;
-      color: #d5d5d5;
-      max-width: 230px;
-      line-height: 1.4;
-      margin-bottom: 14px;
+      font-size: 13px; color: rgba(255,255,255,0.5);
+      max-width: 220px; line-height: 1.5; margin-bottom: 18px;
     }
     .hero-cta {
-      background: #fff;
+      background: rgba(255,255,255,0.95);
       color: #111;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 14.5px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      width: fit-content;
+      border: 2px solid rgba(255,32,32,0.25);
+      border-radius: 14px;
+      padding: 13px 20px;
+      font-size: 15px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 8px;
+      cursor: pointer; width: fit-content;
+      box-shadow: 0 0 28px rgba(255,32,32,0.2), 0 4px 16px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+    }
+    .hero-cta-icon {
+      width: 22px; height: 22px;
+      background: linear-gradient(135deg,#FF2020,#FF6060);
+      border-radius: 6px;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
     }
     .hero-dots {
-      position: absolute;
-      bottom: 12px; left: 22px;
-      display: flex; gap: 5px;
-      z-index: 2;
+      position: absolute; bottom: 14px; left: 22px;
+      display: flex; gap: 5px; z-index: 2;
     }
     .hero-dot {
       width: 5px; height: 5px; border-radius: 50%;
-      background: rgba(255,255,255,0.35);
-      transition: all 0.3s;
+      background: rgba(255,255,255,0.25); transition: all 0.3s;
     }
-    .hero-dot.active { background: #fff; width: 16px; border-radius: 3px; }
+    .hero-dot.active { background: #fff; width: 18px; border-radius: 3px; }
     .hero-nav {
       position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
       width: 34px; height: 34px; border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: none;
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16.5px;
-      cursor: pointer;
-      z-index: 2;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer; z-index: 2;
     }
 
+    /* ── QUICK ACTIONS V2 ── */
     .icon-row {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 108px;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 26px;
-      scrollbar-width: none;
+      display: grid; grid-auto-flow: column;
+      grid-auto-columns: 110px; gap: 10px;
+      overflow-x: auto; padding: 0 16px 4px;
+      margin-bottom: 28px; scrollbar-width: none;
     }
     .icon-row::-webkit-scrollbar { display: none; }
     .icon-item {
-      text-align: left;
-      cursor: pointer;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 12px;
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      text-align: left; cursor: pointer;
+      background: #161616;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 22px; padding: 14px 13px 13px;
+      transition: all 0.25s; position: relative; overflow: hidden;
     }
-    .icon-item:hover {
-      border-color: var(--red);
-      box-shadow: 0 0 0 1px rgba(230,33,23,0.25), 0 6px 16px rgba(230,33,23,0.16);
-      transform: translateY(-2px);
-    }
-    .icon-item:active {
-      transform: scale(0.97);
-      border-color: var(--red);
-      box-shadow: 0 0 0 1px rgba(230,33,23,0.3);
-    }
+    .icon-item:hover { border-color: rgba(255,32,32,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,32,32,0.1); }
+    .icon-item:active { transform: scale(0.97); }
     .icon-circle {
-      width: 40px; height: 40px;
-      border-radius: 12px;
-      background: rgba(230,33,23,0.12);
-      border: 1px solid rgba(230,33,23,0.35);
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(255,32,32,0.1);
+      border: 1px solid rgba(255,32,32,0.22);
       display: flex; align-items: center; justify-content: center;
-      font-size: 19.5px;
       margin-bottom: 10px;
-      transition: background 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 0 12px rgba(255,32,32,0.08);
+      transition: all 0.25s;
     }
-    .icon-item:hover .icon-circle {
-      background: rgba(230,33,23,0.2);
-      border-color: rgba(230,33,23,0.55);
-    }
-    .icon-item p { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 3px; }
-    .icon-item .icon-desc { display: block; font-size: 12px; color: var(--text-dim); line-height: 1.3; }
+    .icon-item:hover .icon-circle { background: rgba(255,32,32,0.18); border-color: rgba(255,32,32,0.45); box-shadow: 0 0 18px rgba(255,32,32,0.18); }
+    .icon-item p { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 3px; }
+    .icon-item .icon-desc { display: block; font-size: 11px; color: #777; line-height: 1.3; }
 
-    .section-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px;
-    }
-    .section-title {
-      font-size: 17.5px; font-weight: 700; color: #fff;
-      position: relative;
-      padding-bottom: 8px;
-    }
-    .section-title::after {
-      content: '';
-      position: absolute; left: 0; bottom: 0;
-      width: 28px; height: 2.5px;
-      background: var(--red);
-      border-radius: 2px;
-    }
+    /* ── SECTION HEADER V2 ── */
+    .section-row { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-bottom: 14px; }
+    .section-title { font-size: 18px; font-weight: 700; color: #fff; }
+    .section-title::after { display:none; }
     .section-link { font-size: 14.5px; color: var(--red); cursor: pointer; font-weight: 600; }
 
     .video-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
@@ -1054,54 +1024,62 @@
 
   <!-- INÍCIO -->
   <div id="dashSection" style="display:none;">
-    <div class="shell">
 
-      <div class="hero" id="heroCarousel">
-        <div class="loading">Carregando...</div>
+    <!-- HERO BANNER V2 -->
+    <div style="padding:16px 16px 0;">
+      <div class="hero" id="heroCarousel" style="border-radius:28px;overflow:hidden;min-height:260px;background:linear-gradient(135deg,#0a0a0a 0%,#1a0000 50%,#0a0a0a 100%);position:relative;">
+        <div class="loading" style="min-height:260px;display:flex;align-items:center;justify-content:center;">Carregando...</div>
       </div>
+    </div>
 
+    <!-- AÇÕES RÁPIDAS V2 -->
+    <div style="padding:20px 0 0;">
+      <div class="section-row" style="margin-bottom:12px;">
+        <span class="section-title">Ações rápidas</span>
+      </div>
       <div class="icon-row">
-        <div class="icon-item" onclick="showUploadScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><rect x="2" y="3" width="20" height="14" rx="2.5"/><path d="M8 21h8M12 17v4"/><path d="m7 10 3 3 2-2 4 4"/><circle cx="8" cy="8" r="1.5"/></svg></div>
-          <p>Vídeos Pendentes</p>
-          <span class="icon-desc">Continue de onde parou</span>
-        </div>
         <div class="icon-item" onclick="showVideoCreatorScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
-          <p>Gerar Vídeo IA</p>
-          <span class="icon-desc">Crie com Inteligência Artificial</span>
-        </div>
-        <div class="icon-item" onclick="showAnuncioExpressScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></div>
-          <p>Anúncio Express</p>
-          <span class="icon-desc">Gere ou capture na hora</span>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+          <p>Criar Vídeo</p>
+          <span class="icon-desc">Crie com IA</span>
         </div>
         <div class="icon-item" onclick="showAiEditScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/><path d="m15 5 3 3"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></div>
           <p>Editar com IA</p>
-          <span class="icon-desc">Edição inteligente e rápida</span>
+          <span class="icon-desc">Edição rápida</span>
+        </div>
+        <div class="icon-item" onclick="showAnuncioExpressScreen()">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></div>
+          <p>Anúncio Express</p>
+          <span class="icon-desc">Capture agora</span>
+        </div>
+        <div class="icon-item" onclick="showUploadScreen()">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2.5"/><path d="M8 21h8M12 17v4"/><path d="m7 10 3 3 2-2 4 4"/></svg></div>
+          <p>Vídeos Pendentes</p>
+          <span class="icon-desc">Em andamento</span>
         </div>
         <div class="icon-item" onclick="showVideosPublicadosScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
-          <p>Vídeos Publicados</p>
-          <span class="icon-desc">O que já foi ao ar</span>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <p>Publicados</p>
+          <span class="icon-desc">Histórico</span>
         </div>
         <div class="icon-item" onclick="showSettingsScreen()">
-          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
           <p>Configurações</p>
-          <span class="icon-desc">Ajustes e preferências</span>
+          <span class="icon-desc">Ajustes</span>
         </div>
       </div>
-
-      <div class="section-row">
-        <p class="section-title">Vídeos prontos</p>
-        <span class="section-link" onclick="showUploadScreen()">Ver tudo ›</span>
-      </div>
-      <div class="video-list" id="readyVideoGrid">
-        <div class="loading">Carregando...</div>
-      </div>
-
     </div>
+
+    <!-- VÍDEOS COM IA -->
+    <div class="section-row">
+      <span class="section-title">Vídeos com IA</span>
+      <span class="section-link" onclick="showUploadScreen()">Ver tudo ›</span>
+    </div>
+    <div class="video-list" id="readyVideoGrid">
+      <div class="loading">Carregando...</div>
+    </div>
+
   </div>
 
   <!-- VOCÊ / CONTA -->
@@ -2670,12 +2648,17 @@
 
       hero.innerHTML = `
         ${slidesHtml}
+        <div class="hero-glow"></div>
         <div class="hero-content">
-          <span class="hero-badge">NOVO</span>
-          <div class="hero-title">Edite com IA</div>
-          <div class="hero-sub">Crie, edite e publique vídeos de produtos com o poder da Inteligência Artificial.</div>
-          <button class="hero-cta" onclick="showAiEditScreen()">Criar projeto <span>+</span></button>
-          <div style="margin-top:8px;font-size:13px;color:var(--text-faint);cursor:pointer;" onclick="openYoutubeCreate()">Ou gere um vídeo pelo YouTube Create →</div>
+          <span class="hero-badge">✦ NOVO</span>
+          <div class="hero-title">Editor com IA</div>
+          <div class="hero-sub">Crie, edite e publique vídeos incríveis com Inteligência Artificial.</div>
+          <button class="hero-cta" onclick="showVideoCreatorScreen()">
+            <div class="hero-cta-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            </div>
+            Criar projeto →
+          </button>
         </div>
         ${dotsHtml}
         ${heroSlides.length > 1 ? '<button class="hero-nav" onclick="advanceHero()">›</button>' : ''}
@@ -2716,20 +2699,23 @@
 
         list.innerHTML = videos.slice(0, 6).map(v => {
           const cover = v.thumbnail_url || v.image_url;
-          const bgStyle = cover ? `style="background-image:url('${cover}')"` : '';
-          const statusLabel = v.package_status === 'confirmed' ? 'Publicado' : 'Pronto para publicar';
-          const priceLabel = v.price ? ('R$ ' + v.price) : '';
+          const bgStyle = cover ? `background-image:url('${cover}')` : 'background:#1a1a1a';
+          const statusLabel = v.package_status === 'confirmed' ? '✓ Publicado' : '📦 Pronto para publicar';
+          const views = v.views ? (v.views > 999 ? (v.views/1000).toFixed(1) + 'mil' : v.views) : '';
+          const likes = v.likes || '';
           return `
             <div class="video-card" onclick="window.location.href='?view=package&id=${v.package_id}'">
-              <div class="video-card-bg" ${bgStyle}></div>
-              <div class="video-card-play">▶</div>
-              <div class="video-card-overlay">
-                <div class="video-card-title">${escapeHtml(v.title || v.product_name || 'Vídeo')}</div>
-                <div class="video-card-meta">
-                  <span class="video-card-status">${statusLabel}</span>
-                  ${priceLabel ? '<span>' + escapeHtml(priceLabel) + '</span>' : ''}
-                </div>
+              <div style="position:absolute;inset:0;${bgStyle};background-size:cover;background-position:center;opacity:0.75;"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.3) 60%,transparent 100%);"></div>
+              <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:5px 8px;color:#fff;font-size:16px;cursor:pointer;">⋯</div>
+              <div style="position:absolute;bottom:0;left:0;right:0;padding:14px 16px;">
+                <div style="font-size:15px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(v.title || v.product_name || 'Vídeo')}</div>
+                <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:3px 10px;font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.8);">${statusLabel}</div>
               </div>
+              ${views || likes ? `<div style="position:absolute;bottom:14px;right:14px;display:flex;gap:8px;">
+                ${views ? `<div style="display:flex;align-items:center;gap:3px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border-radius:100px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);">▶ ${views}</div>` : ''}
+                ${likes ? `<div style="display:flex;align-items:center;gap:3px;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);border-radius:100px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);">♥ ${likes}</div>` : ''}
+              </div>` : ''}
             </div>
           `;
         }).join('');
@@ -4751,7 +4737,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
           ${roteiro.cta ? `
           <div class="vc-result-card">
-            <div class="vc-result-label">🔥 Call too Action</div>
+            <div class="vc-result-label">🔥 Call to Action</div>
             <div class="vc-result-text">${escapeHtml(roteiro.cta)}</div>
           </div>` : ''}
 
