@@ -1319,10 +1319,61 @@
     </div>
     <div class="card" style="margin-top:12px;">
       <p style="font-size: 14.5px; color:#999; margin-bottom:16px;">Quer publicar agora, sem esperar o próximo horário automático? Escolha um dos caminhos rápidos abaixo.</p>
-      <button class="btn" onclick="showSearchNowScreen()" id="buscarAgoraBtn">🔍 Buscar agora</button>
-      <p style="font-size: 13px; color:#777; margin:8px 0 16px;">Você escolhe categoria, preço e comissão, e a IA gera na hora.</p>
-      <button class="btn btn-secondary" onclick="showPincarAnuncioScreen()" id="printAnuncioBtn">📸 Print do Anúncio</button>
-      <p style="font-size: 13px; color:#777; margin:8px 0 0;">Achou um anúncio pronto na Shopee? Manda o print que a IA lê pra você.</p>
+      <div class="ae-actions">
+        <div class="ae-action" onclick="showSearchNowScreen()" id="buscarAgoraBtn">
+          <div class="ae-action-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <div class="ae-action-text">
+            <div class="ae-action-title">Buscar agora</div>
+            <div class="ae-action-sub">Você escolhe categoria, preço e comissão, e a IA gera na hora.</div>
+          </div>
+          <svg class="ae-action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        <div class="ae-action" onclick="showPincarAnuncioScreen()" id="printAnuncioBtn">
+          <div class="ae-action-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+          <div class="ae-action-text">
+            <div class="ae-action-title">Print do Anúncio</div>
+            <div class="ae-action-sub">Achou um anúncio pronto na Shopee? Manda o print que a IA lê pra você.</div>
+          </div>
+          <svg class="ae-action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFINAR LEGENDA COM IA -->
+    <div class="card" style="margin-top:12px;">
+      <div class="field-label" style="margin-top:0;">✨ Refinar Legenda com IA</div>
+      <p style="font-size: 13px; color:#777; margin:0 0 12px;">Cole uma legenda pronta ou mal escrita — a IA reescreve na hora.</p>
+      <textarea id="rl-texto" placeholder="Cole aqui a legenda que você quer refinar..." style="width:100%; min-height:90px; background:#151515; border:1px solid #2a2a2a; border-radius:12px; color:#fff; font-size:14px; padding:12px; resize:vertical; font-family:inherit; box-sizing:border-box;"></textarea>
+
+      <div class="field-label">Ajuste rápido</div>
+      <div class="vc-chip-row" id="rl-ajuste">
+        <div class="vc-chip active" onclick="vcSelect('rl-ajuste',this)" data-value="mais_vendedora">Mais vendedora</div>
+        <div class="vc-chip" onclick="vcSelect('rl-ajuste',this)" data-value="mais_curta">Mais curta</div>
+        <div class="vc-chip" onclick="vcSelect('rl-ajuste',this)" data-value="mais_divertida">Mais divertida</div>
+        <div class="vc-chip" onclick="vcSelect('rl-ajuste',this)" data-value="mais_formal">Mais formal</div>
+        <div class="vc-chip" onclick="vcSelect('rl-ajuste',this)" data-value="corrigir_erros">Corrigir erros</div>
+      </div>
+
+      <div class="field-label">Ou escreva seu próprio pedido (opcional)</div>
+      <input type="text" id="rl-prompt-livre" placeholder="Ex: deixe mais urgente, tipo oferta relâmpago" style="width:100%; box-sizing:border-box;">
+
+      <button class="btn" onclick="doRefinarLegenda()" id="rl-btn" style="margin-top:16px;">Refinar com IA</button>
+      <div class="status" id="rl-status"></div>
+
+      <div id="rl-resultado" style="display:none; margin-top:16px;">
+        <div class="field-label" style="margin-top:0;">Legenda refinada</div>
+        <div id="rl-legenda-texto" style="background:#151515; border:1px solid #2a2a2a; border-radius:12px; padding:12px; font-size:14px; color:#eee; white-space:pre-wrap; margin-bottom:8px;"></div>
+        <button class="btn btn-secondary" onclick="rlCopiar('legenda')" style="margin-bottom:12px;">📋 Copiar Legenda</button>
+
+        <div class="field-label">Hashtags</div>
+        <div id="rl-hashtags-texto" style="background:#151515; border:1px solid #2a2a2a; border-radius:12px; padding:12px; font-size:14px; color:#eee; white-space:pre-wrap; margin-bottom:8px;"></div>
+        <button class="btn btn-secondary" onclick="rlCopiar('hashtags')">📋 Copiar Hashtags</button>
+      </div>
+
+      <div id="rl-historico-wrap" style="display:none; margin-top:20px;">
+        <div class="field-label" style="margin-top:0;">Histórico recente</div>
+        <div id="rl-historico"></div>
+      </div>
     </div>
   </div>
 
@@ -1553,6 +1604,33 @@
       display:flex; align-items:center; gap:7px;
     }
     .vc-glass-title svg { opacity:0.5; }
+
+    /* ── ANÚNCIO EXPRESS — QUICK ACTIONS (padrão visual v2) ── */
+    .ae-actions { display:flex; flex-direction:column; gap:12px; margin-top:4px; }
+    .ae-action {
+      display:flex; align-items:center; gap:14px;
+      background:rgba(255,255,255,0.035);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px; padding:16px 18px;
+      cursor:pointer; transition:all 0.2s ease; position:relative; overflow:hidden;
+    }
+    .ae-action::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,31,31,0.35),transparent);
+    }
+    .ae-action:hover { border-color:rgba(255,31,31,0.35); transform:translateY(-1px); }
+    .ae-action:active { transform:scale(0.98); }
+    .ae-action-icon {
+      width:48px; height:48px; flex-shrink:0; border-radius:14px;
+      background:rgba(255,31,31,0.1); border:1px solid rgba(255,31,31,0.3);
+      display:flex; align-items:center; justify-content:center;
+      color:#ff1f1f; box-shadow:0 0 18px rgba(255,31,31,0.25);
+    }
+    .ae-action-text { flex:1; min-width:0; }
+    .ae-action-title { font-size:15.5px; font-weight:700; color:#fff; margin-bottom:2px; }
+    .ae-action-sub { font-size:12.5px; color:rgba(255,255,255,0.4); line-height:1.35; }
+    .ae-action-arrow { color:rgba(255,255,255,0.25); flex-shrink:0; }
 
     /* ── PROMPT TEXTAREA ── */
     .vc-textarea {
@@ -3307,6 +3385,7 @@ function showSearchNowScreen() {
       document.getElementById('pageSubtitle').textContent = 'Anúncio Express';
       document.getElementById('anuncioExpressSection').style.display = 'block';
       document.getElementById('bottomNav').style.display = 'flex';
+      if (typeof rlRenderHistorico === 'function') rlRenderHistorico();
       document.getElementById('headerActions').style.display = 'flex';
       setActiveNav(null);
     }
@@ -4196,6 +4275,113 @@ function showSearchNowScreen() {
     function vcSelect(groupId, el) {
       document.querySelectorAll('#' + groupId + ' .vc-chip').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
+    }
+
+    // ── REFINAR LEGENDA COM IA ──
+    function rlGetHistorico() {
+      try { return JSON.parse(localStorage.getItem('rl_historico') || '[]'); }
+      catch (e) { return []; }
+    }
+    function rlSalvarHistorico(item) {
+      const hist = rlGetHistorico();
+      hist.unshift(item);
+      localStorage.setItem('rl_historico', JSON.stringify(hist.slice(0, 8)));
+      rlRenderHistorico();
+    }
+    function rlRenderHistorico() {
+      const hist = rlGetHistorico();
+      const wrap = document.getElementById('rl-historico-wrap');
+      const list = document.getElementById('rl-historico');
+      if (!hist.length) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'block';
+      list.innerHTML = hist.map(h => `
+        <div class="ae-action" style="cursor:pointer;" onclick="rlUsarHistorico('${h.id}')">
+          <div class="ae-action-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></div>
+          <div class="ae-action-text">
+            <div class="ae-action-title">${h.ajusteLabel}</div>
+            <div class="ae-action-sub">${(h.legenda || '').slice(0, 60)}${(h.legenda||'').length > 60 ? '…' : ''}</div>
+          </div>
+        </div>`).join('');
+      window._rlHistorico = hist;
+    }
+    function rlUsarHistorico(id) {
+      const item = (window._rlHistorico || []).find(h => h.id === id);
+      if (!item) return;
+      window._rlUltimoResultado = item;
+      document.getElementById('rl-legenda-texto').textContent = item.legenda || '';
+      document.getElementById('rl-hashtags-texto').textContent = item.hashtags || '';
+      document.getElementById('rl-resultado').style.display = 'block';
+    }
+
+    async function doRefinarLegenda() {
+      const texto = document.getElementById('rl-texto').value.trim();
+      const statusEl = document.getElementById('rl-status');
+      const btn = document.getElementById('rl-btn');
+      statusEl.className = 'status';
+      statusEl.style.display = 'none';
+
+      if (!texto) {
+        statusEl.className = 'status err';
+        statusEl.textContent = 'Cole uma legenda antes de refinar.';
+        statusEl.style.display = 'block';
+        return;
+      }
+
+      const chipAtivo = document.querySelector('#rl-ajuste .vc-chip.active');
+      const ajuste = chipAtivo ? chipAtivo.getAttribute('data-value') : 'mais_vendedora';
+      const ajusteLabel = chipAtivo ? chipAtivo.textContent : 'Mais vendedora';
+      const promptLivre = document.getElementById('rl-prompt-livre').value.trim();
+
+      btn.disabled = true;
+      btn.textContent = 'Refinando...';
+      document.getElementById('rl-resultado').style.display = 'none';
+
+      try {
+        const res = await fetch(API + '/api/ai/refinar-legenda', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ texto, ajuste, prompt_livre: promptLivre || undefined })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao refinar legenda');
+
+        const legenda = data.legenda || data.caption || '';
+        const hashtags = data.hashtags || '';
+
+        document.getElementById('rl-legenda-texto').textContent = legenda;
+        document.getElementById('rl-hashtags-texto').textContent = hashtags;
+        document.getElementById('rl-resultado').style.display = 'block';
+
+        const item = { id: Date.now().toString(), ajusteLabel, legenda, hashtags };
+        window._rlUltimoResultado = item;
+        rlSalvarHistorico(item);
+
+        statusEl.className = 'status ok';
+        statusEl.textContent = 'Legenda refinada com sucesso!';
+        statusEl.style.display = 'block';
+      } catch (err) {
+        statusEl.className = 'status err';
+        statusEl.textContent = err.message || 'Erro ao refinar legenda.';
+        statusEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Refinar com IA';
+      }
+    }
+
+    function rlCopiar(tipo) {
+      const item = window._rlUltimoResultado;
+      if (!item) return;
+      const texto = tipo === 'hashtags' ? (item.hashtags || '') : (item.legenda || '');
+      navigator.clipboard.writeText(texto).then(() => {
+        const statusEl = document.getElementById('rl-status');
+        statusEl.className = 'status ok';
+        statusEl.textContent = tipo === 'hashtags' ? 'Hashtags copiadas!' : 'Legenda copiada!';
+        statusEl.style.display = 'block';
+      });
     }
 
     function vcPreviewImg(idx, input) {
