@@ -2915,7 +2915,7 @@
         content.innerHTML = '<div class="status err" style="display:block;">Faça login para configurar.</div>';
         return;
       }
-      const subId = SESSION._activeSubId || (SESSION.affiliate && SESSION.affiliate.id) || SESSION.id;
+      const subId = (_activeSubAccount && _activeSubAccount.id) || (SESSION.affiliate && SESSION.affiliate.id) || SESSION.id;
       if (!subId) {
         content.innerHTML = '<div class="status err" style="display:block;">&#10060; Nenhuma conta selecionada. Volte ao início e selecione uma conta.</div>';
         return;
@@ -3797,7 +3797,14 @@ function showSearchNowScreen() {
         const products = Array.isArray(data) ? data : (data.products || []);
 
         if (!products.length) {
-          content.innerHTML = '<div class="status info" style="display:block;">Nenhum produto selecionado hoje ainda. Volte mais tarde ou rode a seleção de produtos.</div>';
+          content.innerHTML = `
+            <div style="text-align:center;padding:32px 20px;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" style="margin-bottom:16px;"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="m8 21 4-4 4 4M12 17v4"/></svg>
+              <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:8px;">Nenhum produto selecionado hoje</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.25);margin-bottom:24px;line-height:1.5;">A seleção automática roda diariamente.<br>Você pode buscar um produto agora.</div>
+              <button class="btn" onclick="showSearchNowScreen()" style="margin:0 auto;">🔍 Buscar produto agora</button>
+            </div>
+          `;
           return;
         }
 
