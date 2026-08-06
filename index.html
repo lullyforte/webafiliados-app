@@ -1403,9 +1403,9 @@
   <!-- ══ CRIADOR DE VÍDEO IA — DESIGN PREMIUM ════════════════════════════ -->
   <div id="videoCreatorSection" style="display:none;">
     <div class="inner-header">
-      <div class="inner-header-btn" onclick="showDash()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
+      <div class="inner-header-btn" onclick="vcVoltar()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="inner-header-title">Criar Vídeo com IA</span>
-      <div style="width:34px;"></div>
+      <div class="inner-header-btn" onclick="showDash()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/></svg></div>
     </div>
     <div class="vc-steps-bar">
       <div class="vc-step-dot active" id="vcs-0"><div class="vc-step-circle">1</div><span class="vc-step-label">Prompt</span></div>
@@ -4145,6 +4145,7 @@ function showSearchNowScreen() {
     }
 
     function vcGoStep(n) {
+      _vcCurrentStep = n;
       // Esconder todos os passos e telas
       [1,2,3].forEach(i => {
         const el = document.getElementById('vc-passo-' + i);
@@ -4180,6 +4181,8 @@ function showSearchNowScreen() {
       const resultado = document.getElementById('vc-step-resultado');
       if (gerando)   gerando.style.display   = step === 'gerando'   ? 'block' : 'none';
       if (resultado) resultado.style.display = step === 'resultado' ? 'block' : 'none';
+      if (step === 'gerando')   _vcCurrentStep = 'gerando';
+      if (step === 'resultado') _vcCurrentStep = 'resultado';
       if (step === 'editor') vcGoStep(1);
       // Steps bar
       if (step === 'gerando') {
@@ -4437,6 +4440,21 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
     // Animação de progresso
     let _vcProgressTimer = null;
+    let _vcCurrentStep = 1;
+
+    function vcVoltar() {
+      if (_vcCurrentStep === "resultado") {
+        vcGoStep(3);
+        _vcCurrentStep = 3;
+      } else if (_vcCurrentStep === "gerando") {
+        return;
+      } else if (_vcCurrentStep > 1) {
+        vcGoStep(_vcCurrentStep - 1);
+        _vcCurrentStep--;
+      } else {
+        if (confirm("Sair do Criador de Vídeo? O prompt será perdido.")) showDash();
+      }
+    }
     function vcStartProgress() {
       let pct = 0;
       const steps  = ['vc-si-0','vc-si-1','vc-si-2','vc-si-3','vc-si-4'];
@@ -4577,13 +4595,13 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
                 <span style="font-size:10px;color:#8B8B8B;">Google IA</span>
               </button>
 
-              <button onclick="window.open('https://vids.google.com','_blank')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+              <button onclick="vcAbrirApp('vids')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#34A853"/><text x="4" y="17" font-size="13" font-weight="bold" fill="#fff">Vids</text></svg>
                 <span style="font-size:12px;font-weight:700;color:#fff;">Google Vids</span>
                 <span style="font-size:10px;color:#8B8B8B;">Apresentações IA</span>
               </button>
 
-              <button onclick="window.open('https://gemini.google.com','_blank')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+              <button onclick="vcAbrirApp('gemini')" style="background:#151515;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(255,40,40,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#8B5CF6"/><path d="M12 5l2 6h6l-5 3.5 2 6L12 17l-5 3.5 2-6L4 11h6z" fill="#fff"/></svg>
                 <span style="font-size:12px;font-weight:700;color:#fff;">Gemini</span>
                 <span style="font-size:10px;color:#8B8B8B;">Multimodal IA</span>
@@ -4616,6 +4634,27 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       navigator.clipboard.writeText(txt)
         .then(() => showStatus(st, 'Legenda copiada!', 'ok'))
         .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+    }
+
+    function vcAbrirApp(app) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
+      const links = {
+        gemini: {
+          ios:     'https://apps.apple.com/app/google-gemini/id6477489729',
+          android: 'https://play.google.com/store/apps/details?id=com.google.android.apps.bard',
+          web:     'https://gemini.google.com'
+        },
+        vids: {
+          ios:     'https://apps.apple.com/app/google-vids/id6504171482',
+          android: 'https://play.google.com/store/apps/details?id=com.google.android.apps.docs.editors.vids',
+          web:     'https://vids.google.com'
+        }
+      };
+      const l = links[app];
+      if (!l) return;
+      const url = isIOS ? l.ios : isAndroid ? l.android : l.web;
+      window.open(url, '_blank');
     }
 
     function vcCopiarPromptEn() {
