@@ -1209,10 +1209,10 @@
         <p class="desc">Conecte e gerencie sua API de afiliado</p>
         <div class="settings-menu-item-arrow">›</div>
       </div>
-      <div class="settings-menu-item" onclick="showComingSoon('Notificações')">
-        <div class="settings-menu-item-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></div>
-        <p class="title">Notificações</p>
-        <p class="desc">Configure alertas e preferências</p>
+      <div class="settings-menu-item" onclick="showAppsScreen()">
+        <div class="settings-menu-item-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red)"><rect x="2" y="3" width="7" height="7" rx="1.5"/><rect x="15" y="3" width="7" height="7" rx="1.5"/><rect x="2" y="14" width="7" height="7" rx="1.5"/><rect x="15" y="14" width="7" height="7" rx="1.5"/></svg></div>
+        <p class="title">Apps & Integrações</p>
+        <p class="desc">NTFY, OpenRouter, Gemini, Shopee e mais</p>
         <div class="settings-menu-item-arrow">›</div>
       </div>
       <div class="settings-menu-item" onclick="showAccountScreen()">
@@ -1790,6 +1790,283 @@
       content:''; flex:1; height:1px; background:rgba(255,255,255,0.05);
     }
   </style>
+
+  <!-- TELA: APPS & INTEGRAÇÕES -->
+  <div id="appsSection" style="display:none;">
+    <div class="inner-header">
+      <div class="inner-header-btn" onclick="showSettingsScreen()" title="Voltar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      <span class="inner-header-title">Apps & Integrações</span>
+    </div>
+    <div class="shell" style="margin-top:12px; padding-bottom:100px;">
+
+      <style>
+        .apps-card {
+          background: #151515;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 22px;
+          padding: 20px;
+          margin-bottom: 14px;
+          position: relative;
+          overflow: hidden;
+        }
+        .apps-card::before {
+          content:'';
+          position:absolute;
+          top:0; left:0; right:0;
+          height:2px;
+          background: linear-gradient(90deg, rgba(255,32,32,0.7), rgba(255,32,32,0.1));
+          border-radius: 22px 22px 0 0;
+        }
+        .apps-card-header {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 12px;
+        }
+        .apps-icon-wrap {
+          width: 52px;
+          height: 52px;
+          border-radius: 16px;
+          background: #1e1e1e;
+          border: 1px solid rgba(255,32,32,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          box-shadow: 0 0 18px rgba(255,32,32,0.12);
+          font-size: 26px;
+        }
+        .apps-card-name {
+          font-size: 17px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.2px;
+        }
+        .apps-card-tagline {
+          font-size: 13px;
+          color: #888;
+          margin-top: 2px;
+          line-height: 1.4;
+        }
+        .apps-divider {
+          height: 1px;
+          background: rgba(255,255,255,0.05);
+          margin: 14px 0;
+        }
+        .apps-desc {
+          font-size: 14px;
+          color: #aaa;
+          line-height: 1.55;
+          margin-bottom: 14px;
+        }
+        .apps-btn-row {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .apps-btn {
+          background: #1e1e1e;
+          border: 1px solid rgba(255,32,32,0.35);
+          border-radius: 12px;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 600;
+          padding: 10px 16px;
+          cursor: pointer;
+          transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          text-decoration: none;
+        }
+        .apps-btn:hover, .apps-btn:active {
+          background: rgba(255,32,32,0.12);
+          border-color: rgba(255,32,32,0.7);
+          box-shadow: 0 0 14px rgba(255,32,32,0.18);
+        }
+        .apps-btn.primary {
+          background: #FF2020;
+          border-color: #FF2020;
+          color: #fff;
+        }
+        .apps-btn.primary:hover {
+          background: #cc0000;
+          border-color: #cc0000;
+          box-shadow: 0 0 20px rgba(255,32,32,0.4);
+        }
+        .apps-steps {
+          counter-reset: step;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .apps-steps li {
+          counter-increment: step;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 10px;
+          font-size: 13px;
+          color: #bbb;
+          line-height: 1.5;
+        }
+        .apps-steps li::before {
+          content: counter(step);
+          background: rgba(255,32,32,0.18);
+          border: 1px solid rgba(255,32,32,0.4);
+          color: #FF2020;
+          font-size: 11px;
+          font-weight: 700;
+          min-width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+        .apps-topic-box {
+          background: #0d0d0d;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 12px;
+          padding: 12px 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 12px;
+        }
+        .apps-topic-val {
+          font-size: 13px;
+          font-family: 'Courier New', monospace;
+          color: #FF2020;
+          word-break: break-all;
+          flex: 1;
+        }
+        .apps-copy-btn {
+          background: rgba(255,32,32,0.12);
+          border: 1px solid rgba(255,32,32,0.3);
+          border-radius: 9px;
+          color: #FF2020;
+          font-size: 12px;
+          font-weight: 600;
+          padding: 7px 12px;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: background 0.15s;
+        }
+        .apps-copy-btn:active { background: rgba(255,32,32,0.25); }
+        .apps-section-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+          color: #555;
+          text-transform: uppercase;
+          margin: 20px 0 10px;
+        }
+      </style>
+
+      <!-- NTFY -->
+      <div class="apps-card">
+        <div class="apps-card-header">
+          <div class="apps-icon-wrap">🔔</div>
+          <div>
+            <div class="apps-card-name">NTFY</div>
+            <div class="apps-card-tagline">Push no celular mesmo offline</div>
+          </div>
+        </div>
+        <div class="apps-desc">Receba notificações em tempo real quando seu conteúdo ficar pronto — sem app aberto, sem depender de internet no momento certo.</div>
+
+        <div id="appsNtfyTopic" style="display:none;">
+          <div class="apps-topic-box">
+            <span class="apps-topic-val" id="appsTopicText">carregando...</span>
+            <button class="apps-copy-btn" onclick="copyAppsNtfyTopic()">Copiar</button>
+          </div>
+        </div>
+
+        <div class="apps-divider"></div>
+        <div class="apps-section-label">Tutorial rápido</div>
+        <ol class="apps-steps">
+          <li>Baixe o NTFY no seu celular pelo botão abaixo</li>
+          <li>Abra o app → toque em <strong style="color:#fff">+</strong> → cole seu tópico</li>
+          <li>Pronto! Você vai receber alertas automáticos do Afilia IA</li>
+        </ol>
+        <div class="apps-btn-row" style="margin-top:14px;">
+          <a class="apps-btn primary" href="https://play.google.com/store/apps/details?id=io.heckel.ntfy" target="_blank">▶ Android</a>
+          <a class="apps-btn primary" href="https://apps.apple.com/app/ntfy/id1625396347" target="_blank">▶ iOS</a>
+          <a class="apps-btn" href="https://ntfy.sh" target="_blank">🌐 Site oficial</a>
+        </div>
+      </div>
+
+      <!-- OPENROUTER -->
+      <div class="apps-card">
+        <div class="apps-card-header">
+          <div class="apps-icon-wrap">🤖</div>
+          <div>
+            <div class="apps-card-name">OpenRouter</div>
+            <div class="apps-card-tagline">IA avançada para suas sub-contas</div>
+          </div>
+        </div>
+        <div class="apps-desc">Use sua própria chave OpenRouter para ter acesso prioritário a modelos premium como Claude, GPT-4 e Llama — independente da cota do servidor.</div>
+        <div class="apps-btn-row">
+          <a class="apps-btn primary" href="https://openrouter.ai/keys" target="_blank">🔑 Gerar chave API</a>
+          <a class="apps-btn" href="https://openrouter.ai" target="_blank">🌐 OpenRouter.ai</a>
+        </div>
+        <div class="apps-desc" style="margin-top:12px; margin-bottom:0; font-size:12px; color:#555;">Cole a chave em <strong style="color:#888">Configurações → Ajustes de IA → Chave OpenRouter</strong> de cada sub-conta.</div>
+      </div>
+
+      <!-- GEMINI -->
+      <div class="apps-card">
+        <div class="apps-card-header">
+          <div class="apps-icon-wrap">✨</div>
+          <div>
+            <div class="apps-card-name">Gemini / Google AI</div>
+            <div class="apps-card-tagline">Visão, OCR e geração de vídeo (Veo)</div>
+          </div>
+        </div>
+        <div class="apps-desc">O Gemini alimenta o OCR do Anúncio Express e será o motor da geração de vídeos com Veo 3.1. Acesse o Google AI Studio para criar ou gerenciar sua chave.</div>
+        <div class="apps-btn-row">
+          <a class="apps-btn primary" href="https://aistudio.google.com/apikey" target="_blank">🔑 Gerar chave Gemini</a>
+          <a class="apps-btn" href="https://aistudio.google.com" target="_blank">🌐 AI Studio</a>
+        </div>
+      </div>
+
+      <!-- SHOPEE AFILIADOS -->
+      <div class="apps-card">
+        <div class="apps-card-header">
+          <div class="apps-icon-wrap">🛍️</div>
+          <div>
+            <div class="apps-card-name">Shopee Afiliados</div>
+            <div class="apps-card-tagline">Configure suas credenciais de API</div>
+          </div>
+        </div>
+        <div class="apps-desc">Para buscar produtos e gerar links rastreáveis, conecte sua conta de afiliado Shopee. Pegue o App ID e Secret no painel de afiliados.</div>
+        <div class="apps-btn-row">
+          <button class="apps-btn primary" onclick="showApiAfiliadoScreen()">⚙️ Configurar API</button>
+          <a class="apps-btn" href="https://affiliate.shopee.com.br" target="_blank">🌐 Painel Shopee</a>
+        </div>
+      </div>
+
+      <!-- YOUTUBE CREATE -->
+      <div class="apps-card">
+        <div class="apps-card-header">
+          <div class="apps-icon-wrap">🎬</div>
+          <div>
+            <div class="apps-card-name">YouTube Create</div>
+            <div class="apps-card-tagline">Editor de vídeo com IA do Google</div>
+          </div>
+        </div>
+        <div class="apps-desc">Editor gratuito do YouTube com IA: corte automático, trilha sonora, legendas e muito mais. Use o roteiro gerado pelo Afilia IA direto aqui.</div>
+        <div class="apps-btn-row">
+          <button class="apps-btn primary" onclick="openYoutubeCreate()">▶ Abrir YouTube Create</button>
+          <a class="apps-btn" href="https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.creator" target="_blank">📱 Android</a>
+          <a class="apps-btn" href="https://apps.apple.com/app/youtube-create/id6450188736" target="_blank">📱 iOS</a>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /appsSection -->
 
   <!-- BOTTOM NAV -->
   <div class="bottom-nav" id="bottomNav" style="display:none;">
