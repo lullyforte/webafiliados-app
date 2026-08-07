@@ -204,7 +204,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection','videoCreatorSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection','videoCreatorSection','appsSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -931,6 +931,16 @@
       document.getElementById('headerActions').style.display = 'flex';
       setActiveNav(null);
       renderSettingsScreen();
+    }
+
+    function showAppsScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Apps & Integrações';
+      document.getElementById('appsSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
     }
 
     let _currentSubAccountId = null;
