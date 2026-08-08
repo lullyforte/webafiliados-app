@@ -1854,6 +1854,12 @@ function showSearchNowScreen() {
             <div class="sheet-num-box"><input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}"></div>
           </div>
         </div>
+        <div class="field-grid">
+          <div>
+            <span class="sheet-label">⏰ Horário do push</span>
+            <div class="sheet-num-box"><input type="time" id="sheet-runtime-${day.day_of_week}" value="${(day.run_time || '09:00').slice(0,5)}" style="font-size:1.1rem;font-weight:700;color:#fff;background:transparent;border:none;outline:none;width:100%;"></div>
+          </div>
+        </div>
         <div class="status" id="sheet-status-${day.day_of_week}"></div>
         <div class="sheet-btn-row">
           <button class="btn btn-outline" onclick="closeDaySheet()">Cancelar</button>
@@ -1878,6 +1884,7 @@ function showSearchNowScreen() {
       const commissionPercent = parseFloat(document.getElementById('sheet-commission-' + dayOfWeek).value) || 0;
       const videos_per_day = parseInt(document.getElementById('sheet-videos-' + dayOfWeek).value) || 1;
       const active = document.getElementById('sheet-active-' + dayOfWeek).checked;
+      const run_time = document.getElementById('sheet-runtime-' + dayOfWeek)?.value || '09:00';
 
       if (!category) {
         showStatus(st, 'Selecione uma categoria antes de salvar.', 'err');
@@ -1907,7 +1914,8 @@ function showSearchNowScreen() {
             price_max,
             commission_min: commissionPercent / 100,
             videos_per_day,
-            active
+            active,
+            run_time
           })
         });
         const data = await res.json();
@@ -1917,7 +1925,7 @@ function showSearchNowScreen() {
         const idx = schedule.findIndex(d => d.day_of_week === dayOfWeek);
         if (idx > -1) {
           schedule[idx] = Object.assign({}, schedule[idx], {
-            category, price_min, price_max, commission_min: commissionPercent / 100, videos_per_day, active
+            category, price_min, price_max, commission_min: commissionPercent / 100, videos_per_day, active, run_time
           });
         }
 
