@@ -994,6 +994,18 @@
       <button class="btn btn-outline" onclick="closeNewSubAccountModal()" style="margin-top:10px;">Cancelar</button>
     </div>
   </div>
+  <!-- MODAL: limite de vídeos/dia sem OpenRouter -->
+  <div class="modal-overlay" id="openRouterLimitModal">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Limite de vídeos por dia</div>
+      <div class="modal-subtitle">Sua conta usa a IA global e pode gerar até 3 vídeos por dia. Para configurar mais que isso, conecte sua própria chave OpenRouter em Apps &amp; Utilitários. Com chave própria o limite sobe para até 15 vídeos por dia.</div>
+      <div class="status" id="openRouterLimitStatus"></div>
+      <button class="btn" onclick="goToOpenRouterSetup()" style="margin-top:4px;">Configurar OpenRouter</button>
+      <button class="btn btn-outline" onclick="closeOpenRouterLimitModal()" style="margin-top:10px;">Cancelar</button>
+    </div>
+  </div>
+
   <div class="subtitle" id="pageSubtitle" style="display:none;">Painel do Afiliado</div>
 
   <!-- LOGIN -->

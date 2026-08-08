@@ -1626,6 +1626,40 @@ function showSearchNowScreen() {
     const CAL_DAY_ABBR = { 0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb' };
     let _calActiveDay = 0;
 
+    // Cache: sub-conta ativa tem chave OpenRouter própria configurada?
+    let _calHasOwnOpenRouter = false;
+
+    async function _refreshOpenRouterFlag(subId) {
+      _calHasOwnOpenRouter = false;
+      if (!subId || !SESSION) return;
+      try {
+        const res = await fetch(API + '/api/subaccounts/' + subId + '/ai-settings', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const key = data.settings && data.settings.openrouter_api_key;
+        _calHasOwnOpenRouter = !!(key && String(key).trim());
+      } catch(e) {
+        // silencioso — se falhar, assume sem chave própria (limite de 3 prevalece)
+      }
+    }
+
+    function openOpenRouterLimitModal() {
+      document.getElementById('openRouterLimitModal').classList.add('open');
+    }
+
+    function closeOpenRouterLimitModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('openRouterLimitModal').classList.remove('open');
+    }
+
+    function goToOpenRouterSetup() {
+      closeOpenRouterLimitModal();
+      closeDaySheet();
+      showAppsScreen();
+    }
+
     async function renderSettingsScreen() {
       const content = document.getElementById('settingsContent');
       content.innerHTML = '<div class="loading">Carregando configurações...</div>';
@@ -1662,6 +1696,9 @@ function showSearchNowScreen() {
         _calActiveDay = window.__SETTINGS_SCHEDULE.some(d => d.day_of_week === today) ? today : (window.__SETTINGS_SCHEDULE[0] || {}).day_of_week || 0;
 
         content.innerHTML = renderCalendarLayout();
+
+        // Não bloqueia a renderização — atualiza a flag em paralelo
+        _refreshOpenRouterFlag(_activeSubAccount.id);
       } catch(e) {
         content.innerHTML = '<div class="status err" style="display:block;"> ' + escapeHtml(e.message) + '</div>';
       }
@@ -1896,6 +1933,11 @@ function showSearchNowScreen() {
         return;
       }
 
+      if (videos_per_day > 3 && !_calHasOwnOpenRouter) {
+        openOpenRouterLimitModal();
+        return;
+      }
+
       btn.disabled = true;
       const originalText = btn.textContent;
       btn.textContent = 'Salvando...';
@@ -1919,7 +1961,16 @@ function showSearchNowScreen() {
           })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+        if (!res.ok) {
+          const msg = data.error || 'Erro ao salvar';
+          if (/openrouter/i.test(msg)) {
+            openOpenRouterLimitModal();
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+          }
+          throw new Error(msg);
+        }
 
         const schedule = window.__SETTINGS_SCHEDULE || [];
         const idx = schedule.findIndex(d => d.day_of_week === dayOfWeek);
