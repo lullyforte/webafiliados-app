@@ -1768,9 +1768,10 @@ function showSearchNowScreen() {
     }
 
     function getCategoryLabel(key) {
+      if (!key) return 'Categoria aleatória';
       const categories = window.__SETTINGS_CATEGORIES || [];
       const found = categories.find(c => c.key === key);
-      return found ? found.label : (key || 'Sem categoria');
+      return found ? found.label : key;
     }
 
     function renderCalDayCard(dayOfWeek) {
@@ -1778,57 +1779,51 @@ function showSearchNowScreen() {
       const day = schedule.find(d => d.day_of_week === dayOfWeek);
       if (!day) return '<div class="empty-note">Dia não encontrado.</div>';
 
-      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+      const slots = day.slots || [];
+      const activeCount = slots.filter(s => s.active).length;
 
       return `
         <div class="cal-day-card" id="calDayCard-${day.day_of_week}">
           <div class="cal-day-card-head">
             <h3>${escapeHtml(day.day_label)}</h3>
-            <span class="cal-status-badge ${day.active ? 'active' : 'inactive'}">${day.active ? 'Ativo' : 'Inativo'}</span>
+            <span class="cal-status-badge ${activeCount > 0 ? 'active' : 'inactive'}">${activeCount} de ${slots.length} horários ativos</span>
           </div>
 
-          <div class="cal-category-row">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 3 6.5 6.5-9 9-6.5-6.5L11 3z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>
-            ${escapeHtml(getCategoryLabel(day.category))}
+          <div class="cal-slot-list">
+            ${slots.map(slot => renderCalSlotRow(day.day_of_week, slot)).join('')}
           </div>
 
-          <div class="cal-chips">
-            <div class="cal-chip">
-              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 3 6.5 6.5-9 9-6.5-6.5L11 3z"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
-              <div class="cal-chip-label">Preço</div>
-              <div class="cal-chip-value">${fmtNum(day.price_min)} ~ ${fmtNum(day.price_max)}</div>
-              <div class="cal-chip-unit">R$</div>
-            </div>
-            <div class="cal-chip">
-              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/></svg></div>
-              <div class="cal-chip-label">Comissão</div>
-              <div class="cal-chip-value">${commissionPercent}%</div>
-              <div class="cal-chip-unit">mín.</div>
-            </div>
-            <div class="cal-chip">
-              <div class="cal-chip-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="12" height="13" rx="2"/><path d="m19.5 9 3-1.7v9.4l-3-1.7"/></svg></div>
-              <div class="cal-chip-label">Vídeos/dia</div>
-              <div class="cal-chip-value">${day.videos_per_day}</div>
-              <div class="cal-chip-unit">vídeos</div>
-            </div>
-          </div>
-
-          <button class="cal-edit-link" onclick="openDaySheet(${day.day_of_week})">
-            Editar
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          <button class="cal-edit-link" onclick="openNewSlotSheet(${day.day_of_week})">
+            Adicionar horário
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
       `;
     }
 
+    function renderCalSlotRow(dayOfWeek, slot) {
+      const videos = slot.videos || 1;
+      return `
+        <div class="cal-slot-row ${slot.active ? '' : 'cal-slot-inactive'}" onclick="openSlotSheet(${dayOfWeek}, '${slot.horario}')">
+          <div class="cal-slot-time">${slot.horario}</div>
+          <div class="cal-slot-info">
+            <div class="cal-slot-cat">${escapeHtml(getCategoryLabel(slot.category))}</div>
+            <div class="cal-slot-meta">${videos} vídeo${videos === 1 ? '' : 's'} · <span class="${slot.is_default ? 'cal-slot-tag-default' : 'cal-slot-tag-edited'}">${slot.is_default ? 'Padrão' : 'Editado'}</span></div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cal-slot-chevron"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      `;
+    }
+
     function renderCalSummaryCard(day) {
-      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+      const slots = day.slots || [];
+      const activeCount = slots.filter(s => s.active).length;
+      const totalVideos = slots.filter(s => s.active).reduce((sum, s) => sum + (s.videos || 1), 0);
       return `
         <div class="cal-summary-card ${day.day_of_week === _calActiveDay ? 'active' : ''}" onclick="switchCalDay(${day.day_of_week})">
           <div class="day-abbr">${CAL_DAY_ABBR[day.day_of_week]}</div>
-          <div class="cat-name">${escapeHtml(getCategoryLabel(day.category))}</div>
-          <div class="stat-line"><b>${fmtNum(day.price_min)}~${fmtNum(day.price_max)}</b> ${commissionPercent}%</div>
-          <div class="stat-line"><b>${day.videos_per_day}</b> vídeos</div>
+          <div class="cat-name">${activeCount} horário${activeCount === 1 ? '' : 's'}</div>
+          <div class="stat-line"><b>${totalVideos}</b> vídeos/dia</div>
         </div>
       `;
     }
@@ -1849,61 +1844,76 @@ function showSearchNowScreen() {
       document.getElementById('calSummaryScroll').innerHTML = (window.__SETTINGS_SCHEDULE || []).map(d => renderCalSummaryCard(d)).join('');
     }
 
-    function openDaySheet(dayOfWeek) {
-      const schedule = window.__SETTINGS_SCHEDULE || [];
-      const day = schedule.find(d => d.day_of_week === dayOfWeek);
-      if (!day) return;
-
+    // horario === null/undefined → modo "novo horário" (cria um slot extra no dia)
+    function _renderSlotSheet(dayOfWeek, slot, isNew) {
       const categories = window.__SETTINGS_CATEGORIES || [];
       const options = categories.map(c =>
-        `<option value="${c.key}" ${c.key === day.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
+        `<option value="${c.key}" ${c.key === slot.category ? 'selected' : ''}>${escapeHtml(c.label)}</option>`
       ).join('');
-      const commissionPercent = (parseFloat(day.commission_min || 0) * 100).toFixed(0);
+      const commissionPercent = (parseFloat(slot.commission_min || 0) * 100).toFixed(0);
+      const slotKey = isNew ? '__new__' : slot.horario;
 
       document.getElementById('daySheetContent').innerHTML = `
-        <h2>${escapeHtml(day.day_label)}</h2>
+        <h2>${isNew ? 'Novo horário' : slot.horario}</h2>
         <label class="day-active-label">
-          <input type="checkbox" id="sheet-active-${day.day_of_week}" ${day.active ? 'checked' : ''}>
-          Dia ativo
+          <input type="checkbox" id="sheet-active-${slotKey}" ${slot.active ? 'checked' : ''}>
+          Horário ativo
         </label>
+        ${isNew ? `
+        <span class="sheet-label" style="display:block;margin-bottom:8px;">Horário</span>
+        <div class="sheet-num-box" style="margin-bottom:16px;">
+          <input type="time" id="sheet-horario-${slotKey}" value="09:00" style="font-size:1.1rem;font-weight:700;color:#fff;background:transparent;border:none;outline:none;width:100%;">
+        </div>
+        ` : ''}
         <span class="sheet-label" style="display:block;margin-bottom:8px;">Categoria</span>
-        <select id="sheet-category-${day.day_of_week}" style="margin-bottom:16px;">
-          <option value="">— Selecione a categoria —</option>
+        <select id="sheet-category-${slotKey}" style="margin-bottom:16px;">
+          <option value="">— Categoria aleatória (padrão) —</option>
           ${options}
         </select>
         <div class="field-grid">
           <div>
             <span class="sheet-label">Preço mínimo (R$)</span>
-            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemin-${day.day_of_week}" value="${day.price_min}"></div>
+            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemin-${slotKey}" value="${slot.price_min}"></div>
           </div>
           <div>
             <span class="sheet-label">Preço máximo (R$)</span>
-            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemax-${day.day_of_week}" value="${day.price_max}"></div>
+            <div class="sheet-num-box"><input type="number" step="0.01" min="0" id="sheet-pricemax-${slotKey}" value="${slot.price_max}"></div>
           </div>
         </div>
         <div class="field-grid">
           <div>
             <span class="sheet-label">Comissão mínima (%)</span>
-            <div class="sheet-num-box"><input type="number" step="1" min="0" max="100" id="sheet-commission-${day.day_of_week}" value="${commissionPercent}"></div>
+            <div class="sheet-num-box"><input type="number" step="1" min="0" max="100" id="sheet-commission-${slotKey}" value="${commissionPercent}"></div>
           </div>
           <div>
-            <span class="sheet-label">Vídeos por dia</span>
-            <div class="sheet-num-box"><input type="number" step="1" min="1" max="10" id="sheet-videos-${day.day_of_week}" value="${day.videos_per_day}"></div>
+            <span class="sheet-label">Vídeos neste horário</span>
+            <div class="sheet-num-box"><input type="number" step="1" min="1" max="10" id="sheet-videos-${slotKey}" value="${slot.videos || 1}"></div>
           </div>
         </div>
-        <div class="field-grid">
-          <div>
-            <span class="sheet-label">⏰ Horário do push</span>
-            <div class="sheet-num-box"><input type="time" id="sheet-runtime-${day.day_of_week}" value="${(day.run_time || '09:00').slice(0,5)}" style="font-size:1.1rem;font-weight:700;color:#fff;background:transparent;border:none;outline:none;width:100%;"></div>
-          </div>
-        </div>
-        <div class="status" id="sheet-status-${day.day_of_week}"></div>
+        <div class="status" id="sheet-status-${slotKey}"></div>
         <div class="sheet-btn-row">
           <button class="btn btn-outline" onclick="closeDaySheet()">Cancelar</button>
-          <button class="btn" onclick="saveScheduleDay(${day.day_of_week})">Salvar alterações</button>
+          <button class="btn" onclick="${isNew ? `saveNewSlot(${dayOfWeek})` : `saveScheduleSlot(${dayOfWeek}, '${slot.horario}')`}">${isNew ? 'Criar horário' : 'Salvar alterações'}</button>
         </div>
+        ${(!isNew && !slot.is_default) ? `
+        <button class="cal-reset-link" onclick="resetScheduleSlot(${dayOfWeek}, '${slot.horario}')">Restaurar para o padrão</button>
+        ` : ''}
       `;
       document.getElementById('daySheetOverlay').classList.add('open');
+    }
+
+    function openSlotSheet(dayOfWeek, horario) {
+      const schedule = window.__SETTINGS_SCHEDULE || [];
+      const day = schedule.find(d => d.day_of_week === dayOfWeek);
+      if (!day) return;
+      const slot = (day.slots || []).find(s => s.horario === horario);
+      if (!slot) return;
+      _renderSlotSheet(dayOfWeek, slot, false);
+    }
+
+    function openNewSlotSheet(dayOfWeek) {
+      const blankSlot = { horario: '', category: null, price_min: 0, price_max: 99999, commission_min: 0, videos: 1, active: true, is_default: false };
+      _renderSlotSheet(dayOfWeek, blankSlot, true);
     }
 
     function closeDaySheet(e) {
@@ -1911,31 +1921,31 @@ function showSearchNowScreen() {
       document.getElementById('daySheetOverlay').classList.remove('open');
     }
 
-    async function saveScheduleDay(dayOfWeek) {
-      const st = document.getElementById('sheet-status-' + dayOfWeek);
-      const btn = document.querySelector('#daySheetContent .sheet-btn-row .btn:last-child');
+    function _readSlotForm(slotKey, isNew) {
+      const category = document.getElementById('sheet-category-' + slotKey).value || null;
+      const price_min = parseFloat(document.getElementById('sheet-pricemin-' + slotKey).value) || 0;
+      const price_max = parseFloat(document.getElementById('sheet-pricemax-' + slotKey).value) || 99999;
+      const commissionPercent = parseFloat(document.getElementById('sheet-commission-' + slotKey).value) || 0;
+      const videos = parseInt(document.getElementById('sheet-videos-' + slotKey).value) || 1;
+      const active = document.getElementById('sheet-active-' + slotKey).checked;
+      const horario = isNew ? (document.getElementById('sheet-horario-' + slotKey)?.value || '09:00') : null;
+      return { category, price_min, price_max, commission_min: commissionPercent / 100, videos, active, horario };
+    }
 
-      const category = document.getElementById('sheet-category-' + dayOfWeek).value;
-      const price_min = parseFloat(document.getElementById('sheet-pricemin-' + dayOfWeek).value) || 0;
-      const price_max = parseFloat(document.getElementById('sheet-pricemax-' + dayOfWeek).value) || 99999;
-      const commissionPercent = parseFloat(document.getElementById('sheet-commission-' + dayOfWeek).value) || 0;
-      const videos_per_day = parseInt(document.getElementById('sheet-videos-' + dayOfWeek).value) || 1;
-      const active = document.getElementById('sheet-active-' + dayOfWeek).checked;
-      const run_time = document.getElementById('sheet-runtime-' + dayOfWeek)?.value || '09:00';
+    async function _submitSlot(dayOfWeek, horarioOriginal, horarioParaEnviar, formData, statusEl, btn) {
+      const schedule = window.__SETTINGS_SCHEDULE || [];
+      const day = schedule.find(d => d.day_of_week === dayOfWeek);
+      const outrosSlots = day ? (day.slots || []).filter(s => s.horario !== horarioOriginal) : [];
+      const totalVideosNoDia = outrosSlots.filter(s => s.active).reduce((sum, s) => sum + (s.videos || 1), 0)
+        + (formData.active ? formData.videos : 0);
 
-      if (!category) {
-        showStatus(st, 'Selecione uma categoria antes de salvar.', 'err');
-        return;
-      }
-
-      if (!_activeSubAccount) {
-        showStatus(st, 'Nenhuma sub-conta ativa.', 'err');
-        return;
-      }
-
-      if (videos_per_day > 3 && !_calHasOwnOpenRouter) {
+      if (totalVideosNoDia > 3 && !_calHasOwnOpenRouter) {
         openOpenRouterLimitModal();
-        return;
+        return false;
+      }
+      if (!_activeSubAccount) {
+        showStatus(statusEl, 'Nenhuma sub-conta ativa.', 'err');
+        return false;
       }
 
       btn.disabled = true;
@@ -1951,13 +1961,13 @@ function showSearchNowScreen() {
           },
           body: JSON.stringify({
             subAccountId: _activeSubAccount.id,
-            category,
-            price_min,
-            price_max,
-            commission_min: commissionPercent / 100,
-            videos_per_day,
-            active,
-            run_time
+            horario: horarioParaEnviar,
+            category: formData.category,
+            price_min: formData.price_min,
+            price_max: formData.price_max,
+            commission_min: formData.commission_min,
+            videos: formData.videos,
+            active: formData.active
           })
         });
         const data = await res.json();
@@ -1967,28 +1977,65 @@ function showSearchNowScreen() {
             openOpenRouterLimitModal();
             btn.disabled = false;
             btn.textContent = originalText;
-            return;
+            return false;
           }
           throw new Error(msg);
         }
 
-        const schedule = window.__SETTINGS_SCHEDULE || [];
-        const idx = schedule.findIndex(d => d.day_of_week === dayOfWeek);
-        if (idx > -1) {
-          schedule[idx] = Object.assign({}, schedule[idx], {
-            category, price_min, price_max, commission_min: commissionPercent / 100, videos_per_day, active, run_time
-          });
-        }
-
-        showStatus(st, 'Salvo com sucesso!', 'ok');
+        window.__SETTINGS_SCHEDULE = data.schedule;
+        showStatus(statusEl, 'Salvo com sucesso!', 'ok');
         document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
-        document.getElementById('calSummaryScroll').innerHTML = schedule.map(d => renderCalSummaryCard(d)).join('');
+        document.getElementById('calSummaryScroll').innerHTML = data.schedule.map(d => renderCalSummaryCard(d)).join('');
         setTimeout(() => closeDaySheet(), 700);
+        return true;
       } catch(e) {
-        showStatus(st, '' + e.message, 'err');
+        showStatus(statusEl, '' + e.message, 'err');
+        return false;
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
+      }
+    }
+
+    async function saveScheduleSlot(dayOfWeek, horario) {
+      const st = document.getElementById('sheet-status-' + horario);
+      const btn = document.querySelector('#daySheetContent .sheet-btn-row .btn:last-child');
+      const formData = _readSlotForm(horario, false);
+      await _submitSlot(dayOfWeek, horario, horario, formData, st, btn);
+    }
+
+    async function saveNewSlot(dayOfWeek) {
+      const st = document.getElementById('sheet-status-__new__');
+      const btn = document.querySelector('#daySheetContent .sheet-btn-row .btn:last-child');
+      const formData = _readSlotForm('__new__', true);
+      if (!formData.horario) {
+        showStatus(st, 'Escolha um horário.', 'err');
+        return;
+      }
+      await _submitSlot(dayOfWeek, formData.horario, formData.horario, formData, st, btn);
+    }
+
+    async function resetScheduleSlot(dayOfWeek, horario) {
+      if (!_activeSubAccount) return;
+      if (!confirm('Restaurar este horário para o padrão? A edição será perdida.')) return;
+      try {
+        const res = await fetch(API + '/api/settings/schedule/' + dayOfWeek + '/reset', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ subAccountId: _activeSubAccount.id, horario })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao restaurar');
+
+        window.__SETTINGS_SCHEDULE = data.schedule;
+        document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
+        document.getElementById('calSummaryScroll').innerHTML = data.schedule.map(d => renderCalSummaryCard(d)).join('');
+        closeDaySheet();
+      } catch(e) {
+        alert('Erro ao restaurar: ' + e.message);
       }
     }
 
