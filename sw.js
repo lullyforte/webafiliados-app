@@ -64,7 +64,7 @@ self.addEventListener('push', (event) => {
   notifyClients({ type: 'push', title, body });
 });
 
-// ── Clique na notificação: abre o app ────────────────────────────────────
+// ── Clique na notificação: abre o app na URL correta ─────────────────────
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
@@ -73,10 +73,15 @@ self.addEventListener('notificationclick', (event) => {
     : '/';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Se já tem uma janela do app aberta, navega para a URL correta
       for (const client of clientList) {
-        if (client.url === targetUrl && 'focus' in client) return client.focus();
+        if ('focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
       }
+      // Se não tem janela aberta, abre uma nova
       if (clients.openWindow) return clients.openWindow(targetUrl);
     })
   );
