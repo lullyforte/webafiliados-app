@@ -294,6 +294,12 @@
       } else {
         imgEl.style.display = 'none';
       }
+
+      // Lê packageId da URL e mostra seção de envio de vídeo
+      const packageId = params.get('packageId');
+      window._currentPackageId = packageId || null;
+      const uploadSection = document.getElementById('promptUploadSection');
+      if (uploadSection) uploadSection.style.display = packageId ? 'block' : 'none';
     }
 
     function copyPromptAndImage() {
@@ -320,6 +326,65 @@
         window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.producer', '_blank');
       } else {
         window.open('https://www.youtube.com/creators/create/youtube-create-app/', '_blank');
+      }
+    }
+
+    function openGemini() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      const isAndroid = /android/i.test(ua);
+      if (isIOS) {
+        window.open('https://apps.apple.com/us/app/google-gemini/id6477489729', '_blank');
+      } else if (isAndroid) {
+        window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.bard', '_blank');
+      } else {
+        window.open('https://gemini.google.com', '_blank');
+      }
+    }
+
+    function openGoogleVids() {
+      window.open('https://vids.google.com', '_blank');
+    }
+
+    async function doUploadFromPrompt() {
+      const fileInput = document.getElementById('promptVideoFileInput');
+      const btn = document.getElementById('promptUploadBtn');
+      const st = document.getElementById('promptUploadStatus');
+      if (!window._currentPackageId) {
+        showStatus(st, 'ID do pacote não encontrado. Acesse pelo push.', 'err');
+        return;
+      }
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
+        return;
+      }
+      const file = fileInput.files[0];
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+      try {
+        // Busca o videoId pelo packageId
+        const res = await fetch(API + '/api/packaging/' + window._currentPackageId, {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const pkg = await res.json();
+        const videoId = pkg.video_id || pkg.videoId;
+        if (!videoId) throw new Error('videoId não encontrado no pacote');
+        const formData = new FormData();
+        formData.append('video', file);
+        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data = await res2.json();
+        if (!res2.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
+        showStatus(st, 'Vídeo enviado com sucesso! ✅', 'ok');
+        btn.textContent = 'Enviado ✅';
+      } catch(e) {
+        showStatus(st, e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Enviar Vídeo';
       }
     }
 

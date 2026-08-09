@@ -1179,8 +1179,19 @@
     <img id="promptProductImage" class="thumb" style="display:none;" alt="Foto do produto">
     <div class="prompt-box" id="promptText"></div>
     <button class="btn" id="copyPromptBtn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
-    <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">Abrir YouTube Create</button>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-align:center;">GERAR VÍDEO COM:</div>
+      <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶ YouTube Create</button>
+      <button class="btn btn-secondary" onclick="openGemini()">✦ Gemini</button>
+      <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
+    </div>
     <div class="status" id="promptStatus"></div>
+    <div id="promptUploadSection" style="display:none;margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
+      <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ TEM O VÍDEO PRONTO? ENVIE AQUI:</div>
+      <input type="file" id="promptVideoFileInput" accept="video/mp4" style="margin-bottom:12px;color:#fff;width:100%;">
+      <button class="btn" id="promptUploadBtn" onclick="doUploadFromPrompt()">Enviar Vídeo</button>
+      <div class="status" id="promptUploadStatus"></div>
+    </div>
     </div>
   </div>
 
