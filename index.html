@@ -2145,5 +2145,19 @@
   </div>
 
   <script src="app.js"></script>
+
+  <!-- MODAL: IMAGEM DO PRODUTO -->
+  <div id="imageModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+    <div style="width:100%;max-width:420px;background:#151515;border-radius:24px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;position:relative;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.08);">
+        <span style="font-size:15px;font-weight:600;color:#fff;letter-spacing:0.02em;">Foto do Produto</span>
+        <button onclick="closeImageModal()" style="background:rgba(255,255,255,0.08);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:18px;line-height:1;">✕</button>
+      </div>
+      <div style="padding:16px;">
+        <img id="modalProductImage" src="" alt="Foto do produto" style="width:100%;border-radius:16px;display:block;margin-bottom:16px;">
+        <a id="modalSaveBtn" href="" download target="_blank" style="display:block;width:100%;padding:16px;background:#FF2020;color:#fff;text-align:center;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 0 20px rgba(255,32,32,0.35);">⬇ Salvar Imagem</a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

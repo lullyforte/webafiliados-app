@@ -268,6 +268,8 @@
 
       if (SESSION) {
         document.body.classList.remove('pre-login');
+        // Tenta restaurar tela do prompt se estava aberta antes
+        if (restorePromptIfNeeded()) return;
         await _ensureSubAccounts();
         _goToDashOrOnboarding();
       } else {
@@ -300,6 +302,30 @@
       window._currentPackageId = packageId || null;
       const uploadSection = document.getElementById('promptUploadSection');
       if (uploadSection) uploadSection.style.display = packageId ? 'block' : 'none';
+
+      // Salva estado no sessionStorage para restaurar ao voltar
+      try {
+        sessionStorage.setItem('wa_prompt_state', JSON.stringify({
+          text: window._currentPrompt,
+          image: imageUrl,
+          packageId: packageId || null
+        }));
+      } catch(e) {}
+    }
+
+    function restorePromptIfNeeded() {
+      try {
+        const saved = sessionStorage.getItem('wa_prompt_state');
+        if (!saved) return false;
+        const state = JSON.parse(saved);
+        if (!state.text || state.text === '(prompt vazio)') return false;
+        const fakeParams = new URLSearchParams();
+        fakeParams.set('text', state.text);
+        if (state.image) fakeParams.set('image', state.image);
+        if (state.packageId) fakeParams.set('packageId', state.packageId);
+        renderPromptView(fakeParams);
+        return true;
+      } catch(e) { return false; }
     }
 
     function copyPromptAndImage() {
@@ -307,13 +333,28 @@
       navigator.clipboard.writeText(window._currentPrompt || '')
         .then(() => {
           if (window._currentProductImage) {
-            window.open(window._currentProductImage, '_blank');
-            showStatus(st, 'Prompt copiado e imagem aberta!', 'ok');
+            openImageModal(window._currentProductImage);
+            showStatus(st, 'Prompt copiado! Salve a imagem abaixo.', 'ok');
           } else {
             showStatus(st, 'Prompt copiado!', 'ok');
           }
         })
         .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
+    }
+
+    function openImageModal(imageUrl) {
+      const modal = document.getElementById('imageModal');
+      const img = document.getElementById('modalProductImage');
+      const btn = document.getElementById('modalSaveBtn');
+      if (!modal || !img || !btn) return;
+      img.src = imageUrl;
+      btn.href = imageUrl;
+      modal.style.display = 'flex';
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('imageModal');
+      if (modal) modal.style.display = 'none';
     }
 
     function openYoutubeCreate() {
