@@ -1639,7 +1639,7 @@ function showSearchNowScreen() {
         if (!res.ok) return;
         const data = await res.json();
         const key = data.settings && data.settings.openrouter_api_key;
-        _calHasOwnOpenRouter = !!(key && String(key).trim());
+        _calHasOwnOpenRouter = !!(key && String(key).trim()) || IS_ADMIN;
       } catch(e) {
         // silencioso — se falhar, assume sem chave própria (limite de 3 prevalece)
       }
