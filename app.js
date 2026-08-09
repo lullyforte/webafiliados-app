@@ -1045,7 +1045,7 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao cadastrar');
         showStatus(st, 'Cadastro realizado! Aguarde aprovação do administrador.', 'ok');
         btn.textContent = 'Cadastrado!';
-        setTimeout(() => showLogin(), 3000);
+        setTimeout(() => { window.history.replaceState({}, "", "/"); showLogin(); }, 3000);
       } catch(e) {
         showStatus(st, '' + e.message, 'err');
         btn.disabled = false; btn.textContent = 'Cadastrar';
