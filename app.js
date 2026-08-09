@@ -456,18 +456,18 @@
         const pkg = (data.packages || []).find(p => String(p.id) === String(packageId));
         if (!pkg) throw new Error('Pacote não encontrado na lista de prontos');
 
-        window._currentPackageCaption = (pkg.caption || '') + '\n' + (pkg.hashtags || '');
+        window._currentPackageCaption = pkg.caption || '';
         window._currentPackageLink = pkg.affiliate_link || '';
 
         content.innerHTML = `
           <div class="product-title">${escapeHtml(pkg.title || pkg.product_name || 'Produto')}</div>
           <div class="product-meta">R$ ${pkg.price || ''} • Status: ${escapeHtml(pkg.status)}</div>
 
-          <div class="field-label">Legenda</div>
-          <div class="prompt-box" style="max-height:100px;">${escapeHtml(pkg.caption || '—')}</div>
+          <div class="field-label">Título</div>
+          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.title || '—')}</div>
 
-          <div class="field-label">Hashtags</div>
-          <div class="prompt-box" style="max-height:80px;">${escapeHtml(pkg.hashtags || '—')}</div>
+          <div class="field-label">Legenda + Hashtags</div>
+          <div class="prompt-box" style="max-height:120px;">${escapeHtml(pkg.caption || '—')}</div>
 
           <div class="field-label">Link de Afiliado</div>
           <div class="prompt-box" style="max-height:60px;">${escapeHtml(pkg.affiliate_link || '—')}</div>
