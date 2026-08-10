@@ -303,12 +303,26 @@
       const uploadSection = document.getElementById('promptUploadSection');
       if (uploadSection) uploadSection.style.display = packageId ? 'block' : 'none';
 
+      // Ler narration da URL e mostrar secao
+      const narrationParam = params.get('narration');
+      const narrationText = narrationParam ? decodeURIComponent(narrationParam) : '';
+      window._currentNarration = narrationText;
+      const narrationSection = document.getElementById('promptNarrationSection');
+      const narrationEl = document.getElementById('promptNarrationText');
+      if (narrationSection && narrationEl && narrationText) {
+        narrationEl.textContent = narrationText;
+        narrationSection.style.display = 'block';
+      } else if (narrationSection) {
+        narrationSection.style.display = 'none';
+      }
+
       // Salva estado no sessionStorage para restaurar ao voltar
       try {
         sessionStorage.setItem('wa_prompt_state', JSON.stringify({
           text: window._currentPrompt,
           image: imageUrl,
-          packageId: packageId || null
+          packageId: packageId || null,
+          narration: narrationText
         }));
       } catch(e) {}
     }
@@ -323,6 +337,7 @@
         fakeParams.set('text', state.text);
         if (state.image) fakeParams.set('image', state.image);
         if (state.packageId) fakeParams.set('packageId', state.packageId);
+        if (state.narration) fakeParams.set('narration', state.narration);
         renderPromptView(fakeParams);
         return true;
       } catch(e) { return false; }
@@ -355,6 +370,13 @@
     function closeImageModal() {
       const modal = document.getElementById('imageModal');
       if (modal) modal.style.display = 'none';
+    }
+
+    function copyNarration() {
+      const st = document.getElementById('narrationStatus');
+      navigator.clipboard.writeText(window._currentNarration || '')
+        .then(() => showStatus(st, 'Narracao copiada!', 'ok'))
+        .catch(() => showStatus(st, 'Nao foi possivel copiar.', 'err'));
     }
 
     function openYoutubeCreate() {
