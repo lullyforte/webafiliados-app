@@ -276,9 +276,9 @@
 
       if (SESSION) {
         document.body.classList.remove('pre-login');
-        // Tenta restaurar tela do prompt se estava aberta antes
-        if (restorePromptIfNeeded()) return;
         await _ensureSubAccounts();
+        // Tenta restaurar tela do prompt somente apos carregar sub-contas
+        if (_subAccounts.length > 0 && restorePromptIfNeeded()) return;
         _goToDashOrOnboarding();
       } else {
         document.body.classList.add('pre-login');
