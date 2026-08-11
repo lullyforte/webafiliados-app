@@ -284,7 +284,7 @@
       document.getElementById('promptSection').style.display = 'block';
       const text = params.get('text') || '(prompt vazio)';
       document.getElementById('promptText').textContent = decodeURIComponent(text);
-      window._currentPrompt = decodeURIComponent(text);
+      // _currentPrompt é montado após ler a narração abaixo
 
       const imageParam = params.get('image');
       const imageUrl = imageParam ? decodeURIComponent(imageParam) : '';
@@ -303,10 +303,11 @@
       const uploadSection = document.getElementById('promptUploadSection');
       if (uploadSection) uploadSection.style.display = packageId ? 'block' : 'none';
 
-      // Ler narration da URL e mostrar secao
+      // Ler narration da URL e montar prompt completo para copiar
       const narrationParam = params.get('narration');
       const narrationText = narrationParam ? decodeURIComponent(narrationParam) : '';
       window._currentNarration = narrationText;
+      window._currentPrompt = buildFullPrompt(decodeURIComponent(text), narrationText);
       const narrationSection = document.getElementById('promptNarrationSection');
       const narrationEl = document.getElementById('promptNarrationText');
       if (narrationSection && narrationEl && narrationText) {
@@ -601,7 +602,7 @@
       const content = document.getElementById('uploadContent');
       const video = (window.__PENDING_VIDEOS || []).find(v => v.id === videoId) || {};
 
-      window._currentPrompt = video.video_prompt || '';
+      window._currentPrompt = buildFullPrompt(video.video_prompt, video.narration);
       window._currentProductImage = video.image_url || '';
 
       content.innerHTML = `
@@ -747,7 +748,7 @@
         return;
       }
 
-      window._currentPrompt = item.video_prompt || '';
+      window._currentPrompt = buildFullPrompt(item.video_prompt, item.narration);
       window._currentProductImage = item.image_url || '';
 
       content.innerHTML = `
@@ -786,6 +787,14 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+    }
+
+    // Une video_prompt + narração num único texto para copiar/colar no YouTube Create
+    function buildFullPrompt(videoPrompt, narration) {
+      const vp  = (videoPrompt || '').trim();
+      const nar = (narration  || '').trim();
+      if (!nar) return vp;
+      return vp + '\n\nNARRAÇÃO: ' + nar;
     }
 
     async function doLogin() {
