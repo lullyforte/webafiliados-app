@@ -38,22 +38,30 @@
     async function _ensureSubAccounts() {
       if (_subAccounts.length > 0) return;
       if (!SESSION) return;
-      try {
-        const res = await fetch(API + '/api/subaccounts', {
-          headers: { 'Authorization': 'Bearer ' + SESSION.token }
-        });
-        const data = await res.json();
-        _subAccounts = data.subAccounts || [];
-        // define ativa: tenta recuperar da sessão, senão usa a primeira
-        _loadActiveSubAccount();
-        if (!_activeSubAccount && _subAccounts.length > 0) {
-          _saveActiveSubAccount(_subAccounts[0]);
-        } else if (_activeSubAccount) {
-          // re-sincroniza com dados frescos
-          const fresh = _subAccounts.find(s => s.id === _activeSubAccount.id);
-          if (fresh) _saveActiveSubAccount(fresh);
+      // Tenta ate 3 vezes antes de desistir (rede instavel, token momentaneo)
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const res = await fetch(API + '/api/subaccounts', {
+            headers: { 'Authorization': 'Bearer ' + SESSION.token }
+          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          _subAccounts = data.subAccounts || [];
+          // define ativa: tenta recuperar da sessao, senao usa a primeira
+          _loadActiveSubAccount();
+          if (!_activeSubAccount && _subAccounts.length > 0) {
+            _saveActiveSubAccount(_subAccounts[0]);
+          } else if (_activeSubAccount) {
+            const fresh = _subAccounts.find(s => s.id === _activeSubAccount.id);
+            if (fresh) _saveActiveSubAccount(fresh);
+          }
+          return; // sucesso, sai do loop
+        } catch(e) {
+          console.warn('sub-contas tentativa ' + attempt + ':', e);
+          if (attempt < 3) await new Promise(r => setTimeout(r, 1500));
         }
-      } catch(e) { console.warn('sub-contas:', e); }
+      }
+      console.error('sub-contas: falhou apos 3 tentativas');
     }
 
     function toggleSubAccountDropdown() {
@@ -284,7 +292,7 @@
       document.getElementById('promptSection').style.display = 'block';
       const text = params.get('text') || '(prompt vazio)';
       document.getElementById('promptText').textContent = decodeURIComponent(text);
-      // _currentPrompt é montado após ler a narração abaixo
+      window._currentPrompt = decodeURIComponent(text);
 
       const imageParam = params.get('image');
       const imageUrl = imageParam ? decodeURIComponent(imageParam) : '';
@@ -303,11 +311,10 @@
       const uploadSection = document.getElementById('promptUploadSection');
       if (uploadSection) uploadSection.style.display = packageId ? 'block' : 'none';
 
-      // Ler narration da URL e montar prompt completo para copiar
+      // Ler narration da URL e mostrar secao
       const narrationParam = params.get('narration');
       const narrationText = narrationParam ? decodeURIComponent(narrationParam) : '';
       window._currentNarration = narrationText;
-      window._currentPrompt = buildFullPrompt(decodeURIComponent(text), narrationText);
       const narrationSection = document.getElementById('promptNarrationSection');
       const narrationEl = document.getElementById('promptNarrationText');
       if (narrationSection && narrationEl && narrationText) {
@@ -602,7 +609,7 @@
       const content = document.getElementById('uploadContent');
       const video = (window.__PENDING_VIDEOS || []).find(v => v.id === videoId) || {};
 
-      window._currentPrompt = buildFullPrompt(video.video_prompt, video.narration);
+      window._currentPrompt = video.video_prompt || '';
       window._currentProductImage = video.image_url || '';
 
       content.innerHTML = `
@@ -748,7 +755,7 @@
         return;
       }
 
-      window._currentPrompt = buildFullPrompt(item.video_prompt, item.narration);
+      window._currentPrompt = item.video_prompt || '';
       window._currentProductImage = item.image_url || '';
 
       content.innerHTML = `
@@ -787,14 +794,6 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
-    }
-
-    // Une video_prompt + narração num único texto para copiar/colar no YouTube Create
-    function buildFullPrompt(videoPrompt, narration) {
-      const vp  = (videoPrompt || '').trim();
-      const nar = (narration  || '').trim();
-      if (!nar) return vp;
-      return vp + '\n\nNARRAÇÃO: ' + nar;
     }
 
     async function doLogin() {
@@ -844,7 +843,19 @@
     async function _goToDashOrOnboarding() {
       refreshAdminStatus();
       if (!_subAccounts.length) {
-        showOnboardingScreen();
+        // Se nao carregou sub-contas, tenta uma vez mais antes de mostrar onboarding
+        await _ensureSubAccounts();
+      }
+      if (!_subAccounts.length) {
+        // Mesmo apos retry — se o afiliado tem sessao valida, provavelmente é erro de rede
+        // Mostra dash com aviso em vez de onboarding (evita loop de reconexao Shopee)
+        if (SESSION && SESSION.token) {
+          showDash();
+          const st = document.getElementById('dashStatus');
+          if (st) { st.style.display = 'block'; st.textContent = 'Erro ao carregar dados. Verifique sua conexao e recarregue.'; st.style.color = '#F59E0B'; }
+        } else {
+          showOnboardingScreen();
+        }
       } else {
         showDash();
       }
