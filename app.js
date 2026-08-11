@@ -757,19 +757,38 @@
 
       window._currentPrompt = item.video_prompt || '';
       window._currentProductImage = item.image_url || '';
+      window._currentNarration = item.narration || '';
+      window._currentPackageId = item.package_id || null;
 
       content.innerHTML = `
         <div class="field-label" style="margin-top:0;">${escapeHtml(item.title || item.product_name || '')}</div>
         ${item.image_url ? `<img src="${item.image_url}" class="thumb" alt="Foto do produto">` : ''}
 
-        <div class="field-label">Prompt do vídeo</div>
+        <div class="field-label">PROMPT DO VÍDEO (YOUTUBE CREATE)</div>
         <div class="prompt-box">${escapeHtml(item.video_prompt || '(sem prompt)')}</div>
 
         <button class="btn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
-        <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:10px;">Abrir YouTube Create</button>
-        <button class="btn btn-secondary" onclick="downloadPromptFile('${escapeHtml((item.title || 'prompt').replace(/'/g, "\\'"))}')" style="margin-top:10px;">Salvar Prompt (.txt)</button>
-        ${item.image_url ? `<button class="btn btn-secondary" onclick="window.open('${item.image_url}', '_blank')" style="margin-top:10px;">Abrir Imagem (salvar)</button>` : ''}
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-align:center;">GERAR VÍDEO COM:</div>
+          <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶ YouTube Create</button>
+          <button class="btn btn-secondary" onclick="openGemini()">✦ Gemini</button>
+          <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
+        </div>
         <div class="status" id="promptStatus"></div>
+        ${item.narration ? `
+        <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">NARRAÇÃO EM PORTUGUÊS:</div>
+          <div class="prompt-box" style="max-height:120px;margin-bottom:12px;">${escapeHtml(item.narration)}</div>
+          <button class="btn btn-secondary" onclick="copyNarration()">🎙️ Copiar Narração</button>
+          <div class="status" id="narrationStatus"></div>
+        </div>` : ''}
+        ${item.package_id ? `
+        <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ TEM O VÍDEO PRONTO? ENVIE AQUI:</div>
+          <input type="file" id="promptVideoFileInput" accept="video/mp4" style="margin-bottom:12px;color:#fff;width:100%;">
+          <button class="btn" onclick="doUploadFromPrompt()">Enviar Vídeo</button>
+          <div class="status" id="promptUploadStatus"></div>
+        </div>` : ''}
       `;
     }
 
