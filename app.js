@@ -353,13 +353,18 @@
 
     function copyPromptAndImage() {
       const st = document.getElementById('promptStatus');
-      navigator.clipboard.writeText(window._currentPrompt || '')
+      // Monta bloco completo: prompt + narração juntos
+      const narration = window._currentNarration || '';
+      const promptBlock = narration
+        ? (window._currentPrompt || '') + '\n\nNarração: ' + narration
+        : (window._currentPrompt || '');
+      navigator.clipboard.writeText(promptBlock)
         .then(() => {
           if (window._currentProductImage) {
             openImageModal(window._currentProductImage);
-            showStatus(st, 'Prompt copiado! Salve a imagem abaixo.', 'ok');
+            showStatus(st, 'Prompt + narração copiados! Salve a imagem abaixo.', 'ok');
           } else {
-            showStatus(st, 'Prompt copiado!', 'ok');
+            showStatus(st, 'Prompt + narração copiados!', 'ok');
           }
         })
         .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
@@ -3305,10 +3310,13 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
     function vcCopiarPromptEn() {
       const el = document.getElementById('vc-prompt-en-text');
+      const narEl = document.getElementById('vc-narracao-text');
       const st = document.getElementById('vc-copy-status');
-      const txt = el ? el.innerText : '';
-      navigator.clipboard.writeText(txt)
-        .then(() => showStatus(st, 'Prompt copiado!', 'ok'))
+      const prompt = el ? el.innerText : '';
+      const narration = narEl ? narEl.innerText : '';
+      const block = narration ? prompt + '\n\nNarração: ' + narration : prompt;
+      navigator.clipboard.writeText(block)
+        .then(() => showStatus(st, 'Prompt + narração copiados!', 'ok'))
         .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
     }
 
