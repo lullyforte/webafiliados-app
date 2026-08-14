@@ -2124,6 +2124,20 @@ function showSearchNowScreen() {
         return false;
       }
 
+      // Aviso se agendamento for para menos de 7 minutos a partir de agora
+      const agoraMinutos = (() => {
+        const now = new Date();
+        const sp = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+        return sp.getHours() * 60 + sp.getMinutes();
+      })();
+      const [hh, mm] = (horarioParaEnviar || '').split(':').map(Number);
+      const slotMinutos = hh * 60 + (mm || 0);
+      const diffMinutos = slotMinutos - agoraMinutos;
+      if (diffMinutos >= 0 && diffMinutos < 7) {
+        showStatus(statusEl, '⚠️ Horário muito próximo! O conteúdo leva ~7 minutos para ser gerado. O push pode chegar com atraso.', 'info');
+        // Não bloqueia — só avisa, salva normalmente
+      }
+
       btn.disabled = true;
       const originalText = btn.textContent;
       btn.textContent = 'Salvando...';
