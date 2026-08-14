@@ -780,13 +780,6 @@
           <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
         </div>
         <div class="status" id="promptStatus"></div>
-        ${item.narration ? `
-        <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">NARRAÇÃO EM PORTUGUÊS:</div>
-          <div class="prompt-box" style="max-height:120px;margin-bottom:12px;">${escapeHtml(item.narration)}</div>
-          <button class="btn btn-secondary" onclick="copyNarration()">🎙️ Copiar Narração</button>
-          <div class="status" id="narrationStatus"></div>
-        </div>` : ''}
         ${item.package_id ? `
         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
           <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ TEM O VÍDEO PRONTO? ENVIE AQUI:</div>
