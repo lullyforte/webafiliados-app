@@ -324,23 +324,29 @@
         narrationSection.style.display = 'none';
       }
 
-      // Salva estado no sessionStorage para restaurar ao voltar
+      // Salva estado no localStorage para restaurar mesmo apos login
       try {
-        sessionStorage.setItem('wa_prompt_state', JSON.stringify({
+        localStorage.setItem('wa_prompt_state', JSON.stringify({
           text: window._currentPrompt,
           image: imageUrl,
           packageId: packageId || null,
-          narration: narrationText
+          narration: narrationText,
+          savedAt: Date.now()
         }));
       } catch(e) {}
     }
 
     function restorePromptIfNeeded() {
       try {
-        const saved = sessionStorage.getItem('wa_prompt_state');
+        const saved = localStorage.getItem('wa_prompt_state');
         if (!saved) return false;
         const state = JSON.parse(saved);
         if (!state.text || state.text === '(prompt vazio)') return false;
+        // Expira apos 2 horas
+        if (state.savedAt && Date.now() - state.savedAt > 2 * 60 * 60 * 1000) {
+          localStorage.removeItem('wa_prompt_state');
+          return false;
+        }
         const fakeParams = new URLSearchParams();
         fakeParams.set('text', state.text);
         if (state.image) fakeParams.set('image', state.image);
@@ -349,6 +355,10 @@
         renderPromptView(fakeParams);
         return true;
       } catch(e) { return false; }
+    }
+
+    function clearPromptState() {
+      try { localStorage.removeItem('wa_prompt_state'); } catch(e) {}
     }
 
     function copyPromptAndImage() {
@@ -533,6 +543,7 @@
         if (!res.ok) throw new Error(data.error || 'Erro ao confirmar');
         showStatus(st, 'Publicação confirmada!', 'ok');
         btn.textContent = 'Confirmado ';
+        clearPromptState(); // limpa estado salvo — prompt já foi usado
       } catch(e) {
         showStatus(st, '' + e.message, 'err');
         btn.disabled = false;
