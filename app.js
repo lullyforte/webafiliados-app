@@ -366,7 +366,7 @@
       // Monta bloco completo: prompt + narração juntos
       const narration = window._currentNarration || '';
       const promptBlock = narration
-        ? (window._currentPrompt || '') + '\n\nNarração: ' + narration
+        ? (window._currentPrompt || '') + '\n\n' + narration
         : (window._currentPrompt || '');
       navigator.clipboard.writeText(promptBlock)
         .then(() => {
