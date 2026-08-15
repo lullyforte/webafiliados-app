@@ -3299,22 +3299,21 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
     function vcCopiarTudo() {
       const r = window._vcRoteiroAtual || {};
       const st = document.getElementById('vc-copy-status');
-      const legTxt = (r.legenda || '') + (r.hashtags ? '\n\n' + r.hashtags : '');
 
-      const blocos = [];
-      if (r.titulo)   blocos.push('🎬 ' + r.titulo);
-      if (r.gancho)   blocos.push('🎯 GANCHO DE ABERTURA\n' + r.gancho);
-      if (r.roteiro)  blocos.push('📝 ROTEIRO COMPLETO\n' + r.roteiro);
-      if (r.narracao) blocos.push('🎙️ NARRAÇÃO\n' + r.narracao);
-      if (legTxt)     blocos.push('📱 LEGENDA + HASHTAGS\n' + legTxt);
-      if (r.cta)      blocos.push('🔥 CALL TO ACTION\n' + r.cta);
-      if (r.dicas)    blocos.push('💡 DICAS DE PRODUÇÃO\n' + r.dicas);
-      blocos.push('🤖 PROMPT PARA GERAR O VÍDEO (EN)\n' + (r.video_prompt_en || window._vcPromptOriginal || ''));
-
-      const textoCompleto = blocos.join('\n\n');
+      // O texto copiado para o gerador de vídeo (YouTube Create/Veo) segue o
+      // MESMO padrão já usado em todo o resto do app (push1/push2): só o
+      // prompt de vídeo em inglês + a narração em português, separados por
+      // uma linha em branco. Título, gancho, roteiro completo, legenda,
+      // CTA e dicas de produção são conteúdo de LEITURA na tela — nunca
+      // devem entrar no texto colado no campo de prompt, pois o limite de
+      // 900 caracteres do YouTube Create é para o prompt+narração, não
+      // para o roteiro inteiro.
+      const videoPromptEn = r.video_prompt_en || window._vcPromptOriginal || '';
+      const narracao = r.narracao || '';
+      const textoCompleto = narracao ? (videoPromptEn + '\n\n' + narracao) : videoPromptEn;
 
       navigator.clipboard.writeText(textoCompleto)
-        .then(() => showStatus(st, 'Prompt completo copiado! Cole no gerador de vídeo.', 'ok'))
+        .then(() => showStatus(st, 'Prompt + narração copiados! Cole no gerador de vídeo.', 'ok'))
         .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
     }
 
