@@ -361,12 +361,17 @@
       try { localStorage.removeItem('wa_prompt_state'); } catch(e) {}
     }
 
-    function copyPromptAndImage() {
-      const st = document.getElementById('promptStatus');
-      // Monta bloco completo: prompt + narração juntos
+    // ── PADRÃO ÚNICO DE CÓPIA: PROMPT + NARRAÇÃO + IMAGEM ──────────────────
+    // Usado por TODOS os fluxos que geram prompt de vídeo (renderPromptView,
+    // renderSingleUpload, showPromptDetail, Criador de Vídeo IA). Cada tela
+    // só precisa preencher window._currentPrompt / _currentNarration /
+    // _currentProductImage antes de chamar esta função, passando o id do
+    // seu próprio elemento de status.
+    function copyPromptAndImageCore(statusElId) {
+      const st = document.getElementById(statusElId);
       const narration = window._currentNarration || '';
       const promptBlock = narration
-        ? (window._currentPrompt || '') + '\n\n' + narration
+        ? (window._currentPrompt || '') + '\n\nNarração: ' + narration
         : (window._currentPrompt || '');
       navigator.clipboard.writeText(promptBlock)
         .then(() => {
@@ -378,6 +383,10 @@
           }
         })
         .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
+    }
+
+    function copyPromptAndImage() {
+      copyPromptAndImageCore('promptStatus');
     }
 
     function openImageModal(imageUrl) {
@@ -627,6 +636,7 @@
 
       window._currentPrompt = video.video_prompt || '';
       window._currentProductImage = video.image_url || '';
+      window._currentNarration = video.narration || '';
 
       content.innerHTML = `
         <button class="btn btn-outline" onclick="showUploadScreen()" style="margin-bottom:16px;">← Ver outros pendentes</button>
@@ -3176,6 +3186,10 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         const container = document.getElementById('vc-resultado-content');
         const legTxt = (roteiro.legenda || '') + (roteiro.hashtags ? '\n\n' + roteiro.hashtags : '');
 
+        // Guarda o roteiro completo para o botão único de cópia
+        window._vcRoteiroAtual = roteiro;
+        window._vcPromptOriginal = prompt;
+
         container.innerHTML = `
           <div class="vc-result-hero">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
@@ -3194,6 +3208,15 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
             </div>
           </div>
 
+          <div class="vc-result-card" style="margin-top:12px;background:rgba(255,31,31,0.06);border-color:rgba(255,31,31,0.25);">
+            <button class="vc-btn-gerar" style="margin:0;width:100%;" onclick="vcCopiarTudo()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Copiar Prompt Completo
+            </button>
+            <div style="font-size:11px;color:#8B8B8B;text-align:center;margin-top:8px;">Copia roteiro + narração + legenda + CTA + dicas + prompt em inglês, tudo junto</div>
+            <div class="status" id="vc-copy-status" style="margin-top:8px;"></div>
+          </div>
+
           ${roteiro.gancho ? `
           <div class="vc-result-card" style="margin-top:12px;">
             <div class="vc-result-label">🎯 Gancho de Abertura</div>
@@ -3203,15 +3226,11 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
           <div class="vc-result-card">
             <div class="vc-result-label">🎬 Roteiro Completo</div>
             <div class="vc-result-text" id="vc-roteiro-text">${escapeHtml(roteiro.roteiro || '')}</div>
-            <button class="vc-copy-btn" onclick="vcCopiarRoteiro()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copiar roteiro
-            </button>
           </div>
 
           ${roteiro.narracao ? `
           <div class="vc-result-card">
-            <div class="vc-result-label">🎙️ Narração — ${escapeHtml(narrador)}</div>
+            <div class="vc-result-label">🎙️ Narração — ${escapeHtml(narrador)} <span style="font-weight:400;color:#8B8B8B;">(${roteiro.narracao.length}/850)</span></div>
             <div class="vc-result-text">${escapeHtml(roteiro.narracao)}</div>
           </div>` : ''}
 
@@ -3219,10 +3238,6 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
           <div class="vc-result-card">
             <div class="vc-result-label">📱 Legenda + Hashtags</div>
             <div class="vc-result-text" id="vc-legenda-text">${escapeHtml(legTxt)}</div>
-            <button class="vc-copy-btn" onclick="vcCopiarLegenda()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copiar legenda
-            </button>
           </div>` : ''}
 
           ${roteiro.cta ? `
@@ -3237,15 +3252,9 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
             <div class="vc-result-text">${escapeHtml(roteiro.dicas)}</div>
           </div>` : ''}
 
-          ${roteiro.dicas || roteiro.cta ? '' : ''}
-
           <div class="vc-result-card" style="margin-top:12px;">
-            <div class="vc-result-label" style="margin-bottom:10px;">Prompt para gerar o vídeo</div>
+            <div class="vc-result-label" style="margin-bottom:10px;">Prompt para gerar o vídeo (EN)</div>
             <div id="vc-prompt-en-text" style="font-size:13px;color:#CFCFCF;line-height:1.6;word-break:break-word;">${escapeHtml(roteiro.video_prompt_en || prompt)}</div>
-            <button class="vc-copy-btn" onclick="vcCopiarPromptEn()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-              Copiar prompt
-            </button>
           </div>
 
           <div style="padding:0 16px 8px;">
@@ -3282,27 +3291,31 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
             <button class="vc-btn-secondary" style="margin:0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
           </div>
-          <div class="status" id="vc-copy-status" style="margin:0 16px 32px;"></div>
         `;
       }, 600);
     }
 
-    function vcCopiarRoteiro() {
-      const el = document.getElementById('vc-roteiro-text');
+    // ── BOTÃO ÚNICO: copia tudo que a IA gerou, num bloco só, formatado ──
+    function vcCopiarTudo() {
+      const r = window._vcRoteiroAtual || {};
       const st = document.getElementById('vc-copy-status');
-      const txt = el ? el.innerText : '';
-      navigator.clipboard.writeText(txt)
-        .then(() => showStatus(st, 'Roteiro copiado!', 'ok'))
-        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
-    }
+      const legTxt = (r.legenda || '') + (r.hashtags ? '\n\n' + r.hashtags : '');
 
-    function vcCopiarLegenda() {
-      const el = document.getElementById('vc-legenda-text');
-      const st = document.getElementById('vc-copy-status');
-      const txt = el ? el.innerText : '';
-      navigator.clipboard.writeText(txt)
-        .then(() => showStatus(st, 'Legenda copiada!', 'ok'))
-        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
+      const blocos = [];
+      if (r.titulo)   blocos.push('🎬 ' + r.titulo);
+      if (r.gancho)   blocos.push('🎯 GANCHO DE ABERTURA\n' + r.gancho);
+      if (r.roteiro)  blocos.push('📝 ROTEIRO COMPLETO\n' + r.roteiro);
+      if (r.narracao) blocos.push('🎙️ NARRAÇÃO\n' + r.narracao);
+      if (legTxt)     blocos.push('📱 LEGENDA + HASHTAGS\n' + legTxt);
+      if (r.cta)      blocos.push('🔥 CALL TO ACTION\n' + r.cta);
+      if (r.dicas)    blocos.push('💡 DICAS DE PRODUÇÃO\n' + r.dicas);
+      blocos.push('🤖 PROMPT PARA GERAR O VÍDEO (EN)\n' + (r.video_prompt_en || window._vcPromptOriginal || ''));
+
+      const textoCompleto = blocos.join('\n\n');
+
+      navigator.clipboard.writeText(textoCompleto)
+        .then(() => showStatus(st, 'Prompt completo copiado! Cole no gerador de vídeo.', 'ok'))
+        .catch(() => showStatus(st, 'Não foi possível copiar. Selecione o texto manualmente.', 'err'));
     }
 
     function vcAbrirApp(app) {
@@ -3326,17 +3339,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       window.open(url, '_blank');
     }
 
-    function vcCopiarPromptEn() {
-      const el = document.getElementById('vc-prompt-en-text');
-      const narEl = document.getElementById('vc-narracao-text');
-      const st = document.getElementById('vc-copy-status');
-      const prompt = el ? el.innerText : '';
-      const narration = narEl ? narEl.innerText : '';
-      const block = narration ? prompt + '\n\nNarração: ' + narration : prompt;
-      navigator.clipboard.writeText(block)
-        .then(() => showStatus(st, 'Prompt + narração copiados!', 'ok'))
-        .catch(() => showStatus(st, 'Não foi possível copiar.', 'err'));
-    }
+    // vcCopiarPromptEn removida — substituída pelo botão único vcCopiarTudo()
 
     function vcAbrirVeo() {
       const st = document.getElementById('vc-veo-status');
