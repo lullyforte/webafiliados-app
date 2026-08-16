@@ -463,7 +463,7 @@
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const pkg = await res.json();
-        const videoId = pkg.video_id || pkg.videoId;
+        const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
         const formData = new FormData();
         formData.append('video', file);
