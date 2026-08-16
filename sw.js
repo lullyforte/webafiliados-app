@@ -64,7 +64,13 @@ self.addEventListener('push', (event) => {
   notifyClients({ type: 'push', title, body });
 });
 
-// ── Clique na notificação: sempre abre nova janela na URL correta ─────────
+// ── Clique na notificação: reaproveita a janela do app se já estiver aberta
+// (navegando ela para a URL do push), ou abre uma nova se não existir.
+// Importante para PWA instalado: quando o app está apenas minimizado (não
+// fechado), o sistema tende a reaproveitar a janela existente ao clicar na
+// notificação — se só chamarmos clients.openWindow(), o app volta pra
+// frente mas continua na tela antiga, sem navegar para o prompt do push.
+// Navegando explicitamente a janela existente resolve isso.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
@@ -73,6 +79,16 @@ self.addEventListener('notificationclick', (event) => {
     : '/';
 
   event.waitUntil(
-    clients.openWindow(targetUrl)
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ('navigate' in client) {
+          return client.navigate(targetUrl).then((navigatedClient) => {
+            return navigatedClient ? navigatedClient.focus() : client.focus();
+          }).catch(() => client.focus());
+        }
+        return client.focus();
+      }
+      return clients.openWindow(targetUrl);
+    })
   );
 });
