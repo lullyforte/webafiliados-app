@@ -649,7 +649,12 @@
           <div class="field-label">Prompt do vídeo (YouTube Create)</div>
           <div class="prompt-box">${escapeHtml(video.video_prompt)}</div>
           <button class="btn" onclick="copyPromptAndImage()">Copiar Prompt + Imagem</button>
-          <button class="btn btn-secondary" onclick="openYoutubeCreate()" style="margin-top:8px;">Abrir YouTube Create</button>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-align:center;">GERAR VÍDEO COM:</div>
+            <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶ YouTube Create</button>
+            <button class="btn btn-secondary" onclick="openGemini()">✦ Gemini</button>
+            <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
+          </div>
           <div class="status" id="promptStatus"></div>
         ` : ''}
 
