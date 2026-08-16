@@ -2082,7 +2082,7 @@ function showSearchNowScreen() {
           <button class="btn" onclick="${isNew ? `saveNewSlot(${dayOfWeek})` : `saveScheduleSlot(${dayOfWeek}, '${slot.horario}')`}">${isNew ? 'Criar horário' : 'Salvar alterações'}</button>
         </div>
         ${(!isNew && !slot.is_default) ? `
-        <button class="cal-reset-link" onclick="resetScheduleSlot(${dayOfWeek}, '${slot.horario}')">Restaurar para o padrão</button>
+        <button class="cal-reset-link" onclick="${slot.is_default_horario ? `resetScheduleSlot(${dayOfWeek}, '${slot.horario}')` : `excluirHorarioExtra(${dayOfWeek}, '${slot.horario}')`}">${slot.is_default_horario ? 'Restaurar para o padrão' : '🗑️ Excluir horário'}</button>
         ` : ''}
       `;
       document.getElementById('daySheetOverlay').classList.add('open');
@@ -2144,7 +2144,10 @@ function showSearchNowScreen() {
       const slotMinutos = hh * 60 + (mm || 0);
       const diffMinutos = slotMinutos - agoraMinutos;
       if (diffMinutos >= 0 && diffMinutos < 7) {
-        showStatus(statusEl, '⚠️ Horário muito próximo! O conteúdo leva ~7 minutos para ser gerado. O push pode chegar com atraso.', 'info');
+        // Modal premium centralizado, não bloqueante — a pessoa lê e fecha
+        // quando quiser, sem risco de a mensagem sumir sozinha junto com
+        // o bottom-sheet de edição (que fecha em 700ms após salvar).
+        showProximityModal();
         // Não bloqueia — só avisa, salva normalmente
       }
 
@@ -2197,6 +2200,13 @@ function showSearchNowScreen() {
       }
     }
 
+    function showProximityModal() {
+      document.getElementById('proximityModalOverlay').classList.add('open');
+    }
+    function closeProximityModal() {
+      document.getElementById('proximityModalOverlay').classList.remove('open');
+    }
+
     async function saveScheduleSlot(dayOfWeek, horario) {
       const st = document.getElementById('sheet-status-' + horario);
       const btn = document.querySelector('#daySheetContent .sheet-btn-row .btn:last-child');
@@ -2236,6 +2246,36 @@ function showSearchNowScreen() {
         closeDaySheet();
       } catch(e) {
         alert('Erro ao restaurar: ' + e.message);
+      }
+    }
+
+    // Excluir um horário EXTRA (criado pelo afiliado, fora dos horários
+    // padrão globais). Usa o MESMO endpoint de reset — o backend já apaga
+    // a linha, e como esse horário não faz parte da lista padrão, ele some
+    // da lista de vez (não vira um "default virtual" como aconteceria com
+    // um horário padrão). Só o texto/confirmação são diferentes, para
+    // deixar claro que a ação é definitiva.
+    async function excluirHorarioExtra(dayOfWeek, horario) {
+      if (!_activeSubAccount) return;
+      if (!confirm('Excluir este horário definitivamente? Ele vai sumir do calendário.')) return;
+      try {
+        const res = await fetch(API + '/api/settings/schedule/' + dayOfWeek + '/reset', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ subAccountId: _activeSubAccount.id, horario })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao excluir');
+
+        window.__SETTINGS_SCHEDULE = data.schedule;
+        document.getElementById('calDayCardWrap').innerHTML = renderCalDayCard(dayOfWeek);
+        document.getElementById('calSummaryScroll').innerHTML = data.schedule.map(d => renderCalSummaryCard(d)).join('');
+        closeDaySheet();
+      } catch(e) {
+        alert('Erro ao excluir: ' + e.message);
       }
     }
 

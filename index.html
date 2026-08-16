@@ -621,6 +621,57 @@
       justify-content: center;
     }
     .day-sheet-overlay.open { display: flex; }
+
+    /* Modal premium — aviso de horário muito próximo (<7min).
+       Centralizado (não bottom-sheet), com glow vermelho neon e borda
+       glass, seguindo a linguagem visual premium do app (glassmorphism
+       escuro + destaque vermelho neon). */
+    .proximity-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .proximity-modal-overlay.open { display: flex; }
+    .proximity-modal {
+      width: 100%;
+      max-width: 360px;
+      background: linear-gradient(180deg, #151515, #101010);
+      border: 1.5px solid rgba(255,29,29,0.45);
+      border-radius: 24px;
+      padding: 28px 24px 24px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255,29,29,0.25), 0 20px 60px rgba(0,0,0,0.6);
+      animation: proximityPop 0.24s ease;
+    }
+    @keyframes proximityPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .proximity-modal-icon {
+      width: 64px; height: 64px; margin: 0 auto 16px;
+      border-radius: 50%;
+      background: rgba(255,29,29,0.12);
+      border: 1.5px solid rgba(255,29,29,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 0 24px rgba(255,29,29,0.35);
+    }
+    .proximity-modal h3 {
+      font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -0.3px;
+    }
+    .proximity-modal p {
+      font-size: 0.92rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 22px;
+    }
+    .proximity-modal button {
+      width: 100%; height: 52px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; border-radius: 14px;
+      color: #fff; font-size: 1rem; font-weight: 700;
+      box-shadow: 0 0 20px rgba(255,29,29,0.35);
+      cursor: pointer;
+    }
     .day-sheet {
       width: 100%;
       max-width: 420px;
@@ -1302,6 +1353,16 @@
     <div class="day-sheet" id="daySheet" onclick="event.stopPropagation()">
       <div class="day-sheet-handle"></div>
       <div id="daySheetContent"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: AVISO DE HORÁRIO MUITO PRÓXIMO (<7min) -->
+  <div id="proximityModalOverlay" class="proximity-modal-overlay">
+    <div class="proximity-modal" onclick="event.stopPropagation()">
+      <div class="proximity-modal-icon">⚠️</div>
+      <h3>Horário muito próximo</h3>
+      <p id="proximityModalText">O conteúdo leva ~7 minutos para ser gerado. O push pode chegar com atraso.</p>
+      <button onclick="closeProximityModal()">Entendi</button>
     </div>
   </div>
 
