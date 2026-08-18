@@ -491,6 +491,13 @@
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const pkg = await res.json();
+        if (!res.ok) {
+          // Mostra o erro real do servidor (ex: token expirado) em vez de
+          // seguir tentando ler campos de uma resposta de erro, o que
+          // gerava a mensagem enganosa "videoId não encontrado no pacote"
+          // quando o problema real era sessão expirada.
+          throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+        }
         const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
         const formData = new FormData();
