@@ -275,15 +275,43 @@
       }
 
       if (SESSION) {
-        document.body.classList.remove('pre-login');
-        await _ensureSubAccounts();
-        // Tenta restaurar tela do prompt somente apos carregar sub-contas
-        if (_subAccounts.length > 0 && restorePromptIfNeeded()) return;
-        _goToDashOrOnboarding();
+        // Antes de confiar no token salvo, valida ele com o servidor. Sem
+        // isso, um token expirado (dias parado) fazia o app pular direto
+        // pro dashboard achando que estava logado, e só quebrava depois,
+        // com "Token inválido ou expirado" em telas espalhadas pelo app —
+        // uma experiência confusa. Agora, se o token não for mais válido,
+        // a sessão é limpa e a tela de login aparece normalmente.
+        const tokenValido = await _validarSessao();
+        if (!tokenValido) {
+          SESSION = null;
+          localStorage.removeItem('wa_session');
+          document.body.classList.add('pre-login');
+        } else {
+          document.body.classList.remove('pre-login');
+          await _ensureSubAccounts();
+          // Tenta restaurar tela do prompt somente apos carregar sub-contas
+          if (_subAccounts.length > 0 && restorePromptIfNeeded()) return;
+          _goToDashOrOnboarding();
+        }
       } else {
         document.body.classList.add('pre-login');
       }
     });
+
+    // Faz uma checagem leve e rapida do token salvo contra o servidor.
+    // Retorna true se o token ainda e valido, false caso contrario
+    // (expirado, revogado, ou erro de rede tratado como invalido por
+    // seguranca — evita deixar o usuario preso numa tela quebrada).
+    async function _validarSessao() {
+      try {
+        const res = await fetch(API + '/api/affiliates/me', {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        return res.ok;
+      } catch (e) {
+        return false;
+      }
+    }
 
     function renderPromptView(params) {
       hideAllCards();
