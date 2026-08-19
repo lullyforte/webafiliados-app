@@ -2747,6 +2747,12 @@ function showSearchNowScreen() {
       // Abre o Criador de Vídeo pré-preenchido com dados do produto
       showVideoCreatorScreen();
 
+      // Guarda o produto vinculado — necessário para, ao final, criar o
+      // pacote de verdade (content + package) e liberar o upload do vídeo
+      // pronto, fechando o fluxo até o push2.
+      window._vcProductId = p.id || null;
+      window._vcProductLink = p.affiliate_link || p.offerLink || null;
+
       // Preenche o prompt com nome + dados relevantes do produto
       const promptEl = document.getElementById('vc-prompt');
       const countEl  = document.getElementById('vc-prompt-count');
@@ -3369,10 +3375,134 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
             <div id="vc-veo-status" class="status" style="display:none;margin-bottom:10px;"></div>
 
-            <button class="vc-btn-secondary" style="margin:0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
+            ${window._vcProductId ? `
+            <div id="vc-finalizar-wrap" style="margin-top:4px;">
+              <button class="btn" style="width:100%;" onclick="vcFinalizarEEnviar()" id="vc-finalizar-btn">
+                Finalizar e Enviar Vídeo Pronto
+              </button>
+              <div class="status" id="vc-finalizar-status" style="margin-top:8px;"></div>
+              <div id="vc-upload-wrap" style="display:none;margin-top:14px;">
+                <div style="font-size:11px;font-weight:700;color:#8B8B8B;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Já tem o vídeo pronto? Envie aqui:</div>
+                <input type="file" accept="video/mp4" id="vc-video-file" style="display:none;" onchange="vcUpdateFileLabel()">
+                <button class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('vc-video-file').click()">
+                  <span id="vc-file-label">Escolher Arquivo</span>
+                </button>
+                <button class="btn" style="width:100%;" onclick="vcEnviarVideo()" id="vc-enviar-video-btn">Enviar Vídeo</button>
+                <div class="status" id="vc-enviar-status" style="margin-top:8px;"></div>
+              </div>
+            </div>
+            ` : `
+            <div class="status" style="margin-top:4px;" >Este roteiro não está vinculado a um produto — abra o Criador de Vídeo a partir de um produto (em "Produtos") para poder publicar e enviar o vídeo pronto.</div>
+            `}
+
+            <button class="vc-btn-secondary" style="margin:12px 0 0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
           </div>
         `;
       }, 600);
+    }
+
+    // Cria o pacote (content + package) a partir do roteiro já gerado,
+    // liberando a seção de upload do vídeo pronto. Chamada uma única vez;
+    // se já existir um packageId para este roteiro, só reabre a seção.
+    async function vcFinalizarEEnviar() {
+      const st = document.getElementById('vc-finalizar-status');
+      const btn = document.getElementById('vc-finalizar-btn');
+
+      if (window._vcPackageId) {
+        document.getElementById('vc-upload-wrap').style.display = 'block';
+        return;
+      }
+
+      if (!window._vcProductId) {
+        showStatus(st, 'Este roteiro não está vinculado a um produto.', 'err');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Finalizando...';
+      try {
+        const res = await fetch(API + '/api/ai/video-script/finalizar', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + SESSION.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            roteiro: window._vcRoteiroAtual,
+            productId: window._vcProductId,
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao finalizar roteiro.');
+
+        window._vcPackageId = data.packageId;
+        showStatus(st, 'Pronto! Agora envie o vídeo abaixo.', 'ok');
+        document.getElementById('vc-upload-wrap').style.display = 'block';
+        btn.textContent = 'Finalizado ✓';
+      } catch(e) {
+        showStatus(st, 'Erro: ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Finalizar e Enviar Vídeo Pronto';
+      }
+    }
+
+    function vcUpdateFileLabel() {
+      const fileInput = document.getElementById('vc-video-file');
+      const label = document.getElementById('vc-file-label');
+      if (fileInput.files && fileInput.files.length > 0) {
+        label.textContent = fileInput.files[0].name;
+      }
+    }
+
+    // Envia o vídeo pronto para o pacote criado por vcFinalizarEEnviar —
+    // mesmo padrão/rota já usado no fluxo push1 (upload por packageId).
+    async function vcEnviarVideo() {
+      const fileInput = document.getElementById('vc-video-file');
+      const btn = document.getElementById('vc-enviar-video-btn');
+      const st = document.getElementById('vc-enviar-status');
+
+      if (!window._vcPackageId) {
+        showStatus(st, 'Finalize o roteiro primeiro.', 'err');
+        return;
+      }
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+      try {
+        const res = await fetch(API + '/api/packaging/' + window._vcPackageId, {
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const pkg = await res.json();
+        if (!res.ok) {
+          throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+        }
+        const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
+        if (!videoId) throw new Error('videoId não encontrado no pacote');
+
+        const formData = new FormData();
+        formData.append('video', file);
+
+        const uploadRes = await fetch(API + '/api/video/' + videoId + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) throw new Error(uploadData.error || 'Erro ao enviar vídeo.');
+
+        showStatus(st, 'Vídeo enviado! Continue no fluxo normal do app.', 'ok');
+        btn.textContent = 'Enviado ✓';
+      } catch(e) {
+        showStatus(st, 'Erro: ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Enviar Vídeo';
+      }
     }
 
     // ── BOTÃO ÚNICO: copia tudo que a IA gerou, num bloco só, formatado ──
