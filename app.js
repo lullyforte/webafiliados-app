@@ -3042,7 +3042,11 @@ function showSearchNowScreen() {
           if (old) old.remove();
           errBox.classList.add('vc-err-msg');
           card.appendChild(errBox);
+          // Rola a tela até o erro — sem isso, a mensagem ficava fora da
+          // área visível e parecia "sumir rápido" na transição de tela.
+          errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+        console.error('[Criador de Vídeo] Erro ao gerar roteiro:', e.message);
       }
     }
 
