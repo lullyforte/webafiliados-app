@@ -3291,7 +3291,8 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         window._vcRoteiroAtual = roteiro;
         window._vcPromptOriginal = prompt;
 
-        container.innerHTML = `
+        try {
+          container.innerHTML = `
           <div class="vc-result-hero">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
               <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,31,31,0.12);border:1px solid rgba(255,31,31,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3390,7 +3391,37 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
             <div id="vc-veo-status" class="status" style="display:none;margin-bottom:10px;"></div>
 
-            ${window._vcProductId ? `
+            <div id="vc-finalizar-area"></div>
+
+            <button class="vc-btn-secondary" style="margin:12px 0 0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
+          </div>
+        `;
+        } catch (e) {
+          console.error('[vcShowResultado] Erro ao renderizar resultado:', e.message);
+          container.innerHTML = `<div class="status err" style="display:block;margin:16px;">Erro ao exibir o roteiro: ${escapeHtml(e.message)}. Os dados foram gerados com sucesso — tente rolar a tela ou recarregar.</div>`;
+        }
+        // Sempre tenta renderizar a área de finalizar, mesmo que o
+        // template principal tenha falhado — assim o botão (ou o erro)
+        // fica visível independente do que aconteceu acima.
+        vcRenderFinalizarArea();
+      }, 600);
+    }
+
+    // Renderiza o botão "Finalizar" (ou o aviso de produto não vinculado)
+    // SEPARADO do template gigante de vcShowResultado. Antes esse bloco
+    // vivia dentro do mesmo template literal enorme que monta toda a tela
+    // de resultado — se qualquer parte anterior desse template falhasse
+    // silenciosamente (erro de runtime não capturado), o botão de
+    // finalizar sumia junto, sem nenhum aviso visível. Isolando aqui,
+    // com try/catch próprio, garantimos que o botão sempre aparece (ou,
+    // se algo falhar, o erro real fica visível na tela em vez de sumir
+    // em silêncio).
+    function vcRenderFinalizarArea() {
+      const area = document.getElementById('vc-finalizar-area');
+      if (!area) return;
+      try {
+        if (window._vcProductId) {
+          area.innerHTML = `
             <div id="vc-finalizar-wrap" style="margin-top:4px;">
               <button class="btn" style="width:100%;" onclick="vcFinalizarEEnviar()" id="vc-finalizar-btn">
                 Finalizar
@@ -3402,14 +3433,16 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
                 <div class="status" id="vc-enviar-status" style="margin-top:8px;"></div>
               </div>
             </div>
-            ` : `
-            <div class="status" style="margin-top:4px;" >Este roteiro não está vinculado a um produto — abra o Criador de Vídeo a partir de um produto (em "Produtos") para poder publicar e enviar o vídeo pronto.</div>
-            `}
-
-            <button class="vc-btn-secondary" style="margin:12px 0 0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
-          </div>
-        `;
-      }, 600);
+          `;
+        } else {
+          area.innerHTML = `
+            <div class="status" style="margin-top:4px;display:block;">Este roteiro não está vinculado a um produto — abra o Criador de Vídeo a partir de um produto (em "Produtos") para poder publicar e enviar o vídeo pronto.</div>
+          `;
+        }
+      } catch (e) {
+        console.error('[vcRenderFinalizarArea] Erro:', e.message);
+        area.innerHTML = `<div class="status err" style="display:block;">Erro ao carregar opções de publicação: ${escapeHtml(e.message)}</div>`;
+      }
     }
 
     // Cria o pacote (content + package) a partir do roteiro já gerado,
