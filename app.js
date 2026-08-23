@@ -469,22 +469,46 @@
       window.open('https://vids.google.com', '_blank');
     }
 
+    // Confirma que o vídeo já foi gerado e publicado pelo afiliado, sem
+    // exigir upload de arquivo MP4 — o vídeo em si nunca era reaproveitado
+    // pelo sistema, servia só de gatilho para o Push 2. Usada nos 3 fluxos
+    // de criação (push1, push2, Criador de Vídeo).
+    async function confirmVideoPronto(videoId, btnId, statusId) {
+      const btn = document.getElementById(btnId);
+      const st = document.getElementById(statusId);
+      if (!videoId) {
+        showStatus(st, 'Vídeo não identificado. Tente novamente.', 'err');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Confirmando...';
+      showStatus(st, 'Confirmando vídeo pronto...', 'info');
+      try {
+        const res = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao confirmar vídeo.');
+        showStatus(st, 'Vídeo confirmado! Continue no fluxo normal do app.', 'ok');
+        btn.textContent = 'Vídeo confirmado';
+      } catch (e) {
+        showStatus(st, 'Erro: ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Vídeo pronto';
+      }
+    }
+
     async function doUploadFromPrompt() {
-      const fileInput = document.getElementById('promptVideoFileInput');
       const btn = document.getElementById('promptUploadBtn');
       const st = document.getElementById('promptUploadStatus');
       if (!window._currentPackageId) {
         showStatus(st, 'ID do pacote não encontrado. Acesse pelo push.', 'err');
         return;
       }
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
-        return;
-      }
-      const file = fileInput.files[0];
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
-      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+      btn.textContent = 'Confirmando...';
+      showStatus(st, 'Confirmando vídeo pronto...', 'info');
       try {
         // Busca o videoId pelo packageId
         const res = await fetch(API + '/api/packaging/' + window._currentPackageId, {
@@ -492,29 +516,23 @@
         });
         const pkg = await res.json();
         if (!res.ok) {
-          // Mostra o erro real do servidor (ex: token expirado) em vez de
-          // seguir tentando ler campos de uma resposta de erro, o que
-          // gerava a mensagem enganosa "videoId não encontrado no pacote"
-          // quando o problema real era sessão expirada.
           throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
         }
         const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
-        const formData = new FormData();
-        formData.append('video', file);
-        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
+
+        const res2 = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data = await res2.json();
-        if (!res2.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
-        showStatus(st, 'Vídeo enviado com sucesso! ✅', 'ok');
-        btn.textContent = 'Enviado ✅';
+        if (!res2.ok) throw new Error(data.error || 'Erro ao confirmar vídeo.');
+        showStatus(st, 'Vídeo confirmado! Continue no fluxo normal do app.', 'ok');
+        btn.textContent = 'Vídeo confirmado';
       } catch(e) {
         showStatus(st, e.message, 'err');
         btn.disabled = false;
-        btn.textContent = 'Enviar Vídeo';
+        btn.textContent = 'Vídeo pronto';
       }
     }
 
@@ -693,47 +711,10 @@
           <div class="status" id="promptStatus"></div>
         ` : ''}
 
-        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Já tem o vídeo pronto? Envie aqui:</div>
-        <input type="file" id="videoFileInput" accept="video/mp4" style="margin-bottom:16px; color:#fff;">
-        <button class="btn" id="uploadBtn" onclick="doUpload(${videoId})">Enviar Vídeo</button>
+        <div class="field-label" style="margin-top:22px;border-top:1px solid var(--border);padding-top:16px;">Já gerou o vídeo?</div>
+        <button class="btn" id="uploadBtn" onclick="confirmVideoPronto(${videoId}, 'uploadBtn', 'uploadStatus')">Vídeo pronto</button>
         <div class="status" id="uploadStatus"></div>
       `;
-    }
-
-    async function doUpload(videoId) {
-      const fileInput = document.getElementById('videoFileInput');
-      const btn = document.getElementById('uploadBtn');
-      const st = document.getElementById('uploadStatus');
-
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
-        return;
-      }
-
-      const file = fileInput.files[0];
-      btn.disabled = true;
-      btn.textContent = 'Enviando...';
-      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
-
-      try {
-        const formData = new FormData();
-        formData.append('video', file);
-
-        const res = await fetch(API + '/api/video/' + videoId + '/upload', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erro ao enviar vídeo');
-
-        showStatus(st, 'Vídeo enviado com sucesso!', 'ok');
-        btn.textContent = 'Enviado ';
-      } catch(e) {
-        showStatus(st, '' + e.message, 'err');
-        btn.disabled = false;
-        btn.textContent = 'Enviar Vídeo';
-      }
     }
 
     // ===== TELA: PROMPTS PRONTOS (histórico permanente) =====
@@ -843,9 +824,8 @@
         <div class="status" id="promptStatus"></div>
         ${item.package_id ? `
         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
-          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ TEM O VÍDEO PRONTO? ENVIE AQUI:</div>
-          <input type="file" id="promptVideoFileInput" accept="video/mp4" style="margin-bottom:12px;color:#fff;width:100%;">
-          <button class="btn" onclick="doUploadFromPrompt()">Enviar Vídeo</button>
+          <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ GEROU O VÍDEO?</div>
+          <button class="btn" id="promptUploadBtn" onclick="doUploadFromPrompt()">Vídeo pronto</button>
           <div class="status" id="promptUploadStatus"></div>
         </div>` : ''}
       `;
@@ -3413,16 +3393,12 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
             ${window._vcProductId ? `
             <div id="vc-finalizar-wrap" style="margin-top:4px;">
               <button class="btn" style="width:100%;" onclick="vcFinalizarEEnviar()" id="vc-finalizar-btn">
-                Finalizar e Enviar Vídeo Pronto
+                Finalizar
               </button>
               <div class="status" id="vc-finalizar-status" style="margin-top:8px;"></div>
               <div id="vc-upload-wrap" style="display:none;margin-top:14px;">
-                <div style="font-size:11px;font-weight:700;color:#8B8B8B;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Já tem o vídeo pronto? Envie aqui:</div>
-                <input type="file" accept="video/mp4" id="vc-video-file" style="display:none;" onchange="vcUpdateFileLabel()">
-                <button class="btn btn-secondary" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('vc-video-file').click()">
-                  <span id="vc-file-label">Escolher Arquivo</span>
-                </button>
-                <button class="btn" style="width:100%;" onclick="vcEnviarVideo()" id="vc-enviar-video-btn">Enviar Vídeo</button>
+                <div style="font-size:11px;font-weight:700;color:#8B8B8B;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Já gerou o vídeo?</div>
+                <button class="btn" style="width:100%;" onclick="vcEnviarVideo()" id="vc-enviar-video-btn">Vídeo pronto</button>
                 <div class="status" id="vc-enviar-status" style="margin-top:8px;"></div>
               </div>
             </div>
@@ -3471,28 +3447,19 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         if (!res.ok) throw new Error(data.error || 'Erro ao finalizar roteiro.');
 
         window._vcPackageId = data.packageId;
-        showStatus(st, 'Pronto! Agora envie o vídeo abaixo.', 'ok');
+        showStatus(st, 'Pronto! Confirme quando o vídeo estiver gerado.', 'ok');
         document.getElementById('vc-upload-wrap').style.display = 'block';
-        btn.textContent = 'Finalizado ✓';
+        btn.textContent = 'Finalizado';
       } catch(e) {
         showStatus(st, 'Erro: ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = 'Finalizar e Enviar Vídeo Pronto';
+        btn.textContent = 'Finalizar';
       }
     }
 
-    function vcUpdateFileLabel() {
-      const fileInput = document.getElementById('vc-video-file');
-      const label = document.getElementById('vc-file-label');
-      if (fileInput.files && fileInput.files.length > 0) {
-        label.textContent = fileInput.files[0].name;
-      }
-    }
-
-    // Envia o vídeo pronto para o pacote criado por vcFinalizarEEnviar —
-    // mesmo padrão/rota já usado no fluxo push1 (upload por packageId).
+    // Confirma que o vídeo do Criador de Vídeo está pronto, sem exigir
+    // upload de arquivo — mesmo padrão usado no fluxo push1.
     async function vcEnviarVideo() {
-      const fileInput = document.getElementById('vc-video-file');
       const btn = document.getElementById('vc-enviar-video-btn');
       const st = document.getElementById('vc-enviar-status');
 
@@ -3500,15 +3467,10 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         showStatus(st, 'Finalize o roteiro primeiro.', 'err');
         return;
       }
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showStatus(st, 'Selecione um arquivo MP4 primeiro.', 'err');
-        return;
-      }
 
-      const file = fileInput.files[0];
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
-      showStatus(st, 'Enviando vídeo, aguarde...', 'info');
+      btn.textContent = 'Confirmando...';
+      showStatus(st, 'Confirmando vídeo pronto...', 'info');
       try {
         const res = await fetch(API + '/api/packaging/' + window._vcPackageId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
@@ -3520,23 +3482,19 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
 
-        const formData = new FormData();
-        formData.append('video', file);
-
-        const uploadRes = await fetch(API + '/api/video/' + videoId + '/upload', {
+        const confirmRes = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
-        const uploadData = await uploadRes.json();
-        if (!uploadRes.ok) throw new Error(uploadData.error || 'Erro ao enviar vídeo.');
+        const confirmData = await confirmRes.json();
+        if (!confirmRes.ok) throw new Error(confirmData.error || 'Erro ao confirmar vídeo.');
 
-        showStatus(st, 'Vídeo enviado! Continue no fluxo normal do app.', 'ok');
-        btn.textContent = 'Enviado ✓';
+        showStatus(st, 'Vídeo confirmado! Continue no fluxo normal do app.', 'ok');
+        btn.textContent = 'Vídeo confirmado';
       } catch(e) {
         showStatus(st, 'Erro: ' + e.message, 'err');
         btn.disabled = false;
-        btn.textContent = 'Enviar Vídeo';
+        btn.textContent = 'Vídeo pronto';
       }
     }
 
