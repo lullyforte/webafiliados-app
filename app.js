@@ -525,7 +525,7 @@
         const videoId = p.video_id || p.videoId || p.video?.id || pkg.video_id || pkg.videoId;
 
         if (!videoId) {
-          throw new Error('videoId não encontrado. Estrutura: ' + Object.keys(pkg).join(', '));
+          throw new Error('videoId não encontrado. JSON: ' + JSON.stringify(pkg).slice(0, 300));
         }
 
         // 2. Chama confirm-ready — o backend atualiza o status e dispara Push 2
@@ -3493,7 +3493,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         const videoId = p.video_id || p.videoId || p.video?.id || pkg.video_id || pkg.videoId;
 
         if (!videoId) {
-          throw new Error('videoId não encontrado. Estrutura: ' + Object.keys(pkg).join(', '));
+          throw new Error('videoId não encontrado. JSON: ' + JSON.stringify(pkg).slice(0, 300));
         }
 
         // 2. Confirm-ready dispara Push 2 no backend
