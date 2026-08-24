@@ -507,42 +507,37 @@
         return;
       }
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      btn.textContent = 'Confirmando...';
       showStatus(st, 'Aguarde, finalizando o pacote...', 'info');
       try {
-        // 1. Busca o videoId pelo packageId
+        // 1. Busca o pacote para extrair o videoId
         const res = await fetch(API + '/api/packaging/' + window._currentPackageId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const pkg = await res.json();
-        if (!res.ok) {
-          throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+        if (!res.ok) throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+
+        // Loga a estrutura real para diagnosticar onde está o videoId
+        console.log('[doUpload] pkg response:', JSON.stringify(pkg));
+
+        // Cobre todas as variações possíveis de estrutura do JSON
+        const p = pkg.package || pkg.data || pkg;
+        const videoId = p.video_id || p.videoId || p.video?.id || pkg.video_id || pkg.videoId;
+
+        if (!videoId) {
+          throw new Error('videoId não encontrado. Estrutura: ' + Object.keys(pkg).join(', '));
         }
-        const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
-        if (!videoId) throw new Error('videoId não encontrado no pacote');
 
-        // 2. Faz upload de um arquivo MP4 mínimo válido para disparar o
-        //    processamento do backend (legenda, hashtags, Push 2). O arquivo
-        //    em si não é exibido nem reutilizado — serve só de gatilho,
-        //    exatamente como era antes da mudança que quebrou o fluxo.
-        const minMp4 = new Uint8Array([
-          0x00,0x00,0x00,0x18,0x66,0x74,0x79,0x70,
-          0x6D,0x70,0x34,0x32,0x00,0x00,0x00,0x00,
-          0x6D,0x70,0x34,0x32,0x69,0x73,0x6F,0x6D
-        ]);
-        const formData = new FormData();
-        formData.append('video', new Blob([minMp4], { type: 'video/mp4' }), 'video.mp4');
-
-        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
+        // 2. Chama confirm-ready — o backend atualiza o status e dispara Push 2
+        const res2 = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data2 = await res2.json();
-        if (!res2.ok) throw new Error(data2.error || 'Erro ao enviar vídeo.');
+        if (!res2.ok) throw new Error(data2.error || 'Erro ao confirmar vídeo.');
 
-        showStatus(st, 'Vídeo enviado! Aguarde o pacote com legenda e hashtags.', 'ok');
-        btn.textContent = 'Enviado ✓';
+        showStatus(st, 'Vídeo confirmado! Aguarde o Push com legenda e hashtags.', 'ok');
+        btn.textContent = 'Confirmado ✓';
       } catch(e) {
         showStatus(st, e.message, 'err');
         btn.disabled = false;
@@ -3471,9 +3466,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       }
     }
 
-    // Dispara o processamento do pacote (legenda, hashtags, Push 2) a partir
-    // do Criador de Vídeo — mesmo mecanismo do fluxo push1: upload de um
-    // arquivo MP4 mínimo válido que serve de gatilho para o backend.
+    // Dispara Push 2 a partir do Criador de Vídeo via confirm-ready.
     async function vcEnviarVideo() {
       const btn = document.getElementById('vc-enviar-video-btn');
       const st = document.getElementById('vc-enviar-status');
@@ -3484,39 +3477,35 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       }
 
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      btn.textContent = 'Confirmando...';
       showStatus(st, 'Aguarde, finalizando o pacote...', 'info');
       try {
-        // 1. Busca o videoId pelo packageId do Criador de Vídeo
+        // 1. Busca o pacote para extrair o videoId
         const res = await fetch(API + '/api/packaging/' + window._vcPackageId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const pkg = await res.json();
-        if (!res.ok) {
-          throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+        if (!res.ok) throw new Error(pkg.error || 'Erro ao buscar pacote (status ' + res.status + ')');
+
+        console.log('[vcEnviarVideo] pkg response:', JSON.stringify(pkg));
+
+        const p = pkg.package || pkg.data || pkg;
+        const videoId = p.video_id || p.videoId || p.video?.id || pkg.video_id || pkg.videoId;
+
+        if (!videoId) {
+          throw new Error('videoId não encontrado. Estrutura: ' + Object.keys(pkg).join(', '));
         }
-        const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
-        if (!videoId) throw new Error('videoId não encontrado no pacote');
 
-        // 2. Upload do MP4 mínimo para disparar o processamento do backend
-        const minMp4 = new Uint8Array([
-          0x00,0x00,0x00,0x18,0x66,0x74,0x79,0x70,
-          0x6D,0x70,0x34,0x32,0x00,0x00,0x00,0x00,
-          0x6D,0x70,0x34,0x32,0x69,0x73,0x6F,0x6D
-        ]);
-        const formData = new FormData();
-        formData.append('video', new Blob([minMp4], { type: 'video/mp4' }), 'video.mp4');
-
-        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
+        // 2. Confirm-ready dispara Push 2 no backend
+        const res2 = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token },
-          body: formData
+          headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
         const data2 = await res2.json();
-        if (!res2.ok) throw new Error(data2.error || 'Erro ao enviar vídeo.');
+        if (!res2.ok) throw new Error(data2.error || 'Erro ao confirmar vídeo.');
 
-        showStatus(st, 'Vídeo enviado! Aguarde o pacote com legenda e hashtags.', 'ok');
-        btn.textContent = 'Enviado ✓';
+        showStatus(st, 'Vídeo confirmado! Aguarde o Push com legenda e hashtags.', 'ok');
+        btn.textContent = 'Confirmado ✓';
       } catch(e) {
         showStatus(st, 'Erro: ' + e.message, 'err');
         btn.disabled = false;
