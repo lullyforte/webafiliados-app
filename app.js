@@ -507,10 +507,10 @@
         return;
       }
       btn.disabled = true;
-      btn.textContent = 'Confirmando...';
-      showStatus(st, 'Confirmando vídeo pronto...', 'info');
+      btn.textContent = 'Enviando...';
+      showStatus(st, 'Aguarde, finalizando o pacote...', 'info');
       try {
-        // Busca o videoId pelo packageId
+        // 1. Busca o videoId pelo packageId
         const res = await fetch(API + '/api/packaging/' + window._currentPackageId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
@@ -521,14 +521,28 @@
         const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
 
-        const res2 = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
+        // 2. Faz upload de um arquivo MP4 mínimo válido para disparar o
+        //    processamento do backend (legenda, hashtags, Push 2). O arquivo
+        //    em si não é exibido nem reutilizado — serve só de gatilho,
+        //    exatamente como era antes da mudança que quebrou o fluxo.
+        const minMp4 = new Uint8Array([
+          0x00,0x00,0x00,0x18,0x66,0x74,0x79,0x70,
+          0x6D,0x70,0x34,0x32,0x00,0x00,0x00,0x00,
+          0x6D,0x70,0x34,0x32,0x69,0x73,0x6F,0x6D
+        ]);
+        const formData = new FormData();
+        formData.append('video', new Blob([minMp4], { type: 'video/mp4' }), 'video.mp4');
+
+        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
           method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token }
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
         });
-        const data = await res2.json();
-        if (!res2.ok) throw new Error(data.error || 'Erro ao confirmar vídeo.');
-        showStatus(st, 'Vídeo confirmado! Continue no fluxo normal do app.', 'ok');
-        btn.textContent = 'Vídeo confirmado';
+        const data2 = await res2.json();
+        if (!res2.ok) throw new Error(data2.error || 'Erro ao enviar vídeo.');
+
+        showStatus(st, 'Vídeo enviado! Aguarde o pacote com legenda e hashtags.', 'ok');
+        btn.textContent = 'Enviado ✓';
       } catch(e) {
         showStatus(st, e.message, 'err');
         btn.disabled = false;
@@ -3291,8 +3305,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         window._vcRoteiroAtual = roteiro;
         window._vcPromptOriginal = prompt;
 
-        try {
-          container.innerHTML = `
+        container.innerHTML = `
           <div class="vc-result-hero">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
               <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,31,31,0.12);border:1px solid rgba(255,31,31,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -3391,37 +3404,7 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
 
             <div id="vc-veo-status" class="status" style="display:none;margin-bottom:10px;"></div>
 
-            <div id="vc-finalizar-area"></div>
-
-            <button class="vc-btn-secondary" style="margin:12px 0 0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
-          </div>
-        `;
-        } catch (e) {
-          console.error('[vcShowResultado] Erro ao renderizar resultado:', e.message);
-          container.innerHTML = `<div class="status err" style="display:block;margin:16px;">Erro ao exibir o roteiro: ${escapeHtml(e.message)}. Os dados foram gerados com sucesso — tente rolar a tela ou recarregar.</div>`;
-        }
-        // Sempre tenta renderizar a área de finalizar, mesmo que o
-        // template principal tenha falhado — assim o botão (ou o erro)
-        // fica visível independente do que aconteceu acima.
-        vcRenderFinalizarArea();
-      }, 600);
-    }
-
-    // Renderiza o botão "Finalizar" (ou o aviso de produto não vinculado)
-    // SEPARADO do template gigante de vcShowResultado. Antes esse bloco
-    // vivia dentro do mesmo template literal enorme que monta toda a tela
-    // de resultado — se qualquer parte anterior desse template falhasse
-    // silenciosamente (erro de runtime não capturado), o botão de
-    // finalizar sumia junto, sem nenhum aviso visível. Isolando aqui,
-    // com try/catch próprio, garantimos que o botão sempre aparece (ou,
-    // se algo falhar, o erro real fica visível na tela em vez de sumir
-    // em silêncio).
-    function vcRenderFinalizarArea() {
-      const area = document.getElementById('vc-finalizar-area');
-      if (!area) return;
-      try {
-        if (window._vcProductId) {
-          area.innerHTML = `
+            ${window._vcProductId ? `
             <div id="vc-finalizar-wrap" style="margin-top:4px;">
               <button class="btn" style="width:100%;" onclick="vcFinalizarEEnviar()" id="vc-finalizar-btn">
                 Finalizar
@@ -3433,16 +3416,14 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
                 <div class="status" id="vc-enviar-status" style="margin-top:8px;"></div>
               </div>
             </div>
-          `;
-        } else {
-          area.innerHTML = `
-            <div class="status" style="margin-top:4px;display:block;">Este roteiro não está vinculado a um produto — abra o Criador de Vídeo a partir de um produto (em "Produtos") para poder publicar e enviar o vídeo pronto.</div>
-          `;
-        }
-      } catch (e) {
-        console.error('[vcRenderFinalizarArea] Erro:', e.message);
-        area.innerHTML = `<div class="status err" style="display:block;">Erro ao carregar opções de publicação: ${escapeHtml(e.message)}</div>`;
-      }
+            ` : `
+            <div class="status" style="margin-top:4px;" >Este roteiro não está vinculado a um produto — abra o Criador de Vídeo a partir de um produto (em "Produtos") para poder publicar e enviar o vídeo pronto.</div>
+            `}
+
+            <button class="vc-btn-secondary" style="margin:12px 0 0;width:100%;" onclick="vcNovoVideo()">Criar novo vídeo</button>
+          </div>
+        `;
+      }, 600);
     }
 
     // Cria o pacote (content + package) a partir do roteiro já gerado,
@@ -3490,8 +3471,9 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       }
     }
 
-    // Confirma que o vídeo do Criador de Vídeo está pronto, sem exigir
-    // upload de arquivo — mesmo padrão usado no fluxo push1.
+    // Dispara o processamento do pacote (legenda, hashtags, Push 2) a partir
+    // do Criador de Vídeo — mesmo mecanismo do fluxo push1: upload de um
+    // arquivo MP4 mínimo válido que serve de gatilho para o backend.
     async function vcEnviarVideo() {
       const btn = document.getElementById('vc-enviar-video-btn');
       const st = document.getElementById('vc-enviar-status');
@@ -3502,9 +3484,10 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
       }
 
       btn.disabled = true;
-      btn.textContent = 'Confirmando...';
-      showStatus(st, 'Confirmando vídeo pronto...', 'info');
+      btn.textContent = 'Enviando...';
+      showStatus(st, 'Aguarde, finalizando o pacote...', 'info');
       try {
+        // 1. Busca o videoId pelo packageId do Criador de Vídeo
         const res = await fetch(API + '/api/packaging/' + window._vcPackageId, {
           headers: { 'Authorization': 'Bearer ' + SESSION.token }
         });
@@ -3515,15 +3498,25 @@ Responda EXATAMENTE neste formato JSON puro (sem markdown, sem backticks, sem co
         const videoId = pkg.package?.video_id || pkg.package?.videoId || pkg.video_id || pkg.videoId;
         if (!videoId) throw new Error('videoId não encontrado no pacote');
 
-        const confirmRes = await fetch(API + '/api/video/' + videoId + '/confirm-ready', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + SESSION.token }
-        });
-        const confirmData = await confirmRes.json();
-        if (!confirmRes.ok) throw new Error(confirmData.error || 'Erro ao confirmar vídeo.');
+        // 2. Upload do MP4 mínimo para disparar o processamento do backend
+        const minMp4 = new Uint8Array([
+          0x00,0x00,0x00,0x18,0x66,0x74,0x79,0x70,
+          0x6D,0x70,0x34,0x32,0x00,0x00,0x00,0x00,
+          0x6D,0x70,0x34,0x32,0x69,0x73,0x6F,0x6D
+        ]);
+        const formData = new FormData();
+        formData.append('video', new Blob([minMp4], { type: 'video/mp4' }), 'video.mp4');
 
-        showStatus(st, 'Vídeo confirmado! Continue no fluxo normal do app.', 'ok');
-        btn.textContent = 'Vídeo confirmado';
+        const res2 = await fetch(API + '/api/video/' + videoId + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token },
+          body: formData
+        });
+        const data2 = await res2.json();
+        if (!res2.ok) throw new Error(data2.error || 'Erro ao enviar vídeo.');
+
+        showStatus(st, 'Vídeo enviado! Aguarde o pacote com legenda e hashtags.', 'ok');
+        btn.textContent = 'Enviado ✓';
       } catch(e) {
         showStatus(st, 'Erro: ' + e.message, 'err');
         btn.disabled = false;
