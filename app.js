@@ -1,5 +1,5 @@
 
-    const API = 'https://webafiliados-backend.onrender.com';
+    const API = 'https://api.webafliados.shop';
     let SESSION = null;
     let IS_ADMIN = false;
     let heroTimer = null;
