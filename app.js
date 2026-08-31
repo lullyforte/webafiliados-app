@@ -462,6 +462,8 @@
         window.open('https://kling.ai', '_blank');
       }
     }
+
+    function openGemini() {
       const ua = navigator.userAgent || navigator.vendor || window.opera;
       const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
       const isAndroid = /android/i.test(ua);
