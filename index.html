@@ -1432,6 +1432,14 @@
           </div>
           <svg class="ae-action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </div>
+        <div class="ae-action" onclick="showLinkAnuncioScreen()" id="linkAnuncioBtn">
+          <div class="ae-action-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+          <div class="ae-action-text">
+            <div class="ae-action-title">Colar Link do Produto</div>
+            <div class="ae-action-sub">Copie o link do produto no app da Shopee e cole aqui — mais rápido que o print.</div>
+          </div>
+          <svg class="ae-action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
       </div>
     </div>
 
@@ -1528,6 +1536,20 @@
     <input type="file" id="adScreenshotInput" accept="image/jpeg,image/png" style="margin-bottom:12px; color:#fff;">
     <button class="btn" onclick="doPincarAnuncio()" id="pincarBtn">Pinçar este Anúncio</button>
     <div class="status" id="pincarStatus"></div>
+    </div>
+  </div>
+
+  <!-- TELA: LINK DO PRODUTO -->
+  <div id="linkAnuncioSection" style="display:none;">
+    <div class="inner-header">
+      <div class="inner-header-btn" onclick="showAnuncioExpressScreen()" title="Voltar"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+      <span class="inner-header-title">Colar Link do Produto</span>
+    </div>
+    <div class="card" style="margin-top:12px;">
+      <p style="font-size:14.5px;color:#999;margin-bottom:16px;">Cole o link do produto copiado do app da Shopee — o sistema busca os dados reais e gera o conteúdo pronto.</p>
+      <textarea id="linkAnuncioInput" placeholder="Cole aqui o link do produto da Shopee..." style="width:100%;min-height:80px;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;color:#fff;font-size:14px;resize:none;box-sizing:border-box;margin-bottom:12px;"></textarea>
+      <button class="btn" onclick="doLinkAnuncio()" id="linkAnuncioBtn">Gerar com este Link</button>
+      <div class="status" id="linkAnuncioStatus"></div>
     </div>
   </div>
 

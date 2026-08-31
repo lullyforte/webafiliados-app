@@ -212,7 +212,7 @@
     }
 
     function hideAllCards() {
-      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection','videoCreatorSection','appsSection'].forEach(id => {
+      ['loginSection','registerSection','dashSection','accountSection','pushSection','promptSection','packageSection','uploadSection','settingsMenuSection','settingsSection','apiAfiliadoSection','onboardingSection','aiSettingsSection','pincarAnuncioSection','linkAnuncioSection','searchNowSection','aiEditSection','promptsListSection','promptDetailSection','anuncioExpressSection','videosPublicadosSection','videoCreatorSection','appsSection'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
@@ -1849,6 +1849,48 @@ function showSearchNowScreen() {
       setActiveNav(null);
       const st = document.getElementById('pincarStatus');
       if (st) { st.style.display = 'none'; st.textContent = ''; }
+    }
+
+    function showLinkAnuncioScreen() {
+      hideAllCards();
+      document.getElementById('pageSubtitle').style.display = 'block';
+      document.getElementById('pageSubtitle').textContent = 'Colar Link do Produto';
+      document.getElementById('linkAnuncioSection').style.display = 'block';
+      document.getElementById('bottomNav').style.display = 'flex';
+      document.getElementById('headerActions').style.display = 'flex';
+      setActiveNav(null);
+      const st = document.getElementById('linkAnuncioStatus');
+      if (st) { st.style.display = 'none'; st.textContent = ''; }
+    }
+
+    async function doLinkAnuncio() {
+      const input = document.getElementById('linkAnuncioInput');
+      const btn = document.getElementById('linkAnuncioBtn');
+      const st = document.getElementById('linkAnuncioStatus');
+      const link = input.value.trim();
+      if (!link) {
+        showStatus(st, 'Cole o link do produto primeiro.', 'err');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Processando...';
+      showStatus(st, 'Buscando produto e gerando conteúdo... isso pode levar até 1 minuto.', 'info');
+      try {
+        const res = await fetch(API + '/api/products/from-link', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ link })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao processar link');
+        showStatus(st, 'Produto "' + data.product.name.substring(0, 50) + '" encontrado! Confira o push que acabou de chegar.', 'ok');
+        input.value = '';
+      } catch(e) {
+        showStatus(st, '' + e.message, 'err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Gerar com este Link';
+      }
     }
 
     async function doPincarAnuncio() {
