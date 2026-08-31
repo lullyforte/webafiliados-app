@@ -452,7 +452,16 @@
       }
     }
 
-    function openGemini() {
+    function openKling() {
+      const ua = navigator.userAgent;
+      if (/iPad|iPhone|iPod/.test(ua)) {
+        window.open('https://apps.apple.com/app/kling-ai/id6467784704', '_blank');
+      } else if (/Android/.test(ua)) {
+        window.open('https://play.google.com/store/apps/details?id=kling.ai.video.chat', '_blank');
+      } else {
+        window.open('https://kling.ai', '_blank');
+      }
+    }
       const ua = navigator.userAgent || navigator.vendor || window.opera;
       const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
       const isAndroid = /android/i.test(ua);
@@ -716,6 +725,7 @@
             <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶ YouTube Create</button>
             <button class="btn btn-secondary" onclick="openGemini()">✦ Gemini</button>
             <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
+            <button class="btn btn-secondary" onclick="openKling()">⚡ Kling AI</button>
           </div>
           <div class="status" id="promptStatus"></div>
         ` : ''}
@@ -829,6 +839,7 @@
           <button class="btn btn-secondary" onclick="openYoutubeCreate()">▶ YouTube Create</button>
           <button class="btn btn-secondary" onclick="openGemini()">✦ Gemini</button>
           <button class="btn btn-secondary" onclick="openGoogleVids()">▣ Google Vids</button>
+          <button class="btn btn-secondary" onclick="openKling()">⚡ Kling AI</button>
         </div>
         <div class="status" id="promptStatus"></div>
         ${item.package_id ? `
