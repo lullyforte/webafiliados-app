@@ -455,7 +455,7 @@
     function openKling() {
       const ua = navigator.userAgent;
       if (/iPad|iPhone|iPod/.test(ua)) {
-        window.open('https://apps.apple.com/app/kling-ai/id6467784704', '_blank');
+        window.open('https://apps.apple.com/us/app/kling-ai-ai-image-video-maker/id6738049229', '_blank');
       } else if (/Android/.test(ua)) {
         window.open('https://play.google.com/store/apps/details?id=kling.ai.video.chat', '_blank');
       } else {
@@ -1865,7 +1865,7 @@ function showSearchNowScreen() {
 
     async function doLinkAnuncio() {
       const input = document.getElementById('linkAnuncioInput');
-      const btn = document.getElementById('linkAnuncioBtn');
+      const btn = document.getElementById('linkAnuncioBtnSubmit');
       const st = document.getElementById('linkAnuncioStatus');
       const link = input.value.trim();
       if (!link) {
