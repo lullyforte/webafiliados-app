@@ -844,13 +844,41 @@
           <button class="btn btn-secondary" onclick="openKling()">⚡ Kling AI</button>
         </div>
         <div class="status" id="promptStatus"></div>
-        ${item.package_id ? `
         <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;">
           <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:10px;">JÁ GEROU O VÍDEO?</div>
+          ${item.package_id ? `
           <button class="btn" id="promptUploadBtn" onclick="doUploadFromPrompt()">Vídeo pronto</button>
           <div class="status" id="promptUploadStatus"></div>
-        </div>` : ''}
+          ` : `
+          <button class="btn" id="promptUploadBtn" onclick="doIniciarFluxoFromPrompt(${item.id})">Vídeo pronto</button>
+          <div class="status" id="promptUploadStatus"></div>
+          `}
+        </div>
       `;
+    }
+
+    async function doIniciarFluxoFromPrompt(contentId) {
+      const btn = document.getElementById('promptUploadBtn');
+      const st = document.getElementById('promptUploadStatus');
+      btn.disabled = true;
+      btn.textContent = 'Iniciando...';
+      showStatus(st, 'Criando pacote e enviando push...', 'info');
+      try {
+        const res = await fetch(API + '/api/ai/iniciar-fluxo', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + SESSION.token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contentId })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erro ao iniciar fluxo');
+        window._currentPackageId = data.packageId;
+        showStatus(st, 'Push enviado! Abra a notificação para continuar.', 'ok');
+        btn.textContent = 'Push enviado ✓';
+      } catch(e) {
+        showStatus(st, e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Vídeo pronto';
+      }
     }
 
     function downloadPromptFile(titleForFileName) {
